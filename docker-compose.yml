@@ -1,0 +1,13 @@
+version: "3"
+services:
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    container_name: db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PORT=5432
+    user: 1000:1000
