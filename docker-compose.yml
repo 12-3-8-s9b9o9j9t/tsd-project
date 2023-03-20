@@ -10,7 +10,14 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_PORT=5432
-
+  back:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: back
+    restart: always
+    ports:
+      - "80:80"
   front:
     build:
       context: ./front
@@ -22,4 +29,3 @@ services:
     ports:
       - "4200:4200"
     command: ng serve --host 0.0.0.0
-    
