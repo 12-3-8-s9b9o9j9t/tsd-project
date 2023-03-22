@@ -15,3 +15,10 @@ public class UserStoryEntity
     [Required]
     public int? estimatedCost { get; set;  }
 }
+
+public class UserStoryInput
+{
+    public string? description { get; set; }
+    
+    public int? estimatedCost { get; set; }
+}
