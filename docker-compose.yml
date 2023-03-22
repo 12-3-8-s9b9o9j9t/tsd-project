@@ -12,7 +12,7 @@ services:
       - POSTGRES_PORT=5432
   back:
     build:
-      context: ./back
+      context: ./back/back.web
       dockerfile: Dockerfile
     container_name: back
     restart: always

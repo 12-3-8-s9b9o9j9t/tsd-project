@@ -1,0 +1,34 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build-back:
+    defaults:
+      run:
+        working-directory: back
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      checks: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0'
+      - name: Display dotnet version
+        run: dotnet --version
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Test with dotnet
+        run: dotnet test --logger trx --results-directory TestResults
+      - name: Test Report  # https://github.com/marketplace/actions/test-reporter
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: MSTest Tests
+          path: back/TestResults/*.trx
+          reporter: dotnet-trx
