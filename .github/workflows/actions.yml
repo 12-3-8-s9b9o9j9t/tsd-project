@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
       - name: Test with dotnet
-        run: dotnet test --logger trx
+        run: dotnet test --logger trx --results-directory TestResults
       - name: Upload dotnet test results
         uses: actions/upload-artifact@v3
         with:
