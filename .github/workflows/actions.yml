@@ -5,8 +5,7 @@ on: [push]
 jobs:
   build-back:
     defaults:
-      run:
-        working-directory: back
+      working-directory: back
 
     runs-on: ubuntu-latest
 
