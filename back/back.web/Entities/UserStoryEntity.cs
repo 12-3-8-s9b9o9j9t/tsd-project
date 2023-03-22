@@ -10,8 +10,8 @@ public class UserStoryEntity
     public int id { get; set; }
     
     [Required]
-    public string description { get; set; }
+    public string? description { get; set; }
     
     [Required]
-    public int ? estimatedCost { get; set;  }
+    public int? estimatedCost { get; set;  }
 }
