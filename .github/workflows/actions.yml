@@ -1,0 +1,30 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build-back:
+    defaults:
+      run:
+        working-directory: back
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0'
+      - name: Display dotnet version
+        run: dotnet --version
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Test with dotnet
+        run: dotnet test --logger trx
+      - name: Upload dotnet test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: dotnet-results
+          path: TestResults
+        if: ${{ always() }}
