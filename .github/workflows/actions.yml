@@ -5,7 +5,8 @@ on: [push]
 jobs:
   build-back:
     defaults:
-      working-directory: back
+      run:
+        working-directory: back
 
     runs-on: ubuntu-latest
 
@@ -25,5 +26,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: dotnet-results
-          path: TestResults
+          path: back/TestResults
         if: ${{ always() }}
