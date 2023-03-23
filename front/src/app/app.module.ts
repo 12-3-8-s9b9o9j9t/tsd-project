@@ -16,13 +16,15 @@ import { SessionComponent } from './session/session.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { BoardComponent } from './board/board.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     NavbarComponent,
-    SessionComponent
+    SessionComponent,
+    BoardComponent
   ],
   imports: [
     HttpClientModule,
