@@ -9,6 +9,9 @@ import {getName} from "../services/storage.service";
 export class SessionComponent implements OnInit{
 
   name: string = "";
+  tabCards: string[] = ['1','2','3','5','8','13','∞'];
+  chosenCard: string | undefined;
+  disabled: boolean = false;
 
   constructor() {
   }
@@ -16,7 +19,5 @@ export class SessionComponent implements OnInit{
   ngOnInit(): void {
     this.name = getName();
   }
-
-
 
 }

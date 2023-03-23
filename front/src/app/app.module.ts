@@ -10,10 +10,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SessionComponent } from './session/session.component';
 import { MatCardModule } from '@angular/material/card';
-
+import { MatRadioModule } from '@angular/material/radio';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -29,9 +30,12 @@ import { MatCardModule } from '@angular/material/card';
     BrowserAnimationsModule,
     MatButtonModule,
     MatFormFieldModule,
+    FormsModule,
     MatInputModule,
     ReactiveFormsModule,
     MatCardModule,
+    MatRadioModule,
+    MatCheckboxModule
   ],
   providers: [],
   bootstrap: [AppComponent]
