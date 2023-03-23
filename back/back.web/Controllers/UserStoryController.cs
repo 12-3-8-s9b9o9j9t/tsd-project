@@ -19,7 +19,7 @@ public class UserStoryController : ControllerBase
     [HttpGet("all")]
     public IEnumerable<UserStoryEntity> get()
     {
-        return _userStoryContext.UserStories;
+        return _userStoryContext.UserStories.OrderBy(u => u.id);
     }
 
     [HttpGet("{id:int}")]
@@ -36,12 +36,13 @@ public class UserStoryController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<UserStoryEntity>> create(UserStoryEntity userStory)
+    public async Task<ActionResult<UserStoryEntity>> create(UserStoryInput userStory)
     {
-        _userStoryContext.UserStories.Add(userStory);
+        UserStoryEntity userStoryToAdd = new UserStoryEntity(userStory.description, userStory.estimatedCost);
+        _userStoryContext.UserStories.Add(userStoryToAdd);
         await _userStoryContext.SaveChangesAsync();
 
-        return userStory;
+        return userStoryToAdd;
     }
 
     [HttpDelete]
