@@ -45,13 +45,13 @@ public class UserStoryController : ControllerBase
         return userStoryToAdd;
     }
 
-    [HttpDelete]
+    [HttpDelete("{id:int}")]
     public async Task<ActionResult<UserStoryEntity>> delete(int id)
     {
 
-        var userStory = getByID(id);
+        var userStory = await getByID(id);
 
-        _userStoryContext.Remove(userStory.Result.Value);
+        _userStoryContext.UserStories.Remove(userStory.Value);
         await _userStoryContext.SaveChangesAsync();
         return Ok();
     }
