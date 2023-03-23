@@ -13,7 +13,15 @@ public class UserStoryEntity
     public string? description { get; set; }
     
     [Required]
-    public int? estimatedCost { get; set;  }
+    public int? estimatedCost { get; set; }
+    
+    public UserStoryEntity() {}
+
+    public UserStoryEntity(string? descr, int? cost)
+    {
+        this.description = descr;
+        this.estimatedCost = cost;
+    }
 }
 
 public class UserStoryInput

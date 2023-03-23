@@ -1,0 +1,28 @@
+.toolbar {
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.title-container {
+  text-align: center;
+}
+
+.title {
+  color: #2600ff;
+  font-family: 'Pacifico', cursive;
+  font-size: 3rem;
+  text-align: center;
+}
+
+.title-underline {
+  position: absolute;
+  bottom: -0.5rem;
+  left: 2rem;
+  right: 2rem;
+  height: 0.15rem;
+  background-color: #2600ff;
+}
+
