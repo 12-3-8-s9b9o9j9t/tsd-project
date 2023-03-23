@@ -12,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SessionComponent } from './session/session.component';
+import { MatCardModule } from '@angular/material/card';
 
 
 @NgModule({
@@ -30,6 +31,7 @@ import { SessionComponent } from './session/session.component';
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
+    MatCardModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
