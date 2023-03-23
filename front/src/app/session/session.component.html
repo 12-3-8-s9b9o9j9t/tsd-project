@@ -10,9 +10,10 @@
   </mat-card-content>
 
   <mat-card-content>
-    <section class="checkbox-section">
-      <mat-checkbox class="checkbox-validate" [(ngModel)]="disabled" [disabled]="!chosenCard"></mat-checkbox>
-      <span>Validate this card</span>
+    <section class="button-section">
+      <button mat-flat-button class="button-validate" color="primary" [disabled]="!chosenCard" (click)="validate()">
+        Validate card
+      </button>
     </section>
   </mat-card-content>
 </mat-card>
