@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import {saveName} from "../services/storage.service";
 
 @Component({
   selector: 'app-home',
@@ -15,12 +16,23 @@ export class HomeComponent {
     name: this.nameControl,
   });
 
-  constructor(   
+  constructor(
     private router: Router
   ) { }
 
 
   enter(): void {
+    if (!this.formGroup.valid) {
+      return ;
+    }
+
+    let name: string | null = this.nameControl.value;
+
+    if (name == null) {
+      return ;
+    }
+
+    saveName(name)
     this.router.navigateByUrl('/session');
   }
 
