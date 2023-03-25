@@ -1,0 +1,25 @@
+.cards {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.player-card {
+    flex-direction: column;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 8rem;
+    height: 10rem;
+    align-items: center;
+}
+
+.card-container {
+    margin: auto;
+}
+
+.hidden {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    color: #ccc;
+}
