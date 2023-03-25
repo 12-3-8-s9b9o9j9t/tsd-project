@@ -17,6 +17,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { BoardComponent } from './board/board.component';
+import { PlayerDeckComponent } from './player-deck/player-deck.component';
+import { UserStoryComponent } from './user-story/user-story.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,9 @@ import { BoardComponent } from './board/board.component';
     HomeComponent,
     NavbarComponent,
     SessionComponent,
-    BoardComponent
+    BoardComponent,
+    PlayerDeckComponent,
+    UserStoryComponent
   ],
   imports: [
     HttpClientModule,

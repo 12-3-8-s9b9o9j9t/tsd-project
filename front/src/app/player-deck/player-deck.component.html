@@ -1,0 +1,45 @@
+<div class="player-deck">
+
+    <mat-card class="player-card">
+        <mat-card-header>
+            <mat-card-title>Selected card</mat-card-title>
+        </mat-card-header>
+
+        <div class="card-container">
+            <div *ngIf="!selectedCard; then thenBlock else elseBlock"></div>
+            
+            <ng-template #thenBlock>
+                <div class="no-card-selected">select a card</div>
+            </ng-template>
+
+            <ng-template #elseBlock>
+                <mat-card-content class="number">
+                    <p>{{selectedCard}}</p>
+                </mat-card-content>
+            </ng-template>
+        </div>
+
+
+    </mat-card>
+
+    <mat-card>
+        <mat-card-content>
+            <mat-radio-group aria-labelledby="cards-radio-group-label" class="cards-radio-group"
+                [(ngModel)]="selectedCard">
+                <mat-radio-button class="cards-radio-button" [disabled]="disabled" *ngFor="let card of tabCards"
+                    [value]="card">
+                    {{card}}
+                </mat-radio-button>
+            </mat-radio-group>
+        </mat-card-content>
+
+        <mat-card-content>
+            <section class="button-section">
+                <button mat-flat-button class="button-validate" color="primary" [disabled]="!selectedCard"
+                    (click)="validate()">
+                    Validate card
+                </button>
+            </section>
+        </mat-card-content>
+    </mat-card>
+</div>
