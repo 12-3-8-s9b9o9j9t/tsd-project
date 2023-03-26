@@ -59,19 +59,24 @@ public class UserStoryController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<UserStoryEntity>> update(int id, [FromBody] UserStoryInput userStory)
     {
-        var u = getByID(id).Result.Value;
+        var u = await getByID(id);
+
+        if (u.Value == null)
+        {
+            return NotFound();
+        }
 
         if (userStory.description != null)
         {
-            u.description = new string(userStory.description);
+            u.Value.description = new string(userStory.description);
         }
 
         if (userStory.estimatedCost != null)
         {
-            u.estimatedCost = userStory.estimatedCost;
+            u.Value.estimatedCost = userStory.estimatedCost;
         }
 
         await _userStoryContext.SaveChangesAsync();
-        return Ok();
+        return Ok(u.Value);
     }
 }

@@ -57,21 +57,21 @@ public class UserStoryPropositionController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<UserStoryPropositionEntity>> update(int id, [FromBody] UserStoryPropositionInput input)
     {
-        var userStoryP = getByID(id);
+        var userStoryP = await getByID(id);
 
-        if (userStoryP == null)
+        if (userStoryP.Value == null)
         {
             return NotFound();
         }
-
+        
         if (input.description != null)
         {
-            userStoryP.Result.Value.description = input.description;
+            userStoryP.Value.description = input.description;
         }
 
         await _userStoryPropositionContext.SaveChangesAsync();
 
-        return Ok(userStoryP);
+        return Ok(userStoryP.Value);
     }
 }
 
