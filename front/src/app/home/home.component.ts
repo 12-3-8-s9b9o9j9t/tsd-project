@@ -33,7 +33,7 @@ export class HomeComponent {
     }
 
     saveName(name)
-    this.router.navigateByUrl('/session');
+    this.router.navigateByUrl('/waiting-room');
   }
 
 
