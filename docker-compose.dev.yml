@@ -14,16 +14,26 @@ services:
   back:
     build:
       context: ./back/back.web
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./back/back.web:/app
     container_name: back
     restart: always
     depends_on:
       - db
+    ports:
+      - 5225:5225
+    command: dotnet watch run --launch-profile publicdev
   front:
     build:
       context: ./front
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./front/src:/app/src
     container_name: front
     restart: always
     depends_on:
       - back
+    ports:
+      - 4200:4200
+    command: ng serve --host 0.0.0.0
