@@ -9,9 +9,9 @@ namespace back.Controllers;
 [Route("[controller]")]
 public class UserStoryController : ControllerBase
 {
-    private readonly UserStoryContext _userStoryContext;
+    private readonly DatabaseContext _userStoryContext;
 
-    public UserStoryController(UserStoryContext userStoryContext)
+    public UserStoryController(DatabaseContext userStoryContext)
     {
         _userStoryContext = userStoryContext;
     }

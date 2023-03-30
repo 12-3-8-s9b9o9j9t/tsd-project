@@ -1,5 +1,6 @@
 using back.DAL;
 using back.Entities;
+using back.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace back.Controllers;
@@ -8,23 +9,23 @@ namespace back.Controllers;
 [Route("[controller]")]
 public class UserStoryPropositionController : ControllerBase
 {
-    private readonly UserStoryPropositionContext _userStoryPropositionContext;
+    private readonly IUserStoryPropositionService _service;
 
-    public UserStoryPropositionController(UserStoryPropositionContext context)
+    public UserStoryPropositionController(IUserStoryPropositionService service)
     {
-        _userStoryPropositionContext = context;
+        _service = service;
     }
 
     [HttpGet("all")]
     public IEnumerable<UserStoryPropositionEntity> get()
     {
-        return _userStoryPropositionContext.UserStoriesProposition.OrderBy(u => u.id);
+        return _service.getAll();
     }
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<UserStoryPropositionEntity>> getByID(int id)
     {
-        var userStoryP = await _userStoryPropositionContext.UserStoriesProposition.FindAsync(id);
+        var userStoryP = await _service.getByID(id);
 
         if (userStoryP == null)
         {
@@ -37,41 +38,26 @@ public class UserStoryPropositionController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<UserStoryPropositionEntity>> create([FromBody] UserStoryPropositionInput userStoryP)
     {
-        UserStoryPropositionEntity userStoryPropositionToAdd = new UserStoryPropositionEntity(userStoryP.description);
-        _userStoryPropositionContext.UserStoriesProposition.Add(userStoryPropositionToAdd);
-        await _userStoryPropositionContext.SaveChangesAsync();
-
-        return userStoryPropositionToAdd;
+        return await _service.create(userStoryP);
     }
 
     [HttpDelete("{id:int}")]
     public async Task<ActionResult<UserStoryPropositionEntity>> delete(int id)
     {
-        var userStoryPropositionToDelete = await getByID(id);
-
-        _userStoryPropositionContext.UserStoriesProposition.Remove(userStoryPropositionToDelete.Value);
-        await _userStoryPropositionContext.SaveChangesAsync();
-        return Ok();
+        bool ans = await _service.delete(id);
+        return ans ? Ok() : NotFound();
     }
 
     [HttpPut("{id:int}")]
     public async Task<ActionResult<UserStoryPropositionEntity>> update(int id, [FromBody] UserStoryPropositionInput input)
     {
-        var userStoryP = await getByID(id);
+        var ans = _service.update(id, input);
 
-        if (userStoryP.Value == null)
+        if (ans == null)
         {
             return NotFound();
         }
-        
-        if (input.description != null)
-        {
-            userStoryP.Value.description = input.description;
-        }
-
-        await _userStoryPropositionContext.SaveChangesAsync();
-
-        return Ok(userStoryP.Value);
+        return Ok(ans);
     }
 }
 

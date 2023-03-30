@@ -1,4 +1,6 @@
+using back.Controllers;
 using back.DAL;
+using back.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,9 +13,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var dbConnectionString = builder.Configuration.GetConnectionString("postgresDB");
-builder.Services.AddDbContext<UserStoryContext>(o => o.UseNpgsql(dbConnectionString));
-builder.Services.AddDbContext<UserStoryPropositionContext>(o => o.UseNpgsql(dbConnectionString));
+builder.Services.AddDbContext<DatabaseContext>(o => o.UseNpgsql(dbConnectionString));
 
+builder.Services.AddScoped<IUserStoryPropositionService, UserStoryPropositionService>();
+builder.Services.AddScoped<ISessionService, SessionService>();
 
 var app = builder.Build();
 

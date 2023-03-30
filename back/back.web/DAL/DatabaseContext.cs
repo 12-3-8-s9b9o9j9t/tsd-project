@@ -3,16 +3,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace back.DAL;
 
-public class UserStoryPropositionContext : DbContext
+public class DatabaseContext : DbContext
 {
-    public UserStoryPropositionContext(DbContextOptions<UserStoryPropositionContext> options)
+    public DatabaseContext(DbContextOptions<DatabaseContext> options) 
         : base(options)
     {}
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseIdentityColumns();
     }
     
     public DbSet<UserStoryPropositionEntity> UserStoriesProposition { get; set; }
+    
+    public DbSet<UserStoryEntity> UserStories { get; set; }
+    
+    public DbSet<NoteEntity> Notes { get; set; }
+    
+    public DbSet<UserEntity> Users { get; set; }
 }
