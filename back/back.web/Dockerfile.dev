@@ -1,0 +1,5 @@
+FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine
+
+WORKDIR /app
+
+EXPOSE 5225
