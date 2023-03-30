@@ -19,6 +19,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { BoardComponent } from './board/board.component';
 import { PlayerDeckComponent } from './player-deck/player-deck.component';
 import { UserStoryComponent } from './user-story/user-story.component';
+import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,8 @@ import { UserStoryComponent } from './user-story/user-story.component';
     SessionComponent,
     BoardComponent,
     PlayerDeckComponent,
-    UserStoryComponent
+    UserStoryComponent,
+    WaitingRoomComponent
   ],
   imports: [
     HttpClientModule,
@@ -43,7 +46,8 @@ import { UserStoryComponent } from './user-story/user-story.component';
     ReactiveFormsModule,
     MatCardModule,
     MatRadioModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatTableModule
   ],
   providers: [],
   bootstrap: [AppComponent]
