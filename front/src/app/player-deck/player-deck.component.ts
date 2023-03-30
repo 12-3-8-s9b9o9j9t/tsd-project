@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { ApiHelperService } from '../services/api-helper.service';
 
 @Component({
   selector: 'app-player-deck',
@@ -9,19 +9,26 @@ import { Component } from '@angular/core';
 export class PlayerDeckComponent {
 
   name: string = "";
-  tabCards: string[] = ['1','2','3','5','8','13','∞'];
+  tabCards: string[] = ['1', '2', '3', '5', '8', '13', '∞'];
   selectedCard: string | undefined;
   disabled: boolean = false;
 
-  constructor(private http: HttpClient) { }
+  constructor(private api: ApiHelperService) { }
 
   validate(): void {
     this.disabled = true;
-    this.http.post('http://localhost:3000/session', {name: this.name, card: this.selectedCard}).subscribe(
-      (response) => {
-        console.log(response);
+
+    this.api.post({
+      endpoint: 'session',
+      data: {
+        name: this.name,
+        card: this.selectedCard
       }
-    );
+    }).then((response) => {
+      console.log(response);
+    }).catch((error) => {
+      console.log(error);
+    });
   }
 
 }
