@@ -1,5 +1,13 @@
 {
   "profiles": {
+    "publicdev": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "http://+:5225",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
     "http": {
       "commandName": "Project",
       "launchBrowser": true,
