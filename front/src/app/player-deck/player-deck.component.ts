@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ApiHelperService } from '../services/api-helper.service';
+import { getID } from '../services/storage.service';
 
 @Component({
   selector: 'app-player-deck',
@@ -19,14 +20,12 @@ export class PlayerDeckComponent {
     this.disabled = true;
 
     this.api.post({
-      endpoint: 'session',
-      data: {
-        name: this.name,
-        card: this.selectedCard
-      }
+      endpoint: '/Session/voteCurrentUserStory/'+getID()+'/'+this.selectedCard
     }).then((response) => {
+      console.log("Vote sent");
       console.log(response);
     }).catch((error) => {
+      console.log("Vote not sent");
       console.log(error);
     });
   }

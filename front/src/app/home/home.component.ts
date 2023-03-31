@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import {saveName} from "../services/storage.service";
+import { ApiHelperService } from '../services/api-helper.service';
+import { saveID, saveName } from "../services/storage.service";
 
 @Component({
   selector: 'app-home',
@@ -17,24 +18,42 @@ export class HomeComponent {
   });
 
   constructor(
+    private api: ApiHelperService,
     private router: Router
   ) { }
 
 
   enter(): void {
     if (!this.formGroup.valid) {
-      return ;
+      return;
     }
-
     let name: string | null = this.nameControl.value;
 
-    if (name == null) {
-      return ;
-    }
 
-    saveName(name)
+    this.api.get({ endpoint: '/User/' + name }).then((response) => {
+      console.log("User found");
+      console.log(response);
+      if (name === null) {
+        return;
+      }
+      saveName(name);
+      saveID(response.id);
+    }).catch((error) => {
+      console.log(error);
+      console.log("User not found, creating new user");
+      this.api.post({ endpoint: '/User', data: { name: name } }).then((response) => {
+        console.log(response);
+        if (name === null) {
+          return;
+        }
+        saveName(name);
+        saveID(response.id);
+      }
+      ).catch((error) => {
+        console.log(error);
+      }
+      );
+    });
     this.router.navigateByUrl('/waiting-room');
   }
-
-
 }
