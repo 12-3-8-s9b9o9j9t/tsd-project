@@ -38,6 +38,7 @@ export class HomeComponent {
       }
       saveName(name);
       saveID(response.id);
+      this.router.navigateByUrl('/waiting-room');
     }).catch((error) => {
       console.log(error);
       console.log("User not found, creating new user");
@@ -48,12 +49,12 @@ export class HomeComponent {
         }
         saveName(name);
         saveID(response.id);
+        this.router.navigateByUrl('/waiting-room');
       }
       ).catch((error) => {
         console.log(error);
       }
       );
     });
-    this.router.navigateByUrl('/waiting-room');
   }
 }
