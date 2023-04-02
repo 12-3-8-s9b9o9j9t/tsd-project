@@ -20,14 +20,20 @@ builder.Services.AddScoped<ISessionService, SessionService>();
 
 var app = builder.Build();
 
+// Enable CORS
+app.UseCors(builder =>
+{
+    builder.AllowAnyOrigin();
+    builder.AllowAnyHeader();
+    builder.AllowAnyMethod();
+});
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-
 
 app.UseAuthorization();
 
