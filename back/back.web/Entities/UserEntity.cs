@@ -17,3 +17,9 @@ public class UserInput
 {
     public string name { get; set; }
 }
+
+public class UserDTO
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}

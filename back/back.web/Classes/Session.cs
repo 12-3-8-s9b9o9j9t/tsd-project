@@ -103,13 +103,13 @@ public class Session
 
     public bool userValidated(int userID, int note)
     {
-        if (!_currentUSMapValidated.Contains(userID))
-        {
-            return false;
-        }
-
-        _currentUSMapValidated[(Object) userID] = note;
-        _state.onUserValidate();
+        // if (!_currentUSMapValidated.Contains(userID))
+        // {
+        //     return false;
+        // }
+        //
+        // _currentUSMapValidated[(Object) userID] = note;
+        // _state.onUserValidate();
         return true;
     }
 
@@ -137,11 +137,16 @@ public class Session
             _currentUSMapValidated.Add(userID, -1);
         }
     }
+
+    public void startDiscussing()
+    {
+        _state.onDiscussing();
+    }
 }
 
 public class SessionDTO
 {
-    public List<int> users { get; set; }
+    public List<UserDTO> users { get; set; }
     
     public UserStoryPropositionEntity currentUserStory { get; set; }
     

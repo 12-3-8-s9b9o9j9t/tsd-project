@@ -13,16 +13,19 @@ public class SessionController : ControllerBase
 
     private readonly ISessionService _sessionService;
 
-    public SessionController(ISessionService sessionService)
+    private readonly IUserService _userService;
+
+    public SessionController(ISessionService sessionService, IUserService userService)
     {
         _sessionService = sessionService;
+        _userService = userService;
     }
     
 
     [HttpGet]
     public async Task<ActionResult<Session>> get()
     {
-        var result = _sessionService.getCurrentSession();
+        var result = await _sessionService.getCurrentSession();
 
         if (result == null)
         {
@@ -41,7 +44,7 @@ public class SessionController : ControllerBase
             return BadRequest("User " + id + " already in current session or current session is null or does not exist");
         }
 
-        return Ok(_sessionService.getCurrentSession());
+        return Ok(await _sessionService.getCurrentSession());
     }
 
     [HttpPost("createSession")]
@@ -49,19 +52,21 @@ public class SessionController : ControllerBase
     {
         _sessionService.createSession();
         
-        return Ok(_sessionService.getCurrentSession());
+        return Ok(await _sessionService.getCurrentSession());
     }
 
     [HttpPost("start/{userID:int}")]
     public async Task<ActionResult<Session>> userStart(int userID)
     {
-        var currentSession = _sessionService.getCurrentSession();
+        var currentSession = await _sessionService.getCurrentSession();
         if (currentSession == null)
         {
             return BadRequest("current session is null.");
         }
 
-        if (!currentSession.users.Contains(userID))
+        var usersIDList = currentSession.users.Select(u => u.Id);
+
+        if (!usersIDList.Contains(userID))
         {
             return BadRequest("user " + userID + " is not in current session.");
         }
@@ -73,7 +78,7 @@ public class SessionController : ControllerBase
             return BadRequest("bad start");
         }
 
-        return Ok(_sessionService.getCurrentSession());
+        return Ok(await _sessionService.getCurrentSession());
 
     }
 
@@ -81,13 +86,15 @@ public class SessionController : ControllerBase
     public async Task<ActionResult<Session>> voteForCurrentUS(int userID, int cardNumber)
     {
         Console.WriteLine("user id : " + userID + " card : " + cardNumber);
-        var currentSession = _sessionService.getCurrentSession();
+        var currentSession = await _sessionService.getCurrentSession();
         if (currentSession == null)
         {
             return BadRequest("current session is null.");
         }
+        
+        var usersIDList = currentSession.users.Select(u => u.Id);
 
-        if (!currentSession.users.Contains(userID))
+        if (!usersIDList.Contains(userID))
         {
             return BadRequest("user " + userID + " is not in current session.");
         }
@@ -99,20 +106,22 @@ public class SessionController : ControllerBase
             return BadRequest("note " + cardNumber + " for user " + userID + " for this user story already exist");
         }
         
-        return Ok(_sessionService.getCurrentSession());
+        return Ok(await _sessionService.getCurrentSession());
         
     }
 
     [HttpPost("validateCurrentUserStory/{userID:int}/{cardNumber:int}")]
     public async Task<ActionResult<Session>> validateCurrentUS(int userID, int cardNumber)
     {
-        var currentSession = _sessionService.getCurrentSession();
+        var currentSession = await _sessionService.getCurrentSession();
         if (currentSession == null)
         {
             return BadRequest("current session is null.");
         }
 
-        if (!currentSession.users.Contains(userID))
+        var usersIDList = currentSession.users.Select(u => u.Id);
+
+        if (!usersIDList.Contains(userID))
         {
             return BadRequest("user " + userID + " is not in current session.");
         }
@@ -124,7 +133,7 @@ public class SessionController : ControllerBase
             return BadRequest("note " + cardNumber + " for user " + userID + " for this user story already exist");
         }
         
-        return Ok(_sessionService.getCurrentSession());
+        return Ok(await _sessionService.getCurrentSession());
     }
 }
 

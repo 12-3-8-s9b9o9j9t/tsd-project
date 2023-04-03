@@ -13,7 +13,7 @@ public abstract class ASessionState
 
     public abstract void onUserVote();
 
-    public abstract void onUserValidate();
+    public abstract void onDiscussing();
 
     public abstract void onUserStart();
 

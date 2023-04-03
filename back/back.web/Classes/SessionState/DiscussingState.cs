@@ -14,32 +14,74 @@ public class DiscussingState : ASessionState
         // nothing to do
     }
 
-    public override void onUserValidate()
+    public override void onDiscussing()
     {
-        if (_session._currentUSMapValidated.Count == 0)
-        {
-            return;
-        }
-
+        bool sameRes = true; 
+    
         // get the first value in dictionary
-        int[] values = new int[_session._currentUSMapValidated.Count];
+        int[] values = new int[_session._currentUSVoted.Count];
         _session._currentUSMapValidated.Values.CopyTo(values, 0);
-        int finalVote = values[0];
+        int firstVote = values[0];
 
-        foreach (DictionaryEntry entry in _session._currentUSMapValidated)
+        foreach (DictionaryEntry entry in _session._currentUSVoted)
         {
-            // one or several developer have not validated the current user story discussed yet
-            if (finalVote != (int) entry.Value || (int) entry.Value < 0)
+            if ((int) entry.Value != firstVote)
             {
-                return;
+                sameRes = false;    
+                break;
             }
         }
+        
+        Console.WriteLine("on discussing");
+        // OK, we can go to next user story
+        if (sameRes)
+        {
+            Task.Delay(5000).ContinueWith(_ =>
+            {
+                _session.resetCurrentUSVoted();
+                _session.setState(new VotingState(_session));
+                _session.nextUserStory();
+            });
+        }
+        // return to vote state
+        else
+        {
+            Task.Delay(5000).ContinueWith(_ =>
+            {
+                _session.resetCurrentUSVoted();
+                _session.setState(new VotingState(_session));
+            });
 
-        _session.resetCurrentUSValidated();
-        _session.nextUserStory();
-        _session.setState(new VotingState(_session));
-        Console.WriteLine("all dev have discussed");
+
+        }
     }
+
+    // public override void onUserValidate()
+    // {
+    //     if (_session._currentUSMapValidated.Count == 0)
+    //     {
+    //         return;
+    //     }
+    //
+    //     // get the first value in dictionary
+    //     int[] values = new int[_session._currentUSMapValidated.Count];
+    //     _session._currentUSMapValidated.Values.CopyTo(values, 0);
+    //     int finalVote = values[0];
+    //
+    //     foreach (DictionaryEntry entry in _session._currentUSMapValidated)
+    //     {
+    //         // one or several developer have not validated the current user story discussed yet
+    //         if (finalVote != (int) entry.Value || (int) entry.Value < 0)
+    //         {
+    //             return;
+    //         }
+    //     }
+    //
+    //     _session.resetCurrentUSValidated();
+    //     _session.nextUserStory();
+    //     _session.setState(new VotingState(_session));
+    //     Console.WriteLine("all dev have discussed");
+    // }
 
     public override void onUserStart()
     {
@@ -48,7 +90,7 @@ public class DiscussingState : ASessionState
 
     public override OrderedDictionary getUsersVote()
     {
-        return _session._currentUSMapValidated;
+        return _session._currentUSVoted;
     }
 
     public override string ToString()

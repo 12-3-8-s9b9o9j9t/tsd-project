@@ -8,7 +8,7 @@ namespace back.Services;
 
 public interface ISessionService
 {
-    public SessionDTO getCurrentSession();
+    public Task<SessionDTO> getCurrentSession();
 
     public bool addUserToSession(int id);
 
@@ -28,17 +28,20 @@ public class SessionService : ISessionService
     private readonly IUserStoryPropositionService _userStoryPropositionService;
 
     private readonly DatabaseContext _databaseContext;
+
+    private readonly IUserService _userService;
     
     private Session _currentSession { get; set; }
 
-    public SessionService(IUserStoryPropositionService userStoryPropositionService, DatabaseContext databaseContext)
+    public SessionService(IUserStoryPropositionService userStoryPropositionService, DatabaseContext databaseContext, IUserService userService)
     {
         _userStoryPropositionService = userStoryPropositionService;
         _currentSession = Session.getInstance();
         _databaseContext = databaseContext;
+        _userService = userService;
     }
 
-    public SessionDTO getCurrentSession()
+    public async Task<SessionDTO> getCurrentSession()
     {
         if (_currentSession == null)
         {
@@ -52,7 +55,8 @@ public class SessionService : ISessionService
         
         var sessionDTO = new SessionDTO();
         sessionDTO.currentUserStory = _currentSession.currentUserStoryDiscussed();
-        sessionDTO.users = new List<int>(_currentSession._joinedUsersID);
+        var users = _currentSession._joinedUsersID.Select(id => _userService.GetByID(id).Result);
+        sessionDTO.users = new List<UserDTO>(users);
         sessionDTO.state = _currentSession._state.ToString();
         sessionDTO.usersNotes = _currentSession._state.getUsersVote();
         return sessionDTO;
@@ -88,12 +92,13 @@ public class SessionService : ISessionService
         _currentSession = Session.getInstance();
 
         SessionDTO result = new SessionDTO();
-        result.users = new List<int>(_currentSession._joinedUsersID);
+        var users = _currentSession._joinedUsersID.Select(id => _userService.GetByID(id).Result);
+        result.users = new List<UserDTO>(users);
         result.currentUserStory = _currentSession.currentUserStoryDiscussed();
         result.state = _currentSession._state.ToString();
         result.usersNotes = null;
 
-        return result;
+        return result; 
     }
 
     public async Task<NoteEntity> createNote(int userID, int cardNumber)

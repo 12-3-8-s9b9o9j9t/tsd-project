@@ -2,8 +2,6 @@ version: "3.8"
 services:
   db:
     image: postgres:15-alpine
-    volumes:
-      - ./db:/var/lib/postgresql/data
     container_name: db
     restart: always
     environment:
@@ -11,7 +9,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_PORT=5432
       - POSTGRES_DB=tsdDB
-    user: 1000:1000
+    #user: 1000:1000
   pgadmin:
     image: dpage/pgadmin4:6
     container_name: pgadmin
@@ -30,6 +28,8 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./back/back.web:/app
+    environment:
+      - DOTNET_WATCH_RESTART_ON_RUDE_EDIT=1
     container_name: back
     restart: always
     depends_on:

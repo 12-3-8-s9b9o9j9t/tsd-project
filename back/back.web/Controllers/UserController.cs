@@ -1,5 +1,6 @@
 using back.DAL;
 using back.Entities;
+using back.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace back.Controllers;
@@ -8,58 +9,48 @@ namespace back.Controllers;
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly DatabaseContext _databaseContext;
+    private readonly IUserService _userService;
+    
 
-    public UserController(DatabaseContext databaseContext)
+    public UserController(IUserService userService)
     {
-        _databaseContext = databaseContext;
+        _userService = userService;
     }
 
     [HttpGet]
-    public IEnumerable<UserEntity> getAll()
+    public async Task<ActionResult<IEnumerable<UserDTO>>> GetAll()
     {
-        return _databaseContext.Users.OrderBy(u => u.id);
+        var users = await _userService.GetAllUsersAsync();
+        return Ok(users);
     }
 
     [HttpPost]
-    public async Task<ActionResult<UserEntity>> create([FromBody] UserInput userInput)
+    public async Task<ActionResult<UserDTO>> Create([FromBody] UserInput userInput)
     {
-        if (userInput.name.Length == 0 || userInput.name.Contains(' '))
-        {
-            return BadRequest("name must be valid");
-        }
-
-        if (_databaseContext.Users.SingleOrDefault(u => u.name == userInput.name) != null)
-        {
-            return BadRequest("user " + userInput.name + " already exist");
-        }
-
-        UserEntity userToAdd = new UserEntity();
-        userToAdd.name = userInput.name;
-
-        _databaseContext.Users.Add(userToAdd);
-        await _databaseContext.SaveChangesAsync();
-
-        return Ok(userToAdd);
+        var createdUser = await _userService.CreateUserAsync(userInput);
+        return Ok(createdUser);
     }
 
     [HttpGet("{name}")]
-    public async Task<ActionResult<UserEntity>> getByName(string name)
+    public async Task<ActionResult<UserDTO>> GetByName(string name)
     {
-        Console.WriteLine("name : " + name);
-        if (name.Length == 0)
+        var user = await _userService.GetUserByNameAsync(name);
+        if (user == null)
         {
-            return BadRequest("name must be valid");
+            return NotFound($"User with name '{name}' not found.");
         }
+        return Ok(user);
+    }
 
-        var result = _databaseContext.Users.SingleOrDefault(u => u.name.Equals(name));
-
-        if (result == null)
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<UserDTO>> GetByID(int id)
+    {
+        var user = await _userService.GetByID(id);
+        if (user == null)
         {
-            return NotFound("user " + name + " not found");
+            return NotFound($"User with id '{id}' not found.");
         }
-
-        return Ok(result);
+        return Ok(user);
     }
 
 }
