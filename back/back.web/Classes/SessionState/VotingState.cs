@@ -20,12 +20,13 @@ public class VotingState : ASessionState
             }
         }
 
-        _session.resetCurrentUSVoted();
+        //_session.resetCurrentUSVoted();
         _session.setState(new DiscussingState(_session));
+        _session.startDiscussing();
         Console.WriteLine("all dev have voted");
     }
 
-    public override void onUserValidate()
+    public override void onDiscussing()
     {
         // nothing to do
     }
