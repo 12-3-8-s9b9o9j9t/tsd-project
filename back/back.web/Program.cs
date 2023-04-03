@@ -17,6 +17,8 @@ builder.Services.AddDbContext<DatabaseContext>(o => o.UseNpgsql(dbConnectionStri
 
 builder.Services.AddScoped<IUserStoryPropositionService, UserStoryPropositionService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 
 var app = builder.Build();
 

@@ -14,7 +14,7 @@ public class StartState : ASessionState
         // nothing to do
     }
 
-    public override void onUserValidate()
+    public override void onDiscussing()
     {
         // nothing to do
     }
