@@ -16,7 +16,7 @@ public class UserStoryController : ControllerBase
         _userStoryContext = userStoryContext;
     }
 
-    [HttpGet("all")]
+    [HttpGet]
     public IEnumerable<UserStoryEntity> get()
     {
         return _userStoryContext.UserStories.OrderBy(u => u.id);

@@ -109,32 +109,6 @@ public class SessionController : ControllerBase
         return Ok(await _sessionService.getCurrentSession());
         
     }
-
-    [HttpPost("validateCurrentUserStory/{userID:int}/{cardNumber:int}")]
-    public async Task<ActionResult<Session>> validateCurrentUS(int userID, int cardNumber)
-    {
-        var currentSession = await _sessionService.getCurrentSession();
-        if (currentSession == null)
-        {
-            return BadRequest("current session is null.");
-        }
-
-        var usersIDList = currentSession.users.Select(u => u.Id);
-
-        if (!usersIDList.Contains(userID))
-        {
-            return BadRequest("user " + userID + " is not in current session.");
-        }
-
-        bool result = _sessionService.validateForCurrentUS(userID, cardNumber);
-
-        if (!result)
-        {
-            return BadRequest("note " + cardNumber + " for user " + userID + " for this user story already exist");
-        }
-        
-        return Ok(await _sessionService.getCurrentSession());
-    }
 }
 
 

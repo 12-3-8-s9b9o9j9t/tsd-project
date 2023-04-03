@@ -20,7 +20,7 @@ public class DiscussingState : ASessionState
     
         // get the first value in dictionary
         int[] values = new int[_session._currentUSVoted.Count];
-        _session._currentUSMapValidated.Values.CopyTo(values, 0);
+        _session._currentUSVoted.Values.CopyTo(values, 0);
         int firstVote = values[0];
 
         foreach (DictionaryEntry entry in _session._currentUSVoted)
@@ -33,55 +33,19 @@ public class DiscussingState : ASessionState
         }
         
         Console.WriteLine("on discussing");
-        // OK, we can go to next user story
-        if (sameRes)
+
+        Task.Delay(5000).ContinueWith(_ =>
         {
-            Task.Delay(5000).ContinueWith(_ =>
+            // OK, we can save the current user story and vote the next user story
+            if (sameRes)
             {
-                _session.resetCurrentUSVoted();
-                _session.setState(new VotingState(_session));
+                // TO DO : save the current user story and delete from the proposition
                 _session.nextUserStory();
-            });
-        }
-        // return to vote state
-        else
-        {
-            Task.Delay(5000).ContinueWith(_ =>
-            {
-                _session.resetCurrentUSVoted();
-                _session.setState(new VotingState(_session));
-            });
-
-
-        }
+            }
+            _session.resetCurrentUSVoted();
+            _session.setState(new VotingState(_session));
+        });
     }
-
-    // public override void onUserValidate()
-    // {
-    //     if (_session._currentUSMapValidated.Count == 0)
-    //     {
-    //         return;
-    //     }
-    //
-    //     // get the first value in dictionary
-    //     int[] values = new int[_session._currentUSMapValidated.Count];
-    //     _session._currentUSMapValidated.Values.CopyTo(values, 0);
-    //     int finalVote = values[0];
-    //
-    //     foreach (DictionaryEntry entry in _session._currentUSMapValidated)
-    //     {
-    //         // one or several developer have not validated the current user story discussed yet
-    //         if (finalVote != (int) entry.Value || (int) entry.Value < 0)
-    //         {
-    //             return;
-    //         }
-    //     }
-    //
-    //     _session.resetCurrentUSValidated();
-    //     _session.nextUserStory();
-    //     _session.setState(new VotingState(_session));
-    //     Console.WriteLine("all dev have discussed");
-    // }
 
     public override void onUserStart()
     {

@@ -35,7 +35,7 @@ public class StartState : ASessionState
 
     public override OrderedDictionary getUsersVote()
     {
-        return null; // no vote for this state
+        return _session._startSessionMap; // not votes in reality but information about players (if they are ready or not)
     }
 
     public override string ToString()
