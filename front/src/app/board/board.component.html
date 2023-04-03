@@ -1,19 +1,19 @@
 <div class="cards">
   <mat-card class="player-card" *ngFor="let player of players">
     <mat-card-header>
-      <mat-card-title>{{player}}</mat-card-title>
+      <mat-card-title>{{player.name}}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <div class="card-container">
 
-        <div *ngIf="!player_cards; then thenBlock else elseBlock"></div>
+        <div *ngIf="!showCards; then thenBlock else elseBlock"></div>
 
         <ng-template #thenBlock>
           <div class="hidden">hidden</div>
         </ng-template>
 
         <ng-template #elseBlock>
-          <mat-card-content class="number">{{player_cards}}</mat-card-content>
+          <mat-card-content class="number">{{player.card}}</mat-card-content>
         </ng-template>
 
       </div>
