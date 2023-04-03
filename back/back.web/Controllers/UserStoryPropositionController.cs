@@ -16,7 +16,7 @@ public class UserStoryPropositionController : ControllerBase
         _service = service;
     }
 
-    [HttpGet("all")]
+    [HttpGet]
     public IEnumerable<UserStoryPropositionEntity> get()
     {
         return _service.getAll();

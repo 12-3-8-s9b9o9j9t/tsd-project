@@ -17,9 +17,7 @@ public interface ISessionService
     public Task<NoteEntity> createNote(int userID, int cardNumber);
 
     public bool voteForCurrentUS(int userID, int cardNumber);
-
-    public bool validateForCurrentUS(int userID, int cardNumber);
-
+    
     public bool userStartSession(int userID);
 }
 
@@ -143,10 +141,5 @@ public class SessionService : ISessionService
     public bool voteForCurrentUS(int userID, int cardNumber)
     {
         return _currentSession.userVoted(userID, cardNumber);
-    }
-
-    public bool validateForCurrentUS(int userID, int cardNumber)
-    {
-        return _currentSession.userValidated(userID, cardNumber);
     }
 }

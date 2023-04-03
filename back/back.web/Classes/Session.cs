@@ -18,8 +18,6 @@ public class Session
     
     public OrderedDictionary _currentUSVoted { get; set; }
     
-    public OrderedDictionary _currentUSMapValidated { get; set; }
-
     private static Session _instance;
     
     private Session()
@@ -27,7 +25,6 @@ public class Session
         _joinedUsersID = new HashSet<int>();
         _allUserStories = new Stack<UserStoryPropositionEntity>();
         _startSessionMap = new OrderedDictionary();
-        _currentUSMapValidated = new OrderedDictionary();
         _currentUSVoted = new OrderedDictionary();
         _state = new StartState(this);
     }
@@ -45,10 +42,6 @@ public class Session
     public void nextUserStory()
     {
         _allUserStories.Pop();
-        for (int i = 0; i < _currentUSMapValidated.Count; i++)
-        {
-            _currentUSMapValidated[i] = false;
-        }
     }
 
     public static Session getInstance()
@@ -67,7 +60,6 @@ public class Session
         _joinedUsersID.Add(id);
         _startSessionMap.Add(id, false);
         _currentUSVoted.Add(id, -1);
-        _currentUSMapValidated.Add(id, -1);
     }
 
     public bool userStart(int userID)
@@ -101,18 +93,6 @@ public class Session
         return true;
     }
 
-    public bool userValidated(int userID, int note)
-    {
-        // if (!_currentUSMapValidated.Contains(userID))
-        // {
-        //     return false;
-        // }
-        //
-        // _currentUSMapValidated[(Object) userID] = note;
-        // _state.onUserValidate();
-        return true;
-    }
-
     public void setState(ASessionState state)
     {
         _state = state;
@@ -125,16 +105,6 @@ public class Session
         foreach (int userID in _joinedUsersID)
         {
             _currentUSVoted.Add(userID, -1);
-        }
-    }
-
-    public void resetCurrentUSValidated()
-    {
-        _currentUSMapValidated.Clear();
-
-        foreach (int userID in _joinedUsersID)
-        {
-            _currentUSMapValidated.Add(userID, -1);
         }
     }
 
