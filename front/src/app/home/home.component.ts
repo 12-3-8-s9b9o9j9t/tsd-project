@@ -38,7 +38,7 @@ export class HomeComponent {
       }
       saveName(name);
       saveID(response.id);
-      this.router.navigateByUrl('/waiting-room');
+      this.moveToSesseion();
     }).catch((error) => {
       console.log(error);
       console.log("User not found, creating new user");
@@ -49,6 +49,25 @@ export class HomeComponent {
         }
         saveName(name);
         saveID(response.id);
+        this.moveToSesseion();
+      }
+      ).catch((error) => {
+        console.log(error);
+      }
+      );
+    });
+  }
+
+  moveToSesseion() {
+    this.api.get({ endpoint: '/Session' }).then((response) => {
+      console.log("Session found");
+      this.router.navigateByUrl('/waiting-room');
+    }).catch((error) => {
+      console.log(error);
+      console.log("Session not found, creating new session");
+      this.api.post({ endpoint: '/Session/createSession' }).then((response) => {
+        console.log(response);
+        console.log("Session created");
         this.router.navigateByUrl('/waiting-room');
       }
       ).catch((error) => {
