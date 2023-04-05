@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using back.Classes.SessionState;
 using back.Entities;
 using back.Controllers;
+using back.DAL;
 using back.Services;
 
 namespace back.Classes;
@@ -17,6 +18,8 @@ public class Session
     public OrderedDictionary _startSessionMap { get; set; }
     
     public OrderedDictionary _currentUSVoted { get; set; }
+
+    private DatabaseContext _dbContext;
     
     private static Session _instance;
     
@@ -49,10 +52,14 @@ public class Session
         return _instance;
     }
 
-    public static void createInstance(List<UserStoryPropositionEntity> allUS)
+    public static void createInstance()
     {
         _instance = new Session();
-        _instance._allUserStories = new Stack<UserStoryPropositionEntity>(allUS);
+    }
+
+    public void setAllUserStories(List<UserStoryPropositionEntity> allUS)
+    {
+        _allUserStories = new Stack<UserStoryPropositionEntity>(allUS);
     }
 
     public void addUser(int id)

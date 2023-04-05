@@ -43,7 +43,17 @@ public class DiscussingState : ASessionState
                 _session.nextUserStory();
             }
             _session.resetCurrentUSVoted();
-            _session.setState(new VotingState(_session));
+            
+            // if current users story is null => go to end state
+            // else go to voting state
+            if (_session.currentUserStoryDiscussed() == null)
+            {
+                _session.setState(new EndState(_session));
+            }
+            else
+            {
+                _session.setState(new VotingState(_session));
+            }
         });
     }
 

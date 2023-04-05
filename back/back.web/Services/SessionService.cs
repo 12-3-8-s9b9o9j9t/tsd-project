@@ -86,7 +86,7 @@ public class SessionService : ISessionService
     public SessionDTO createSession()
     {
         var allUS = _userStoryPropositionService.getAll().OrderByDescending(u => u.id);
-        Session.createInstance(new List<UserStoryPropositionEntity>(allUS));
+        Session.createInstance();
         _currentSession = Session.getInstance();
 
         SessionDTO result = new SessionDTO();
@@ -135,7 +135,17 @@ public class SessionService : ISessionService
 
     public bool userStartSession(int userID)
     {
-        return _currentSession.userStart(userID);
+        bool ans = _currentSession.userStart(userID);
+
+        // session is now in voting state, so we can push the user stories in it
+        if (_currentSession._state.ToString().Equals("voting"))
+        {
+            var allUS = _databaseContext.UserStoriesProposition.ToList();
+            allUS.Reverse();
+            _currentSession.setAllUserStories(allUS);
+        }
+
+        return ans;  
     }
 
     public bool voteForCurrentUS(int userID, int cardNumber)
