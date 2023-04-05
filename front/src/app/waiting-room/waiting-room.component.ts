@@ -16,11 +16,11 @@ export class WaitingRoomComponent implements OnInit {
   currentPlayers: Player[] = [];
 
   constructor(private api: ApiHelperService, private router: Router) {
-    this.player = new Player(getName());
+    this.player = new Player(getName(), getID());
   }
 
   ngOnInit(): void {
-    this.player = new Player(getName());
+    this.player = new Player(getName(), getID());
     this.refreshCurrentPlayers();
 
     // post this user in the session
@@ -34,7 +34,7 @@ export class WaitingRoomComponent implements OnInit {
 
   setReady() {
     this.api.post({ endpoint: '/Session/start/' + getID() }).then((response) => {
-      
+
       console.log(response);
       console.log("User ready");
     }).catch((error) => {
@@ -63,14 +63,34 @@ export class WaitingRoomComponent implements OnInit {
     this.api.get({ endpoint: '/Session' }).then((response) => {
       this.currentPlayers = []
       response.users.forEach((user: any) => {
-        this.currentPlayers.push(new Player(user.name));
+        this.currentPlayers.push(new Player(user.name, user.id));
       });
       console.log(this.currentPlayers);
       // update user status for each player
+      let ids = Object.keys(response.usersNotes);
+      let notes: string[] = [];
+      for (const id of ids) {
+        notes.push(response.usersNotes[id].toString());
+      }
+      console.log(notes);
+      this.currentPlayers.forEach((player) => {
+        response.users.forEach((user: any) => {
+          if (user.name == player.name) {
+            if (ids.includes(this.player.id.toString())) {
+              if (notes[player.id - 1] == "true") {
+                player.isPlayerReady = true;
+              } else {
+                player.isPlayerReady = false;
+              }
+            }
+          }
+        });
+      });
+      console.log(this.currentPlayers);
 
       // if session state is "voting", redirect to session page
       if (response.state == "voting") {
-        this.router.navigateByUrl('/Session');
+        this.router.navigateByUrl('/session');
       }
 
     }).catch((error) => {
@@ -85,10 +105,12 @@ export class WaitingRoomComponent implements OnInit {
 
 class Player {
   name: string;
+  id: number;
   isPlayerReady: boolean;
 
-  constructor(name: string) {
+  constructor(name: string, id: number) {
     this.name = name;
+    this.id = id;
     this.isPlayerReady = false;
   }
 }
