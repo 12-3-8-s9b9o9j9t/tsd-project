@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { SessionComponent } from './session/session.component';
 import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
+import {AddUserStoryComponent} from "./add-user-story/add-user-story.component";
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -10,7 +11,7 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'waiting-room', component: WaitingRoomComponent },
   { path: 'session', component: SessionComponent },
-
+  { path: 'addUserStory', component: AddUserStoryComponent },
 ];
 
 @NgModule({

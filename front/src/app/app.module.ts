@@ -21,6 +21,7 @@ import { PlayerDeckComponent } from './player-deck/player-deck.component';
 import { UserStoryComponent } from './user-story/user-story.component';
 import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
 import { MatTableModule } from '@angular/material/table';
+import { AddUserStoryComponent } from './add-user-story/add-user-story.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { MatTableModule } from '@angular/material/table';
     BoardComponent,
     PlayerDeckComponent,
     UserStoryComponent,
-    WaitingRoomComponent
+    WaitingRoomComponent,
+    AddUserStoryComponent
   ],
   imports: [
     HttpClientModule,

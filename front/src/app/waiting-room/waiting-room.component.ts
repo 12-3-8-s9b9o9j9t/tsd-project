@@ -15,7 +15,7 @@ export class WaitingRoomComponent implements OnInit {
   player: Player;
   currentPlayers: Player[] = []//[new Player("John"), new Player("Jane"), new Player("Jack")];
 
-  constructor(private api: ApiHelperService, private router: Router) { 
+  constructor(private api: ApiHelperService, private router: Router) {
     this.player = new Player(getName());
   }
 
@@ -31,6 +31,10 @@ export class WaitingRoomComponent implements OnInit {
 
   setNotReady() {
     this.player.isPlayerReady = false;
+  }
+
+  goToAddUS(): void {
+    this.router.navigateByUrl("addUserStory");
   }
 
   refreshCurrentPlayers() {

@@ -8,6 +8,8 @@
         <ng-template #elseBlock>
             <button mat-raised-button class="button" color="warn" (click)="setNotReady()">NOT READY</button>
         </ng-template>
+
+        <button mat-raised-button class="us-button" color="primary" (click)="goToAddUS()">Add a user story</button>
     </div>
 
     <table mat-table [dataSource]="currentPlayers" class="mat-elevation-z8 players-table">
