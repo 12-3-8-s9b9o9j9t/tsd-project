@@ -4,26 +4,32 @@
     align-items: center;
     flex-direction: column;
   }
-  
+
   .players-table {
     margin-bottom: 20px;
     flex: 1;
   }
-  
+
   .button-field {
-    width: 5rem;
+    width: 15rem;
     height: 5rem;
 
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 3rem;
+
+    .us-button {
+      width: 150%;
+      height: 60%;
+    }
   }
 
   .button {
     width: 100%;
     height: 60%;
   }
-  
+
   .button:hover {
     background-color: #0077ff;
   }

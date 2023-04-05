@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Route, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ApiHelperService } from '../services/api-helper.service';
 import { getID, getName } from '../services/storage.service';
 
@@ -54,6 +54,10 @@ export class WaitingRoomComponent implements OnInit {
     // });
 
     this.player.isPlayerReady = false;
+  }
+
+  goToAddUS(): void {
+    this.router.navigateByUrl("addUserStory");
   }
 
   refreshCurrentPlayers() {

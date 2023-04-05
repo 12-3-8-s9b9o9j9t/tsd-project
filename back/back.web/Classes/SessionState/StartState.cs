@@ -29,7 +29,6 @@ public class StartState : ASessionState
                 return;
             }
         }
-        
         _session.setState(new VotingState(_session));
     }
 
@@ -38,7 +37,7 @@ public class StartState : ASessionState
         return _session._startSessionMap; // not votes in reality but information about players (if they are ready or not)
     }
 
-    public override string ToString()
+    public override string ToString()  
     {
         return "starting";
     }

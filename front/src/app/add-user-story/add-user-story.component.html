@@ -1,0 +1,18 @@
+<div class="container">
+  <button mat-raised-button color="primary" (click)="goToWaitingRoom()">Go back to waiting room</button>
+  <mat-card>
+    <mat-card-title>
+      Enter a new user story :
+    </mat-card-title>
+    <form (submit)="postUserStory()">
+      <mat-form-field>
+        <mat-label>
+          User Story
+        </mat-label>
+        <input matInput [formControl]="inputFormControl">
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit">Create</button>
+    </form>
+  </mat-card>
+</div>
