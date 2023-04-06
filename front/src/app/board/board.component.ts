@@ -28,7 +28,7 @@ export class BoardComponent implements OnInit {
         if (user.name != getName()) {
           this.players.push(new Player(user.name, user.id));
         }
-      });
+      });      
 
       // if the session is in discussing state, show the cards
       if (response.state == "discussing") {

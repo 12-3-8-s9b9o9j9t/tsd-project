@@ -22,6 +22,7 @@ import { UserStoryComponent } from './user-story/user-story.component';
 import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
 import { MatTableModule } from '@angular/material/table';
 import { AddUserStoryComponent } from './add-user-story/add-user-story.component';
+import { EndPageComponent } from './end-page/end-page.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { AddUserStoryComponent } from './add-user-story/add-user-story.component
     PlayerDeckComponent,
     UserStoryComponent,
     WaitingRoomComponent,
-    AddUserStoryComponent
+    AddUserStoryComponent,
+    EndPageComponent
   ],
   imports: [
     HttpClientModule,
