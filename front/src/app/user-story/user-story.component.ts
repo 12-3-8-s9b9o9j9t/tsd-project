@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ApiHelperService } from '../services/api-helper.service';
 
 @Component({
@@ -6,20 +7,26 @@ import { ApiHelperService } from '../services/api-helper.service';
   templateUrl: './user-story.component.html',
   styleUrls: ['./user-story.component.scss']
 })
-export class UserStoryComponent {
+export class UserStoryComponent implements OnInit {
 
-  userStories: number[] = [];
-  currrentUserStory: string = "";
+  currentUserStory: string = "Loading...";
 
-  constructor(private api: ApiHelperService) {
-    this.api.get({ endpoint: '/Session/UserStory/all' }).then((response) => {
-      console.log("User story found");
-      console.log(response);
-      // for each element in response, add id in userStories
-      response.forEach((element: { id: number; }) => {
-        this.userStories.push(element.id);
+  constructor(private api: ApiHelperService, private router: Router) {}
+
+  ngOnInit(): void {
+    // refresh user story every 1 second
+
+    setInterval(() => { this.refreshUserStory(); }, 1000);
+  }
+
+  refreshUserStory() {
+    this.api.get({ endpoint: '/Session' }).then((response) => {
+      if (response.state === "end") {
+        this.router.navigateByUrl("/end");
       }
-      );
+      
+      this.currentUserStory = response.currentUserStory.description;
+      console.log(response.currrentUserStory);
     }).catch((error) => {
       console.log(error);
       console.log("User stories not found");
