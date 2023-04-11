@@ -1,5 +1,6 @@
 using back.DAL;
 using back.Entities;
+using back.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,74 +10,65 @@ namespace back.Controllers;
 [Route("[controller]")]
 public class UserStoryController : ControllerBase
 {
-    private readonly DatabaseContext _userStoryContext;
+    private readonly IUserStoryService _userStoryService;
 
-    public UserStoryController(DatabaseContext userStoryContext)
+    public UserStoryController(IUserStoryService userStoryService)
     {
-        _userStoryContext = userStoryContext;
+        _userStoryService = userStoryService;
     }
 
     [HttpGet]
-    public IEnumerable<UserStoryEntity> get()
+    public async Task<ActionResult<IEnumerable<UserStoryEntity>>> GetAllUserStories()
     {
-        return _userStoryContext.UserStories.OrderBy(u => u.id);
+        var userStories = await _userStoryService.GetAllUserStoriesAsync();
+
+        return Ok(userStories);
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<UserStoryEntity>> getByID(int id)
+    public async Task<ActionResult<UserStoryEntity>> GetUserStoryById(int id)
     {
-        var userStory = await _userStoryContext.UserStories.FindAsync(id);
+        var userStory = await _userStoryService.GetUserStoryByIdAsync(id);
 
         if (userStory == null)
         {
             return NotFound();
         }
 
-        return userStory;
+        return Ok(userStory);
     }
 
     [HttpPost]
-    public async Task<ActionResult<UserStoryEntity>> create(UserStoryInput userStory)
+    public async Task<ActionResult<UserStoryEntity>> CreateUserStory(UserStoryInput userStory)
     {
-        UserStoryEntity userStoryToAdd = new UserStoryEntity(userStory.description, userStory.estimatedCost);
-        _userStoryContext.UserStories.Add(userStoryToAdd);
-        await _userStoryContext.SaveChangesAsync();
+        var createdUserStory = await _userStoryService.CreateUserStoryAsync(userStory);
 
-        return userStoryToAdd;
+        return CreatedAtAction(nameof(GetUserStoryById), new { id = createdUserStory.id }, createdUserStory);
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<ActionResult<UserStoryEntity>> delete(int id)
+    public async Task<IActionResult> DeleteUserStory(int id)
     {
+        var deletedUserStory = await _userStoryService.DeleteUserStoryAsync(id);
 
-        var userStory = await getByID(id);
-
-        _userStoryContext.UserStories.Remove(userStory.Value);
-        await _userStoryContext.SaveChangesAsync();
-        return Ok();
-    }
-
-    [HttpPut("{id:int}")]
-    public async Task<ActionResult<UserStoryEntity>> update(int id, [FromBody] UserStoryInput userStory)
-    {
-        var u = await getByID(id);
-
-        if (u.Value == null)
+        if (deletedUserStory == null)
         {
             return NotFound();
         }
 
-        if (userStory.description != null)
+        return Ok();
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateUserStory(int id, UserStoryInput userStory)
+    {
+        var updatedUserStory = await _userStoryService.UpdateUserStoryAsync(id, userStory);
+
+        if (updatedUserStory == null)
         {
-            u.Value.description = new string(userStory.description);
+            return NotFound();
         }
 
-        if (userStory.estimatedCost != null)
-        {
-            u.Value.estimatedCost = userStory.estimatedCost;
-        }
-
-        await _userStoryContext.SaveChangesAsync();
-        return Ok(u.Value);
+        return Ok(updatedUserStory);
     }
 }

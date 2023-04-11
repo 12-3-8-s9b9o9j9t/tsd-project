@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { environment } from './../environments/environment';
 import { Observable, lastValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import {Environment} from "@angular/cli/lib/config/workspace-schema";
 
-const dev_base_url: string = 'http://localhost:5225';
-const prod_base_url: string = 'https://api.localhost:80';   // Modify when deploying to production
+const dev_base_url: string = process.env["API_URL"] || "http://localhost:5225";
 
 @Injectable({
   providedIn: 'root',
