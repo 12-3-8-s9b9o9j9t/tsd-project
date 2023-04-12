@@ -37,7 +37,7 @@ public class SessionController : ControllerBase
     [HttpPost("addUser/{id:int}")]
     public async Task<ActionResult<Session>> addUser(int id)
     {
-        bool result = _sessionService.addUserToSession(id);
+        bool result = await _sessionService.addUserToSession(id);
 
         if (!result)
         {
@@ -71,7 +71,7 @@ public class SessionController : ControllerBase
             return BadRequest("user " + userID + " is not in current session.");
         }
 
-        bool result = _sessionService.userStartSession(userID);
+        bool result = await _sessionService.userStartSession(userID);
 
         if (!result)
         {
@@ -99,7 +99,7 @@ public class SessionController : ControllerBase
             return BadRequest("user " + userID + " is not in current session.");
         }
 
-        bool result = _sessionService.voteForCurrentUS(userID, cardNumber);
+        bool result = await _sessionService.voteForCurrentUS(userID, cardNumber);
 
         if (!result)
         {

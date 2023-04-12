@@ -31,15 +31,16 @@ public class DiscussingState : ASessionState
                 break;
             }
         }
-        
-        Console.WriteLine("on discussing");
+
+        // in order to know if we can store in db the us
+        _session._CanSaveCurrentUS = sameRes;
 
         Task.Delay(5000).ContinueWith(_ =>
         {
-            // OK, we can save the current user story and vote the next user story
+            _session._CanSaveCurrentUS = false;
+            // OK, we can vote the next user story
             if (sameRes)
             {
-                // TO DO : save the current user story and delete from the proposition
                 _session.nextUserStory();
             }
             _session.resetCurrentUSVoted();

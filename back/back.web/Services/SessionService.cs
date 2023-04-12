@@ -1,5 +1,6 @@
 using System.Collections.Specialized;
 using back.Classes;
+using back.Classes.SessionState;
 using back.DAL;
 using back.Entities;
 using Microsoft.AspNetCore.Components;
@@ -10,20 +11,22 @@ public interface ISessionService
 {
     public Task<SessionDTO> getCurrentSession();
 
-    public bool addUserToSession(int id);
+    public Task<bool> addUserToSession(int id);
 
     public SessionDTO createSession();
 
     public Task<NoteEntity> createNote(int userID, int cardNumber);
 
-    public bool voteForCurrentUS(int userID, int cardNumber);
+    public Task<bool> voteForCurrentUS(int userID, int cardNumber);
     
-    public bool userStartSession(int userID);
+    public Task<bool> userStartSession(int userID);
 }
 
 public class SessionService : ISessionService
 {
     private readonly IUserStoryPropositionService _userStoryPropositionService;
+
+    private readonly IUserStoryService _userStoryService;
 
     private readonly DatabaseContext _databaseContext;
 
@@ -31,9 +34,10 @@ public class SessionService : ISessionService
     
     private Session _currentSession { get; set; }
 
-    public SessionService(IUserStoryPropositionService userStoryPropositionService, DatabaseContext databaseContext, IUserService userService)
+    public SessionService(IUserStoryPropositionService userStoryPropositionService, IUserStoryService userStoryService,DatabaseContext databaseContext, IUserService userService)
     {
         _userStoryPropositionService = userStoryPropositionService;
+        _userStoryService = userStoryService;
         _currentSession = Session.getInstance();
         _databaseContext = databaseContext;
         _userService = userService;
@@ -60,7 +64,7 @@ public class SessionService : ISessionService
         return sessionDTO;
     }
 
-    public bool addUserToSession(int id)
+    public async Task<bool> addUserToSession(int id)
     {
         if (_currentSession == null)
         {
@@ -68,7 +72,7 @@ public class SessionService : ISessionService
         }
         
         // if user does not exist
-        if (_databaseContext.Users.Find(id) == null)
+        if (await _userService.GetByID(id) == null)
         {
             return false;
         }
@@ -133,12 +137,12 @@ public class SessionService : ISessionService
         return noteToSave;
     }
 
-    public bool userStartSession(int userID)
+    public async Task<bool> userStartSession(int userID)
     {
         bool ans = _currentSession.userStart(userID);
 
         // session is now in voting state, so we can push the user stories in it
-        if (_currentSession._state.ToString().Equals("voting"))
+        if (_currentSession._state is VotingState)
         {
             var allUS = _databaseContext.UserStoriesProposition.ToList();
             allUS.Reverse();
@@ -148,8 +152,36 @@ public class SessionService : ISessionService
         return ans;  
     }
 
-    public bool voteForCurrentUS(int userID, int cardNumber)
+    public async Task<bool> voteForCurrentUS(int userID, int cardNumber)
     {
-        return _currentSession.userVoted(userID, cardNumber);
+        bool ans = _currentSession.userVoted(userID, cardNumber);
+
+        if (_currentSession._CanSaveCurrentUS)
+        {
+            await storeCurrentUS();
+        }
+
+        return ans;
+    }
+
+    private async Task storeCurrentUS()
+    {
+        var currentUS = _currentSession.currentUserStoryDiscussed();
+
+        // store in UserStory table
+        // get the first value in dictionary
+        int[] values = new int[_currentSession._currentUSVoted.Count];
+        _currentSession._currentUSVoted.Values.CopyTo(values, 0);
+        int cost = values[0];
+        
+        UserStoryInput userStoryToAdd = new UserStoryInput
+            { description = currentUS.description, estimatedCost = cost };
+        await _userStoryService.CreateUserStoryAsync(userStoryToAdd);
+        
+        // delete the proposition because we can now store in UserStory table
+        await _userStoryPropositionService.delete(currentUS.id);
+        
+        // saving changes
+        await _databaseContext.SaveChangesAsync();
     }
 }

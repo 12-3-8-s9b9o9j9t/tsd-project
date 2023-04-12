@@ -22,7 +22,9 @@ public class Session
     private DatabaseContext _dbContext;
     
     private static Session _instance;
-    
+
+    public bool _CanSaveCurrentUS { get; set; }
+
     private Session()
     {
         _joinedUsersID = new HashSet<int>();
@@ -30,6 +32,7 @@ public class Session
         _startSessionMap = new OrderedDictionary();
         _currentUSVoted = new OrderedDictionary();
         _state = new StartState(this);
+        _CanSaveCurrentUS = false;
     }
 
     public UserStoryPropositionEntity currentUserStoryDiscussed()
