@@ -23,7 +23,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./back/back.web
-          file: Dockerfile.prod
+          file: ./back/back.web/Dockerfile.prod
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tsd-project-back:latest
       -
@@ -31,7 +31,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./front
-          file: Dockerfile.prod
+          file: ./front/Dockerfile.prod
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tsd-project-front:latest
       -
@@ -39,6 +39,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./rv-proxy
-          file: Dockerfile
+          file: ./rv-proxy/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tsd-project-rv-proxy:latest
