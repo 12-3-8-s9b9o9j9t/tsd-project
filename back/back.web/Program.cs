@@ -34,6 +34,7 @@ app.UseCors(builder =>
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    // use custom url for calls in swagger    
     app.UseSwagger();
     app.UseSwaggerUI();
 }
