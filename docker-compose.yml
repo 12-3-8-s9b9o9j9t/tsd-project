@@ -30,5 +30,3 @@ services:
     restart: always
     depends_on:
       - back
-    environment:
-      - API_URL:"http:://planningpoker.azurewebsites.net/api"
