@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   rv-proxy:
-    image: botyanis/tsd-project-rv-proxy:1
+    image: botyanis/tsd-project-rv-proxy:lastest
     container_name: rv-proxy
     restart: always
     ports:
@@ -19,13 +19,13 @@ services:
       - POSTGRES_PORT=5432
       - POSTGRES_DB=tsdDB
   back:
-    image: botyanis/tsd-project-back:alpha
+    image: botyanis/tsd-project-back:lastest
     container_name: back
     restart: always
     depends_on:
       - db
   front:
-    image: botyanis/tsd-project-front:alpha
+    image: botyanis/tsd-project-front:lastest
     container_name: front
     restart: always
     depends_on:
