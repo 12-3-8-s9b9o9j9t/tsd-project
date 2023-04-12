@@ -1,28 +1,31 @@
 version: "3.8"
 services:
+  rv-proxy:
+    image: botyanis/tsd-project-rv-proxy:1
+    container_name: rv-proxy
+    restart: always
+    ports:
+      - 80:80
+    depends_on:
+      - back
+      - front
   db:
     image: postgres:15-alpine
-    volumes:
-      - ./db:/var/lib/postgresql/data
     container_name: db
     restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_PORT=5432
-    user: 1000:1000
+      - POSTGRES_DB=tsdDB
   back:
-    build:
-      context: ./back/back.web
-      dockerfile: Dockerfile.prod
+    image: botyanis/tsd-project-back:alpha
     container_name: back
     restart: always
     depends_on:
       - db
   front:
-    build:
-      context: ./front
-      dockerfile: Dockerfile.prod
+    image: botyanis/tsd-project-front:alpha
     container_name: front
     restart: always
     depends_on:

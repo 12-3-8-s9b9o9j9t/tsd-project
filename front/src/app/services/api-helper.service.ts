@@ -3,8 +3,7 @@ import { environment } from './../environments/environment';
 import { Observable, lastValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
-const dev_base_url: string = 'http://localhost:5225';
-const prod_base_url: string = 'https://api.localhost:80';   // Modify when deploying to production
+const base_url: string = environment.api_base_url;
 
 @Injectable({
   providedIn: 'root',
@@ -71,7 +70,7 @@ export class ApiHelperService {
   }): Promise<any> {
     const methodWanted = method.toLowerCase();
 
-    const url = dev_base_url + endpoint;
+    const url = base_url + endpoint;
 
     const requestOptions = {
       params: queryParams,
