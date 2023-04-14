@@ -16,9 +16,6 @@ import { SessionComponent } from './session/session.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { BoardComponent } from './board/board.component';
-import { PlayerDeckComponent } from './player-deck/player-deck.component';
-import { UserStoryComponent } from './user-story/user-story.component';
 import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
 import { MatTableModule } from '@angular/material/table';
 import { AddUserStoryComponent } from './add-user-story/add-user-story.component';
@@ -30,9 +27,6 @@ import { EndPageComponent } from './end-page/end-page.component';
     HomeComponent,
     NavbarComponent,
     SessionComponent,
-    BoardComponent,
-    PlayerDeckComponent,
-    UserStoryComponent,
     WaitingRoomComponent,
     AddUserStoryComponent,
     EndPageComponent
