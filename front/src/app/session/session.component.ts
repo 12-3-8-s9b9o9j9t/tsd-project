@@ -16,7 +16,7 @@ export class SessionComponent implements OnInit {
 
   // user stories
   currentUserStory: string = "Loading...";
-  tabCards: string[] = ['1', '2', '3', '5', '8', '13', '1000'];
+  tabCards: string[] = ['1', '2', '3', '5', '8', '13', '1597'];
 
   // player deck
   selectedCard: string | undefined;
