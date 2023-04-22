@@ -2,11 +2,25 @@ import { Component, OnInit } from '@angular/core';
 import { ApiHelperService } from '../services/api-helper.service';
 import { getID, getName } from '../services/storage.service';
 import { Router } from '@angular/router';
+import { trigger, style, animate, transition } from '@angular/animations';
+
 
 @Component({
   selector: 'app-session',
   templateUrl: './session.component.html',
-  styleUrls: ['./session.component.scss']
+  styleUrls: ['./session.component.scss'],
+  animations: [
+    trigger('fade', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('300ms ease-in', style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in', style({ opacity: 0 }))
+      ])
+    ])
+  ]
+
 })
 export class SessionComponent implements OnInit {
 
@@ -16,10 +30,12 @@ export class SessionComponent implements OnInit {
 
   // user stories
   currentUserStory: string = "Loading...";
-  tabCards: string[] = ['1', '2', '3', '5', '8', '13', '1597'];
+  tabCards: string[] = ['☕','1', '2', '3', '5', '8', '13', '∞'];
 
   // player deck
   selectedCard: string | undefined;
+
+
   disabled: boolean = false;
   hasVoted: boolean = false;
 
@@ -67,7 +83,10 @@ export class SessionComponent implements OnInit {
         session.users.forEach((user: any) => {
           if (user.name == player.name) {
             if (ids.includes(player.id.toString())) {
-              player.card = notes[user.id - 1];
+              let cardToAdd = notes[user.id - 1];
+              if (cardToAdd == "1000") { cardToAdd = "∞"; } // convert infinity to string number
+              if (cardToAdd == "0") { cardToAdd = "☕"; } // convert coffee to string
+              player.card = cardToAdd;
             }
           }
         });
@@ -103,10 +122,12 @@ export class SessionComponent implements OnInit {
   validate(): void {
     this.disabled = true;
 
-    if (this.selectedCard == "∞") { this.selectedCard = ""+Infinity; } // convert infinity to string number
+    let cardToSend = this.selectedCard;
+    if (cardToSend == "∞") { cardToSend = "1000"; } // convert infinity to string number
+    if (cardToSend == "☕") { cardToSend = "0"; } // convert coffee to string
     
     this.api.post({
-      endpoint: '/Session/voteCurrentUserStory/'+getID()+'/'+this.selectedCard
+      endpoint: '/Session/voteCurrentUserStory/'+getID()+'/'+cardToSend
     }).then((response) => {
       console.log("Vote sent");
       console.log(response);
@@ -115,6 +136,7 @@ export class SessionComponent implements OnInit {
       console.log("error while sending vote");
       console.log(error);
     });
+
   }
 }
 
