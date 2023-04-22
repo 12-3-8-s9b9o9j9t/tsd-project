@@ -54,7 +54,7 @@
         </mat-card>
     
         <mat-card>
-            <mat-card-content>
+            <!-- <mat-card-content>
                 <mat-radio-group aria-labelledby="cards-radio-group-label" class="cards-radio-group"
                     [(ngModel)]="selectedCard">
                     <mat-radio-button class="cards-radio-button" [disabled]="disabled" *ngFor="let card of tabCards"
@@ -62,7 +62,13 @@
                         {{card}}
                     </mat-radio-button>
                 </mat-radio-group>
-            </mat-card-content>
+            </mat-card-content> -->
+            <mat-button-toggle-group name="fontStyle" appearance="legacy" aria-label="Font Style">
+                <mat-button-toggle class="button-toggle" [disabled]="disabled" *ngFor="let card of tabCards"
+                  value="card" >
+                  {{card}}
+                </mat-button-toggle>
+              </mat-button-toggle-group>
     
             <mat-card-content>
                 <section class="button-section">

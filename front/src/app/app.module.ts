@@ -20,6 +20,7 @@ import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
 import { MatTableModule } from '@angular/material/table';
 import { AddUserStoryComponent } from './add-user-story/add-user-story.component';
 import { EndPageComponent } from './end-page/end-page.component';
+import { MatButtonToggleModule}  from '@angular/material/button-toggle';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { EndPageComponent } from './end-page/end-page.component';
     MatCardModule,
     MatRadioModule,
     MatCheckboxModule,
-    MatTableModule
+    MatTableModule,
+    MatButtonToggleModule
   ],
   providers: [],
   bootstrap: [AppComponent]
