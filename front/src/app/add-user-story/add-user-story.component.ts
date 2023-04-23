@@ -13,7 +13,7 @@ export class AddUserStoryComponent {
   private readonly apiService: ApiHelperService;
   private readonly router: Router;
 
-  inputFormControl: FormControl = new FormControl('', [Validators.required]);
+  inputFormControl: FormControl = new FormControl('');
   userStories: UserSory[] = [];
 
   constructor(apiService: ApiHelperService, router: Router) {
@@ -42,6 +42,7 @@ export class AddUserStoryComponent {
     const us: string = this.inputFormControl.value;
     try {
       await this.apiService.post({endpoint:'/UserStoryProposition', data:{"description":us}});
+      this.inputFormControl.setValue("");
     }
     catch (e) {
       console.log("error when posting users story");
