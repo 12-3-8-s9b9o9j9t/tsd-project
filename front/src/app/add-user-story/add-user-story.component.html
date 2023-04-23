@@ -4,13 +4,14 @@
     <mat-card-title class="text">
       Enter a new user story :
     </mat-card-title>
-    <form (submit)="postUserStory()">
+    <form (submit)="inputFormControl.value ? postUserStory() : null">
       <mat-form-field>
         <mat-label>
           User Story
         </mat-label>
         <input matInput [formControl]="inputFormControl">
       </mat-form-field>
+    
 
       <button mat-raised-button color="primary" type="submit">Create</button>
     </form>

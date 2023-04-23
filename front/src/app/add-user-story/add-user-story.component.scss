@@ -36,14 +36,14 @@ h3 {
 .user-stories-list {
   margin: auto;
   width: 50%;
-  margin-top: 2%;
+  justify-content: center; /* Centre le contenu horizontalement */
+  align-items: center; /* Centre le contenu verticalement */
 }
 
 .user-story {
-  border: 2px solid blue; /* Ajoute une bordure bleue */
-  display: flex; /* Utilise le modèle de boîte flexible */
   justify-content: center; /* Centre le contenu horizontalement */
   align-items: center; /* Centre le contenu verticalement */
+  border: 2px solid rgb(133, 133, 133); /* Ajoute une bordure bleue */
   height: 100%; /* Vous pouvez régler la hauteur selon vos besoins */
   width: 100%; /* Vous pouvez régler la largeur selon vos besoins */
 }
