@@ -21,6 +21,7 @@ import { MatTableModule } from '@angular/material/table';
 import { AddUserStoryComponent } from './add-user-story/add-user-story.component';
 import { EndPageComponent } from './end-page/end-page.component';
 import { MatButtonToggleModule}  from '@angular/material/button-toggle';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { MatButtonToggleModule}  from '@angular/material/button-toggle';
     SessionComponent,
     WaitingRoomComponent,
     AddUserStoryComponent,
-    EndPageComponent
+    EndPageComponent,
+    LoginComponent
   ],
   imports: [
     HttpClientModule,

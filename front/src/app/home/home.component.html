@@ -1,10 +1,27 @@
-<form [formGroup]="formGroup" (submit)="enter()">
-    <mat-form-field>
-      <mat-label>Name</mat-label>
-      <input matInput [formControl]="nameControl">
-    </mat-form-field>
+<div class="home">
 
-    <button mat-raised-button class="button" color="primary" appeareace="fill" type="submit">
-      Enter
+  <!-- join session form -->
+  <form class="join-session" [formGroup]="formGroup" (submit)="enter()">
+    <mat-form-field>
+      <mat-label>Session code</mat-label>
+      <input matInput [formControl]="sessionControl">
+    </mat-form-field>
+    <button mat-raised-button class="button-join" color="primary" appeareace="fill" type="submit">
+      ➜
     </button>
   </form>
+
+
+  <!-- div bar -->
+  <div class="bar">
+    <div class="bar-left"></div>
+    <p class="or">OR</p>
+    <div class="bar-right"></div>
+  </div>
+
+  <!-- create session button -->
+  <button mat-raised-button class="button-create" color="primary" appeareace="fill" (click)="createSession()">
+    Create a session
+  </button>
+
+</div>

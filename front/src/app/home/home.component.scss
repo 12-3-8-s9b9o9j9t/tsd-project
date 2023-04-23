@@ -1,17 +1,49 @@
-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 50%
-  }
-  
-  .mat-form-field {
-    width: 100%;
-    max-width: 20rem;
-  }
-  
-  .button {
-    margin-top: 0rem;
-  }
-  
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50%;
+}
+
+.join-session {
+  display: flex;
+  flex-direction: row;
+}
+
+.button-join {
+  height: 72%;
+  font-size: 2rem;
+}
+
+.bar {
+  width: 17rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.bar-left {
+  margin-right: 1rem;
+  height: 1px;
+  background-color: #747474;
+  width: 50%;
+}
+
+.or {
+  margin: auto;
+  font-size: 1rem;
+  color: #747474;
+}
+
+.bar-right {
+  margin-left: 1rem;
+  height: 1px;
+  background-color: #747474;
+  width: 50%;
+}
+
+.button-create {
+  margin-top: 1.2rem;
+}
