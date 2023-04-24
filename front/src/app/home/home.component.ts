@@ -11,10 +11,12 @@ import { saveID, saveName } from "../services/storage.service";
 })
 export class HomeComponent {
 
-  sessionControl = new FormControl('', [Validators.required]);
+  sessionCode: string = '1';
+
+  joinSessionControl = new FormControl('', [Validators.required]);
 
   formGroup = new FormGroup({
-    name: this.sessionControl,
+    sessionCode: this.joinSessionControl,
   });
 
   constructor(
@@ -27,19 +29,30 @@ export class HomeComponent {
     if (!this.formGroup.valid) {
       return;
     }
-    let session: string | null = this.sessionControl.value;
+    let session: string | null = this.joinSessionControl.value;
     // TODO: check if session exists
 
     // TODO: move to session
-    this.moveToSession();
+    this.moveToSession(this.sessionCode);
 
   }
 
-  moveToSession() {
-    
+  moveToSession(code: string): void {
+    this.router.navigate(['/session', code, 'waiting-room']);
+
   }
 
   createSession(): void {
-    
+    //TODO create session and get code
+    this.api.post({ endpoint: '/Session/createSession' }).then((response) => {
+      console.log(response);
+      console.log("Session created");
+      this.router.navigate(['/session', this.sessionCode, 'waiting-room']);
+    }
+    ).catch((error) => {
+      console.log(error);
+    }
+    );
+
   }
 }

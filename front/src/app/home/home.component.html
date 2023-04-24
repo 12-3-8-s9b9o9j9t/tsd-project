@@ -1,10 +1,11 @@
 <div class="home">
 
   <!-- join session form -->
+  <p> Join a session</p>
   <form class="join-session" [formGroup]="formGroup" (submit)="enter()">
     <mat-form-field>
       <mat-label>Session code</mat-label>
-      <input matInput [formControl]="sessionControl">
+      <input matInput [formControl]="joinSessionControl">
     </mat-form-field>
     <button mat-raised-button class="button-join" color="primary" appeareace="fill" type="submit">
       ➜
@@ -20,8 +21,9 @@
   </div>
 
   <!-- create session button -->
+  <p>Create a session</p>
   <button mat-raised-button class="button-create" color="primary" appeareace="fill" (click)="createSession()">
-    Create a session
+    Create
   </button>
 
 </div>

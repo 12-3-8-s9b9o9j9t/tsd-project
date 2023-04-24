@@ -6,13 +6,18 @@
   height: 50%;
 }
 
+p {
+  font-size: 1.1rem;
+  color: #747474;
+}
+
 .join-session {
   display: flex;
   flex-direction: row;
 }
 
 .button-join {
-  height: 72%;
+  height: 71%;
   font-size: 2rem;
 }
 
@@ -22,6 +27,7 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  margin-bottom: 1rem;
 }
 
 .bar-left {
@@ -45,5 +51,6 @@
 }
 
 .button-create {
-  margin-top: 1.2rem;
+  width: 10rem;
+  font-size: 1.1rem;
 }
