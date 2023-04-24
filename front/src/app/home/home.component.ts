@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiHelperService } from '../services/api-helper.service';
-import { saveID, saveName } from "../services/storage.service";
+import { getName, saveID, saveName } from "../services/storage.service";
 
 @Component({
   selector: 'app-home',
@@ -12,6 +12,7 @@ import { saveID, saveName } from "../services/storage.service";
 export class HomeComponent {
 
   sessionCode: string = '1';
+  user: string = '';
 
   joinSessionControl = new FormControl('', [Validators.required]);
 
@@ -19,10 +20,9 @@ export class HomeComponent {
     sessionCode: this.joinSessionControl,
   });
 
-  constructor(
-    private api: ApiHelperService,
-    private router: Router
-  ) { }
+  constructor(private api: ApiHelperService, private router: Router) {
+    this.user = getName();
+  }
 
 
   enter(): void {
@@ -51,8 +51,7 @@ export class HomeComponent {
     }
     ).catch((error) => {
       console.log(error);
-    }
-    );
+    });
 
   }
 }
