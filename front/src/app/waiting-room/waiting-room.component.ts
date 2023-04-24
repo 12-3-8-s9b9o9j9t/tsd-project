@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApiHelperService } from '../services/api-helper.service';
 import { getID, getName } from '../services/storage.service';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-waiting-room',
@@ -10,18 +11,28 @@ import { getID, getName } from '../services/storage.service';
 })
 export class WaitingRoomComponent implements OnInit {
 
+  gameId: string;
+
 
   displayedColumns: string[] = ['name', 'status'];
   player: Player;
   currentPlayers: Player[] = [];
 
-  constructor(private api: ApiHelperService, private router: Router) {
+  inputFormControl: FormControl = new FormControl('');
+  userStories: UserSory[] = [];
+
+  constructor(private api: ApiHelperService, private router: Router, private route:ActivatedRoute) {
     this.player = new Player(getName(), getID());
+    this.gameId = "";
+    this.route.params.subscribe(params => {
+      this.gameId = params['id'];
+    });
   }
 
   ngOnInit(): void {
     this.player = new Player(getName(), getID());
     this.refreshCurrentPlayers();
+    this.refreshUserStories();
 
     // post this user in the session
     this.api.post({ endpoint: '/Session/addUser/' + getID() }).then((response) => {
@@ -32,6 +43,9 @@ export class WaitingRoomComponent implements OnInit {
     });
   }
 
+  ///////////////////////////////////////////
+  ////////// Player display part ////////////
+  ///////////////////////////////////////////
   setReady() {
     this.api.post({ endpoint: '/Session/start/' + getID() }).then((response) => {
 
@@ -94,7 +108,7 @@ export class WaitingRoomComponent implements OnInit {
 
       // if session state is "voting", redirect to session page
       if (response.state == "voting") {
-        this.router.navigateByUrl('/session');
+        this.router.navigate(['/session', this.gameId, 'game'])
       }
 
     }).catch((error) => {
@@ -104,6 +118,37 @@ export class WaitingRoomComponent implements OnInit {
 
 
     setTimeout(() => { this.refreshCurrentPlayers(); }, 1000);
+  }
+
+
+  /////////////////////////////////////////////////////////
+  ////////////////// Add user story part //////////////////
+  /////////////////////////////////////////////////////////
+  refreshUserStories(): void {
+    this.api.get({endpoint:'/UserStoryProposition'}).then((response) => {
+      // for each user story, create a new UserStory object and add it to the list
+      this.userStories = [];
+      response.map((us: any) => {
+        this.userStories.push(new UserSory(us.description, us.id));
+      })
+    }).catch((error) => {
+      console.log(error);
+      console.log("Error getting user stories");
+    });
+
+    //refresh user stories every 1 second
+    setTimeout(() => { this.refreshUserStories(); }, 1000);
+  }
+
+  async postUserStory(): Promise<void> {
+    const us: string = this.inputFormControl.value;
+    try {
+      await this.api.post({endpoint:'/UserStoryProposition', data:{"description":us}});
+      this.inputFormControl.setValue("");
+    }
+    catch (e) {
+      console.log("error when posting users story");
+    }
   }
 }
 
@@ -116,5 +161,15 @@ class Player {
     this.name = name;
     this.id = id;
     this.isPlayerReady = false;
+  }
+}
+
+class UserSory {
+  description: string;
+  id: number;
+
+  constructor(description: string, id: number) {
+    this.description = description;
+    this.id = id;
   }
 }
