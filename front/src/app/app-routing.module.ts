@@ -12,9 +12,8 @@ const routes: Routes = [
   { path: 'login', component : LoginComponent },
   { path: 'home', component: HomeComponent },
   { path: 'session/:id/waiting-room', component: WaitingRoomComponent },
-  { path: 'session/:id', component: SessionComponent },
-  { path: 'addUserStory', component: AddUserStoryComponent },
-  { path: 'end', component: EndPageComponent },
+  { path: 'session/:id/game', component: SessionComponent },
+  { path: 'session/:id/end', component: EndPageComponent },
 ];
 
 @NgModule({
