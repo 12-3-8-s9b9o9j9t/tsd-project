@@ -5,15 +5,15 @@ import { SessionComponent } from './session/session.component';
 import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
 import {AddUserStoryComponent} from "./add-user-story/add-user-story.component";
 import { EndPageComponent } from './end-page/end-page.component';
+import { LoginComponent } from './login/login.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
-
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component : LoginComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'waiting-room', component: WaitingRoomComponent },
-  { path: 'session', component: SessionComponent },
-  { path: 'addUserStory', component: AddUserStoryComponent },
-  { path: 'end', component: EndPageComponent },
+  { path: 'session/:id/waiting-room', component: WaitingRoomComponent },
+  { path: 'session/:id/game', component: SessionComponent },
+  { path: 'session/:id/end', component: EndPageComponent },
 ];
 
 @NgModule({

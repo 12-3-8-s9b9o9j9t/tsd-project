@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiHelperService } from '../services/api-helper.service';
-import { saveID, saveName } from "../services/storage.service";
+import { getName, saveID, saveName } from "../services/storage.service";
 
 @Component({
   selector: 'app-home',
@@ -11,69 +11,47 @@ import { saveID, saveName } from "../services/storage.service";
 })
 export class HomeComponent {
 
-  nameControl = new FormControl('', [Validators.required]);
+  sessionCode: string = '1';
+  user: string = '';
+
+  joinSessionControl = new FormControl('', [Validators.required]);
 
   formGroup = new FormGroup({
-    name: this.nameControl,
+    sessionCode: this.joinSessionControl,
   });
 
-  constructor(
-    private api: ApiHelperService,
-    private router: Router
-  ) { }
+  constructor(private api: ApiHelperService, private router: Router) {
+    this.user = getName();
+  }
 
 
   enter(): void {
     if (!this.formGroup.valid) {
       return;
     }
-    let name: string | null = this.nameControl.value;
+    let session: string | null = this.joinSessionControl.value;
+    // TODO: check if session exists
 
+    // TODO: move to session
+    this.moveToSession(this.sessionCode);
 
-    this.api.get({ endpoint: '/User/' + name }).then((response) => {
-      console.log("User found");
-      console.log(response);
-      if (name === null) {
-        return;
-      }
-      saveName(name);
-      saveID(response.id);
-      this.moveToSession();
-    }).catch((error) => {
-      console.log(error);
-      console.log("User not found, creating new user");
-      this.api.post({ endpoint: '/User', data: { name: name } }).then((response) => {
-        console.log(response);
-        if (name === null) {
-          return;
-        }
-        saveName(name);
-        saveID(response.id);
-        this.moveToSession();
-      }
-      ).catch((error) => {
-        console.log(error);
-      }
-      );
-    });
   }
 
-  moveToSession() {
-    this.api.get({ endpoint: '/Session' }).then((response) => {
-      console.log("Session found");
-      this.router.navigateByUrl('/waiting-room');
-    }).catch((error) => {
+  moveToSession(code: string): void {
+    this.router.navigate(['/session', code, 'waiting-room']);
+
+  }
+
+  createSession(): void {
+    //TODO create session and get code
+    this.api.post({ endpoint: '/Session/createSession' }).then((response) => {
+      console.log(response);
+      console.log("Session created");
+      this.router.navigate(['/session', this.sessionCode, 'waiting-room']);
+    }
+    ).catch((error) => {
       console.log(error);
-      console.log("Session not found, creating new session");
-      this.api.post({ endpoint: '/Session/createSession' }).then((response) => {
-        console.log(response);
-        console.log("Session created");
-        this.router.navigateByUrl('/waiting-room');
-      }
-      ).catch((error) => {
-        console.log(error);
-      }
-      );
     });
+
   }
 }

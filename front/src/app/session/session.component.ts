@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiHelperService } from '../services/api-helper.service';
 import { getID, getName } from '../services/storage.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { trigger, style, animate, transition } from '@angular/animations';
 
 
@@ -24,6 +24,8 @@ import { trigger, style, animate, transition } from '@angular/animations';
 })
 export class SessionComponent implements OnInit {
 
+  gameId: string;
+
   // board
   boardPlayers: Player[] = []
   showCards: boolean = false;
@@ -40,7 +42,12 @@ export class SessionComponent implements OnInit {
   hasVoted: boolean = false;
 
 
-  constructor(private api: ApiHelperService, private router: Router) { }
+  constructor(private api: ApiHelperService, private router: Router, private route: ActivatedRoute) {
+    this.gameId = "";
+    this.route.params.subscribe(params => {
+      this.gameId = params['id'];
+    });
+  }
 
   ngOnInit(): void {
     this.refreshBoard();
@@ -100,7 +107,7 @@ export class SessionComponent implements OnInit {
 
   refreshUserStory(session: any) {
     if (session.state === "end") {
-      this.router.navigateByUrl("/end");
+      this.router.navigate(['/session', this.gameId, 'end'])
     }
 
     this.currentUserStory = session.currentUserStory.description;
