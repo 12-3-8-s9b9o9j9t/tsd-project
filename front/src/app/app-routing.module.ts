@@ -11,8 +11,8 @@ const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component : LoginComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'waiting-room', component: WaitingRoomComponent },
-  { path: 'session', component: SessionComponent },
+  { path: 'session/:id/waiting-room', component: WaitingRoomComponent },
+  { path: 'session/:id', component: SessionComponent },
   { path: 'addUserStory', component: AddUserStoryComponent },
   { path: 'end', component: EndPageComponent },
 ];
