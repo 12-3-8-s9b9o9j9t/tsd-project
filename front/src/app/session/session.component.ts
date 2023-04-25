@@ -3,6 +3,8 @@ import { ApiHelperService } from '../services/api-helper.service';
 import { getID, getName } from '../services/storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { trigger, style, animate, transition } from '@angular/animations';
+import { SocketService } from '../services/socket.service';
+
 
 
 @Component({
@@ -32,7 +34,7 @@ export class SessionComponent implements OnInit {
 
   // user stories
   currentUserStory: string = "Loading...";
-  tabCards: string[] = ['☕','1', '2', '3', '5', '8', '13', '∞'];
+  tabCards: string[] = ['☕', '1', '2', '3', '5', '8', '13', '∞'];
 
   // player deck
   selectedCard: string | undefined;
@@ -42,7 +44,7 @@ export class SessionComponent implements OnInit {
   hasVoted: boolean = false;
 
 
-  constructor(private api: ApiHelperService, private router: Router, private route: ActivatedRoute) {
+  constructor(private api: ApiHelperService, private socket: SocketService, private router: Router, private route: ActivatedRoute) {
     this.gameId = "";
     this.route.params.subscribe(params => {
       this.gameId = params['id'];
@@ -51,6 +53,17 @@ export class SessionComponent implements OnInit {
 
   ngOnInit(): void {
     this.refreshBoard();
+    this.onMessage();
+  }
+
+  //
+  onMessage(): void {
+    this.socket.onMessage().subscribe((message: any) => {
+      console.log('Received message:', message);
+      this.refreshBoardPlayers(message);
+      this.refreshUserStory(message);
+      this.refreshPlayerDeck(message);
+    });
   }
 
   refreshBoard() {
@@ -63,9 +76,6 @@ export class SessionComponent implements OnInit {
       console.log(error);
       console.log("Error getting session");
     });
-
-    //refresh player  & player cards every 1 second
-    setTimeout(() => { this.refreshBoard(); }, 1000);
   }
 
   refreshBoardPlayers(session: any) {
@@ -132,9 +142,9 @@ export class SessionComponent implements OnInit {
     let cardToSend = this.selectedCard;
     if (cardToSend == "∞") { cardToSend = "1000"; } // convert infinity to string number
     if (cardToSend == "☕") { cardToSend = "0"; } // convert coffee to string
-    
+
     this.api.post({
-      endpoint: '/Session/voteCurrentUserStory/'+getID()+'/'+cardToSend
+      endpoint: '/Session/voteCurrentUserStory/' + getID() + '/' + cardToSend
     }).then((response) => {
       console.log("Vote sent");
       console.log(response);

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "ngx-socket-io": "^4.4.0",
+    "ws": "^8.13.0"
+  }
+}
