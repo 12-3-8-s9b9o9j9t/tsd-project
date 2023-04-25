@@ -22,6 +22,7 @@ import { AddUserStoryComponent } from './add-user-story/add-user-story.component
 import { EndPageComponent } from './end-page/end-page.component';
 import { MatButtonToggleModule}  from '@angular/material/button-toggle';
 import { LoginComponent } from './login/login.component';
+import { SocketService } from './services/socket.service';
 
 @NgModule({
   declarations: [
@@ -49,9 +50,14 @@ import { LoginComponent } from './login/login.component';
     MatRadioModule,
     MatCheckboxModule,
     MatTableModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+
+  constructor(private socket: SocketService) {
+    this.socket.ngOnInit();
+  }
+}
