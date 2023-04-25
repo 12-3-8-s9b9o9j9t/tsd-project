@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApiHelperService } from '../services/api-helper.service';
 import { getID, getName } from '../services/storage.service';
 import { FormControl } from '@angular/forms';
+import { SocketService } from '../services/socket.service';
 
 @Component({
   selector: 'app-waiting-room',
@@ -13,7 +14,6 @@ export class WaitingRoomComponent implements OnInit {
 
   gameId: string;
 
-
   displayedColumns: string[] = ['name', 'status'];
   player: Player;
   currentPlayers: Player[] = [];
@@ -21,7 +21,7 @@ export class WaitingRoomComponent implements OnInit {
   inputFormControl: FormControl = new FormControl('');
   userStories: UserSory[] = [];
 
-  constructor(private api: ApiHelperService, private router: Router, private route:ActivatedRoute) {
+  constructor(private api: ApiHelperService, private socket: SocketService, private router: Router, private route:ActivatedRoute) {
     this.player = new Player(getName(), getID());
     this.gameId = "";
     this.route.params.subscribe(params => {
@@ -31,8 +31,8 @@ export class WaitingRoomComponent implements OnInit {
 
   ngOnInit(): void {
     this.player = new Player(getName(), getID());
-    this.refreshCurrentPlayers();
-    this.refreshUserStories();
+    this.onMessage();
+    //this.refreshWaitingRoom();
 
     // post this user in the session
     this.api.post({ endpoint: '/Session/addUser/' + getID() }).then((response) => {
@@ -40,6 +40,14 @@ export class WaitingRoomComponent implements OnInit {
     }).catch((error) => {
       console.log(error);
       console.log("Error adding user to session");
+    });
+  }
+
+  onMessage(): void {
+    this.socket.onMessage().subscribe((message: any) => {
+      console.log('Received message:', message);
+      this.refreshCurrentPlayers(message);
+      this.refreshUserStories();
     });
   }
 
@@ -74,11 +82,10 @@ export class WaitingRoomComponent implements OnInit {
     this.router.navigateByUrl("addUserStory");
   }
 
-  refreshCurrentPlayers() {
+  refreshCurrentPlayers(response: any) {
     // refresh every 1 second
 
     // Get players in the session
-    this.api.get({ endpoint: '/Session' }).then((response) => {
       this.currentPlayers = []
       response.users.forEach((user: any) => {
         this.currentPlayers.push(new Player(user.name, user.id));
@@ -111,13 +118,7 @@ export class WaitingRoomComponent implements OnInit {
         this.router.navigate(['/session', this.gameId, 'game'])
       }
 
-    }).catch((error) => {
-      console.log(error);
-      console.log("Error getting session");
-    });
 
-
-    setTimeout(() => { this.refreshCurrentPlayers(); }, 1000);
   }
 
 
@@ -137,7 +138,7 @@ export class WaitingRoomComponent implements OnInit {
     });
 
     //refresh user stories every 1 second
-    setTimeout(() => { this.refreshUserStories(); }, 1000);
+    // setTimeout(() => { this.refreshUserStories(); }, 1000);
   }
 
   async postUserStory(): Promise<void> {
