@@ -1,13 +1,21 @@
 .waiting-room {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-  }
+  display: flex;
+  flex-direction: row;
+  margin: 2rem;
+}
+
+//////////////////////////////////////////////////
+/////// 1. Container for the players table ///////
+/////////////////////////////////////////////////
+.container-players {
+  width: 60%;
+  margin-right: 5%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   .players-table {
     margin-bottom: 20px;
-    flex: 1;
   }
 
   .button-field {
@@ -18,11 +26,6 @@
     justify-content: center;
     align-items: center;
     gap: 3rem;
-
-    .us-button {
-      width: 150%;
-      height: 60%;
-    }
   }
 
   .button {
@@ -31,7 +34,8 @@
   }
 
   .button:hover {
-    background-color: #0077ff;
+    background-color: #2188ff;
+    transition: 0.3s;
   }
 
   .ready {
@@ -43,3 +47,59 @@
     color: #f44336;
     font-weight: bold;
   }
+}
+
+
+/////////////////////////////////////////////////
+/// 2. Container for the user stories table /////
+/////////////////////////////////////////////////
+.container-user-stories {
+  display: flex;
+  flex-direction: column;
+  width: 35%;
+
+  .text {
+    margin: auto;
+  }
+
+  .add-user-story {
+    margin-top: 2%;
+    padding-bottom: 2%;
+  }
+
+  .form-user-story {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .create-button:hover {
+    background-color: #2188ff;
+    transition: 0.3s;
+  }
+
+  .list-title {
+    font-weight: bold;
+    /* Met le texte en gras */
+    font-size: 1.5em;
+    /* Police 2 fois plus grande que la taille normale */
+    margin-top: 3%;
+    text-align: center;
+  }
+
+
+  .user-stories-list {
+    margin: auto;
+    width: 80%;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .user-story {
+    justify-content: center;
+    align-items: center;
+    border: 2px solid rgb(133, 133, 133);
+    width: 100%;
+    margin: 1rem 0;
+  }
+}

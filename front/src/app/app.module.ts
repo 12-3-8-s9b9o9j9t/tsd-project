@@ -16,13 +16,13 @@ import { SessionComponent } from './session/session.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { BoardComponent } from './board/board.component';
-import { PlayerDeckComponent } from './player-deck/player-deck.component';
-import { UserStoryComponent } from './user-story/user-story.component';
 import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
 import { MatTableModule } from '@angular/material/table';
 import { AddUserStoryComponent } from './add-user-story/add-user-story.component';
 import { EndPageComponent } from './end-page/end-page.component';
+import { MatButtonToggleModule}  from '@angular/material/button-toggle';
+import { LoginComponent } from './login/login.component';
+import { SocketService } from './services/socket.service';
 
 @NgModule({
   declarations: [
@@ -30,12 +30,10 @@ import { EndPageComponent } from './end-page/end-page.component';
     HomeComponent,
     NavbarComponent,
     SessionComponent,
-    BoardComponent,
-    PlayerDeckComponent,
-    UserStoryComponent,
     WaitingRoomComponent,
     AddUserStoryComponent,
-    EndPageComponent
+    EndPageComponent,
+    LoginComponent
   ],
   imports: [
     HttpClientModule,
@@ -51,9 +49,15 @@ import { EndPageComponent } from './end-page/end-page.component';
     MatCardModule,
     MatRadioModule,
     MatCheckboxModule,
-    MatTableModule
+    MatTableModule,
+    MatButtonToggleModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+
+  constructor(private socket: SocketService) {
+    this.socket.ngOnInit();
+  }
+}

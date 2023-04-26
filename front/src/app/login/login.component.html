@@ -1,0 +1,10 @@
+<form [formGroup]="formGroup" (submit)="enter()">
+    <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input matInput [formControl]="nameControl">
+    </mat-form-field>
+
+    <button mat-raised-button class="button" color="primary" appeareace="fill" type="submit">
+      Enter
+    </button>
+  </form>

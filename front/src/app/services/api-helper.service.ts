@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { environment } from './../environments/environment';
+import { environment } from '../environments/environment';
 import { Observable, lastValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import {Environment} from "@angular/cli/lib/config/workspace-schema";
 
-const dev_base_url: string = "http://localhost:5225";
+const base_url: string = environment.api_url;
 
 @Injectable({
   providedIn: 'root',
@@ -71,7 +70,7 @@ export class ApiHelperService {
   }): Promise<any> {
     const methodWanted = method.toLowerCase();
 
-    const url = dev_base_url + endpoint;
+    const url = base_url + endpoint;
 
     const requestOptions = {
       params: queryParams,
