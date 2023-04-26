@@ -1,3 +1,4 @@
+using System.Net.WebSockets;
 using back.Classes;
 using back.Entities;
 using back.Services;
@@ -20,7 +21,6 @@ public class SessionController : ControllerBase
         _sessionService = sessionService;
         _userService = userService;
     }
-    
 
     [HttpGet]
     public async Task<ActionResult<Session>> get()
@@ -43,6 +43,8 @@ public class SessionController : ControllerBase
         {
             return BadRequest("User " + id + " already in current session or current session is null or does not exist");
         }
+
+        await _sessionService.sendSessionToAllWS();
 
         return Ok(await _sessionService.getCurrentSession());
     }
@@ -77,6 +79,8 @@ public class SessionController : ControllerBase
         {
             return BadRequest("bad start");
         }
+        
+        await _sessionService.sendSessionToAllWS();
 
         return Ok(await _sessionService.getCurrentSession());
 
@@ -106,6 +110,8 @@ public class SessionController : ControllerBase
             return BadRequest("note " + cardNumber + " for user " + userID + " for this user story already exist");
         }
         
+        await _sessionService.sendSessionToAllWS();
+        
         return Ok(await _sessionService.getCurrentSession());
         
     }
@@ -119,3 +125,4 @@ public class SessionController : ControllerBase
 
 
 
+ 
