@@ -47,11 +47,10 @@ export class HomeComponent {
     this.api.post({ endpoint: '/Session/createSession' }).then((response) => {
       console.log(response);
       console.log("Session created");
-      this.router.navigate(['/session', this.sessionCode, 'waiting-room']);
+      this.moveToSession(this.sessionCode);
     }
     ).catch((error) => {
       console.log(error);
     });
-
   }
 }

@@ -29,23 +29,26 @@ export class WaitingRoomComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.player = new Player(getName(), getID());
+    this.socket.connect();
     this.onMessage();
-    //this.refreshWaitingRoom();
 
     // post this user in the session
-    this.api.post({ endpoint: '/Session/addUser/' + getID() }).then((response) => {
+    await this.api.post({ endpoint: '/Session/addUser/' + getID() }).then((response) => {
       console.log("User added to session");
     }).catch((error) => {
       console.log(error);
       console.log("Error adding user to session");
     });
+    this.refreshWaitingRoom();
+
   }
 
   onMessage(): void {
     this.socket.onMessage().subscribe((message: any) => {
-      console.log('Received message:', message);
+      console.log("Message received");
+      console.log(message);
       this.refreshCurrentPlayers(message);
       this.refreshUserStories();
     });
@@ -54,10 +57,10 @@ export class WaitingRoomComponent implements OnInit {
   ///////////////////////////////////////////
   ////////// Player display part ////////////
   ///////////////////////////////////////////
-  setReady() {
-    this.api.post({ endpoint: '/Session/start/' + getID() }).then((response) => {
+  async setReady() {
+    await this.api.post({ endpoint: '/Session/start/' + getID() }).then((response) => {
 
-      console.log(response);
+      //console.log(response);
       console.log("User ready");
     }).catch((error) => {
       console.log(error);
@@ -82,22 +85,39 @@ export class WaitingRoomComponent implements OnInit {
     this.router.navigateByUrl("addUserStory");
   }
 
+  async refreshWaitingRoom() {
+    await this.api.get({ endpoint: '/Session' }).then((response) => {
+      console.log("Getting session state :");
+      console.log(response);
+      this.refreshCurrentPlayers(response);
+      this.refreshUserStories();
+    }).catch((error) => {
+      console.log(error);
+      console.log("Error getting session");
+    });
+  }
+
   refreshCurrentPlayers(response: any) {
     // refresh every 1 second
 
     // Get players in the session
       this.currentPlayers = []
+      console.log(response);
+      console.log(response.users);
       response.users.forEach((user: any) => {
-        this.currentPlayers.push(new Player(user.name, user.id));
+        if (user.name != undefined) {
+          this.currentPlayers.push(new Player(user.name, user.id));
+        } else {
+          this.currentPlayers.push(new Player(user.Name, user.Id));
+        }
       });
-      console.log(this.currentPlayers);
       // update user status for each player
       let ids = Object.keys(response.usersNotes);
       let notes: string[] = [];
       for (const id of ids) {
         notes.push(response.usersNotes[id].toString());
       }
-      console.log(notes);
+      //console.log(notes);
       this.currentPlayers.forEach((player) => {
         response.users.forEach((user: any) => {
           if (user.name == player.name) {
@@ -111,7 +131,6 @@ export class WaitingRoomComponent implements OnInit {
           }
         });
       });
-      console.log(this.currentPlayers);
 
       // if session state is "voting", redirect to session page
       if (response.state == "voting") {
@@ -125,8 +144,8 @@ export class WaitingRoomComponent implements OnInit {
   /////////////////////////////////////////////////////////
   ////////////////// Add user story part //////////////////
   /////////////////////////////////////////////////////////
-  refreshUserStories(): void {
-    this.api.get({endpoint:'/UserStoryProposition'}).then((response) => {
+ async refreshUserStories(): Promise<void> {
+    await this.api.get({endpoint:'/UserStoryProposition'}).then((response) => {
       // for each user story, create a new UserStory object and add it to the list
       this.userStories = [];
       response.map((us: any) => {
