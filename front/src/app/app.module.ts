@@ -55,9 +55,4 @@ import { SocketService } from './services/socket.service';
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule {
-
-  constructor(private socket: SocketService) {
-    this.socket.ngOnInit();
-  }
-}
+export class AppModule { }
