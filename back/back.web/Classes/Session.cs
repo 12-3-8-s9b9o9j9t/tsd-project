@@ -134,7 +134,6 @@ public class Session
         
         foreach (WebSocket ws in _WebSockets)
         {
-            Console.WriteLine("sending session to : " + ws);
             await ws.SendAsync(
                 new ArraySegment<byte>(data, 0, data.Length),
                 WebSocketMessageType.Text,
