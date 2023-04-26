@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Specialized;
+using System.Net.WebSockets;
+using System.Text;
+using System.Text.Json;
 using back.Classes.SessionState;
 using back.Entities;
-using back.Controllers;
 using back.DAL;
-using back.Services;
 
 namespace back.Classes;
 
@@ -24,6 +25,8 @@ public class Session
     private static Session _instance;
 
     public bool _CanSaveCurrentUS { get; set; }
+    
+    public HashSet<WebSocket> _WebSockets { get; set; }
 
     private Session()
     {
@@ -33,6 +36,7 @@ public class Session
         _currentUSVoted = new OrderedDictionary();
         _state = new StartState(this);
         _CanSaveCurrentUS = false;
+        _WebSockets = new HashSet<WebSocket>();
     }
 
     public UserStoryPropositionEntity currentUserStoryDiscussed()
@@ -122,8 +126,25 @@ public class Session
     {
         _state.onDiscussing();
     }
+
+    public async Task sendSessionToAllWS(SessionDTO currentSession)
+    {
+        string json = JsonSerializer.Serialize(currentSession);
+        byte[] data = Encoding.UTF8.GetBytes(json);
+        
+        foreach (WebSocket ws in _WebSockets)
+        {
+            Console.WriteLine("sending session to : " + ws);
+            await ws.SendAsync(
+                new ArraySegment<byte>(data, 0, data.Length),
+                WebSocketMessageType.Text,
+                WebSocketMessageFlags.EndOfMessage,
+                CancellationToken.None);
+        }
+    }
 }
 
+[Serializable]
 public class SessionDTO
 {
     public List<UserDTO> users { get; set; }
@@ -133,4 +154,6 @@ public class SessionDTO
     public OrderedDictionary usersNotes { get; set; }
     
     public string state { get; set; }
+
+    public int? nb_ws { get; set; }
 }

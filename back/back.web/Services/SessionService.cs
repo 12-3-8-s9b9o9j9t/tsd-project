@@ -1,4 +1,5 @@
 using System.Collections.Specialized;
+using System.Net.WebSockets;
 using back.Classes;
 using back.Classes.SessionState;
 using back.DAL;
@@ -20,6 +21,12 @@ public interface ISessionService
     public Task<bool> voteForCurrentUS(int userID, int cardNumber);
     
     public Task<bool> userStartSession(int userID);
+
+    public void addWS(WebSocket webSocket);
+
+    public void removeWS(WebSocket webSocket);
+
+    public Task sendSessionToAllWS();
 }
 
 public class SessionService : ISessionService
@@ -61,6 +68,7 @@ public class SessionService : ISessionService
         sessionDTO.users = new List<UserDTO>(users);
         sessionDTO.state = _currentSession._state.ToString();
         sessionDTO.usersNotes = _currentSession._state.getUsersVote();
+        sessionDTO.nb_ws = _currentSession._WebSockets.Count;
         return sessionDTO;
     }
 
@@ -84,6 +92,7 @@ public class SessionService : ISessionService
         }
         
         _currentSession.addUser(id);
+        
         return true;
     }
 
@@ -183,5 +192,32 @@ public class SessionService : ISessionService
         
         // saving changes
         await _databaseContext.SaveChangesAsync();
+    }
+
+    public void addWS(WebSocket webSocket)
+    {
+        if (_currentSession == null)
+        {
+            return;
+        }
+        
+        _currentSession._WebSockets.Add(webSocket);
+    }
+
+    public void removeWS(WebSocket webSocket)
+    {
+        if (_currentSession == null)
+        {
+            return;
+        }
+
+        _currentSession._WebSockets.Remove(webSocket);
+    }
+
+    public async Task sendSessionToAllWS()
+    {
+        SessionDTO sdto = await getCurrentSession();
+
+        await _currentSession.sendSessionToAllWS(sdto);
     }
 }
