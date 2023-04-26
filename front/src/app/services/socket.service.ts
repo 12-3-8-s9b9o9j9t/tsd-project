@@ -8,7 +8,7 @@ import { environment } from '../environments/environment';
 })
 export class SocketService implements OnInit {
 
-	api_url = environment.api_url;
+	api_url = environment.ws_url;
 	private socket!: WebSocket;
 
 
