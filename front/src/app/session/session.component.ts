@@ -90,25 +90,38 @@ export class SessionComponent implements OnInit {
 
     // if the session is in discussing state, show the cards
     if (session.state == "discussing") {
-      let ids = Object.keys(session.usersNotes);
-      let notes: string[] = [];
-      for (const id of ids) {
-        notes.push(session.usersNotes[id]);
-      }
       this.showCards = true;
-      // update player card for each player
+      let ids = Object.keys(session.usersNotes);
+      console.log(session.usersNotes);
+      console.log(session.usersNotes[ids[0]]);
+      console.log(session.usersNotes[ids[1]])
+
+      // for every player, get the note and update the card
       this.boardPlayers.forEach((player) => {
-        session.users.forEach((user: any) => {
-          if (user.name == player.name) {
-            if (ids.includes(player.id.toString())) {
-              let cardToAdd = notes[user.id - 1];
-              if (cardToAdd == "1000") { cardToAdd = "∞"; } // convert infinity to string number
-              if (cardToAdd == "0") { cardToAdd = "☕"; } // convert coffee to string
-              player.card = cardToAdd;
-            }
-          }
-        });
+        let cardToAdd = session.usersNotes[player.id];
+        if (cardToAdd == "1000") { cardToAdd = "∞"; } // convert infinity to string number
+        if (cardToAdd == "0") { cardToAdd = "☕"; } // convert coffee to string
+        player.card = cardToAdd;
       });
+      
+
+
+      // let notes: string[] = [];
+      // for (const id of ids) { notes.push(session.usersNotes[id]); }
+      // update player card for each player
+      // let counter = 0;
+      // this.boardPlayers.forEach((player) => {
+      //   session.users.forEach((user: any) => {
+      //     if (user.name == player.name) {
+      //       if (ids.includes(player.id.toString())) {
+      //         let cardToAdd = notes[counter];
+      //         if (cardToAdd == "1000") { cardToAdd = "∞"; } // convert infinity to string number
+      //         if (cardToAdd == "0") { cardToAdd = "☕"; } // convert coffee to string
+      //         player.card = cardToAdd;
+      //       }
+      //     }
+      //   });
+      // });
       console.log(this.boardPlayers);
     } else {
       this.showCards = false;
@@ -120,8 +133,9 @@ export class SessionComponent implements OnInit {
     if (session.state === "end") {
       this.socket.disconnect();
       this.router.navigate(['/session', this.gameId, 'end'])
+    } else {
+      this.currentUserStory = session.currentUserStory.description;
     }
-    this.currentUserStory = session.currentUserStory.description;
   }
 
   refreshPlayerDeck(session: any) {
@@ -146,12 +160,12 @@ export class SessionComponent implements OnInit {
     if (cardToSend == "∞") { cardToSend = "1000"; } // convert infinity to string number
     if (cardToSend == "☕") { cardToSend = "0"; } // convert coffee to string
 
-    await this.api.post({
+    this.hasVoted = true;
+    this.api.post({
       endpoint: '/Session/voteCurrentUserStory/' + getID() + '/' + cardToSend
     }).then((response) => {
       console.log("Vote sent");
       //console.log(response);
-      this.hasVoted = true;
     }).catch((error) => {
       console.log("error while sending vote");
       console.log(error);

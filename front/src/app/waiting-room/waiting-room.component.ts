@@ -59,14 +59,13 @@ export class WaitingRoomComponent implements OnInit {
   ////////// Player display part ////////////
   ///////////////////////////////////////////
   async setReady() {
+    this.player.isPlayerReady = true;
     await this.api.post({ endpoint: '/Session/start/' + getID() }).then((response) => {
       console.log("User ready");
     }).catch((error) => {
       console.log(error);
       console.log("Error sending ready");
     });
-
-    this.player.isPlayerReady = true;
   }
 
   setNotReady() {
@@ -93,35 +92,22 @@ export class WaitingRoomComponent implements OnInit {
     });
   }
 
-  refreshCurrentPlayers(response: any) {
+  refreshCurrentPlayers(session: any) {
     // Get players in the session
       this.currentPlayers = []
-      response.users.forEach((user: any) => {
+      session.users.forEach((user: any) => {
           this.currentPlayers.push(new Player(user.name, user.id));
       });
       // update user status for each player
-      let ids = Object.keys(response.usersNotes);
-      let notes: string[] = [];
-      for (const id of ids) {
-        notes.push(response.usersNotes[id].toString());
-      }
-      //console.log(notes);
+      let ids = Object.keys(session.usersNotes);
+
       this.currentPlayers.forEach((player) => {
-        response.users.forEach((user: any) => {
-          if (user.name == player.name) {
-            if (ids.includes(this.player.id.toString())) {
-              if (notes[player.id - 1] == "true") {
-                player.isPlayerReady = true;
-              } else {
-                player.isPlayerReady = false;
-              }
-            }
-          }
-        });
+        let isReady = session.usersNotes[player.id];
+        player.isPlayerReady = isReady;
       });
 
       // if session state is "voting", redirect to session page
-      if (response.state == "voting") {
+      if (session.state == "voting") {
         this.router.navigate(['/session', this.gameId, 'game'])
       }
 
