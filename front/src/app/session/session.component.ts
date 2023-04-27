@@ -59,7 +59,8 @@ export class SessionComponent implements OnInit {
   //
   onMessage(): void {
     this.socket.onMessage().subscribe((message: any) => {
-      console.log('Received message:', message);
+      console.log("Message received");
+      console.log(message);
       this.refreshBoardPlayers(message);
       this.refreshUserStory(message);
       this.refreshPlayerDeck(message);
@@ -82,8 +83,11 @@ export class SessionComponent implements OnInit {
     // add players to the board
     this.boardPlayers = [];
     session.users.map((user: any) => {
-      if (user.name != getName()) {
+      if (user.name != undefined && user.name != getName()) {
         this.boardPlayers.push(new Player(user.name, user.id));
+      }
+      if (user.Name != undefined && user.Name != getName()) {
+        this.boardPlayers.push(new Player(user.Name, user.Id));
       }
     });
 
@@ -98,9 +102,9 @@ export class SessionComponent implements OnInit {
       // update player card for each player
       this.boardPlayers.forEach((player) => {
         session.users.forEach((user: any) => {
-          if (user.name == player.name) {
+          if (user.Name == player.name) {
             if (ids.includes(player.id.toString())) {
-              let cardToAdd = notes[user.id - 1];
+              let cardToAdd = notes[user.Id - 1];
               if (cardToAdd == "1000") { cardToAdd = "∞"; } // convert infinity to string number
               if (cardToAdd == "0") { cardToAdd = "☕"; } // convert coffee to string
               player.card = cardToAdd;
@@ -117,11 +121,10 @@ export class SessionComponent implements OnInit {
 
   refreshUserStory(session: any) {
     if (session.state === "end") {
+      this.socket.disconnect();
       this.router.navigate(['/session', this.gameId, 'end'])
     }
-
     this.currentUserStory = session.currentUserStory.description;
-    console.log(session.currrentUserStory);
   }
 
   refreshPlayerDeck(session: any) {

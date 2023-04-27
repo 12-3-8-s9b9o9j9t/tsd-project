@@ -1,5 +1,64 @@
 <div class="waiting-room">
-    <div class="container-players">
+    <div class="main-content">
+        <div class="container-players">
+
+            <p class="title">Player list</p>
+
+            <table mat-table [dataSource]="currentPlayers" class="mat-elevation-z8 players-table">
+
+                <!-- Name Column -->
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef>Name</th>
+                    <td mat-cell *matCellDef="let player"> {{player.name}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="status" class="status-cell">
+                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                    <td mat-cell *matCellDef="let player">
+                        <div *ngIf="player.isPlayerReady; then thenBlock else elseBlock"></div>
+                        <ng-template #thenBlock>
+                            <p class="ready">Ready</p>
+                        </ng-template>
+                        <ng-template #elseBlock>
+                            <p class="not-ready">Not ready</p>
+                        </ng-template>
+                    </td>
+                </ng-container>
+
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </div>
+
+        <div class="container-user-stories">
+            <mat-card class="add-user-story">
+                <mat-card-title class="title">
+                    Add user story
+                </mat-card-title>
+                <form class="form-user-story" (submit)="inputFormControl.value ? postUserStory() : null">
+                    <mat-form-field>
+                        <mat-label>
+                            User Story
+                        </mat-label>
+                        <input matInput [formControl]="inputFormControl">
+                    </mat-form-field>
+
+
+                    <button class="create-button" mat-raised-button color="primary">Create</button>
+                </form>
+            </mat-card>
+            <h3 class="list-title">Current user stories</h3>
+
+            <div class="user-stories-list">
+                <mat-card class="user-story" *ngFor="let userStory of userStories">
+                    <mat-card-title>
+                        {{userStory.description}}
+                    </mat-card-title>
+                </mat-card>
+            </div>
+        </div>
+
         <div class="button-field">
             <div *ngIf="!player.isPlayerReady; then thenBlock else elseBlock"></div>
             <ng-template #thenBlock>
@@ -10,60 +69,5 @@
             </ng-template>
         </div>
 
-        <table mat-table [dataSource]="currentPlayers" class="mat-elevation-z8 players-table">
-
-            <!-- Name Column -->
-            <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef>Name</th>
-                <td mat-cell *matCellDef="let player"> {{player.name}} </td>
-            </ng-container>
-
-            <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef>Status</th>
-                <td mat-cell *matCellDef="let player">
-                    <div *ngIf="player.isPlayerReady; then thenBlock else elseBlock"></div>
-                    <ng-template #thenBlock>
-                        <p class="ready">Ready</p>
-                    </ng-template>
-                    <ng-template #elseBlock>
-                        <p class="not-ready">Not ready</p>
-                    </ng-template>
-                </td>
-            </ng-container>
-
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
     </div>
-
-    <div class="container-user-stories">
-        <mat-card class="add-user-story">
-            <mat-card-title class="text">
-                Enter a new user story :
-            </mat-card-title>
-            <form class="form-user-story" (submit)="inputFormControl.value ? postUserStory() : null">
-                <mat-form-field>
-                    <mat-label>
-                        User Story
-                    </mat-label>
-                    <input matInput [formControl]="inputFormControl">
-                </mat-form-field>
-
-
-                <button class="create-button" mat-raised-button color="primary">Create</button>
-            </form>
-        </mat-card>
-        <h3 class="list-title">Current user stories</h3>
-
-        <div class="user-stories-list">
-            <mat-card class="user-story" *ngFor="let userStory of userStories">
-                <mat-card-title>
-                    {{userStory.description}}
-                </mat-card-title>
-            </mat-card>
-        </div>
-    </div>
-
-
 </div>

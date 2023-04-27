@@ -6,34 +6,24 @@ import { environment } from '../environments/environment';
 @Injectable({
 	providedIn: 'root'
 })
-export class SocketService implements OnInit {
+export class SocketService {
 
 	api_url = environment.ws_url;
 	private socket!: WebSocket;
 
-
-	constructor() {
-		this.connect();
-	}
-
-	ngOnInit(): void {
-		console.log("websocket initialized")
-		this.onMessage().subscribe(message => {
-			console.log('Received message:', message);
-		});
-	}
-
 	public connect(): void {
 		this.socket = new WebSocket(this.api_url);
+		console.log("Websocket connected");
 	}
 
 	public disconnect(): void {
 		this.socket.close();
+		console.log("Websocket disconnected");
 	}
 
 	public onMessage(): Observable<any> {
 		return new Observable<any>(observer => {
-			this.socket.onmessage = (event) => observer.next(event.data);
+			this.socket.onmessage = (event) => observer.next(JSON.parse(event.data));
 		});
 	}
 

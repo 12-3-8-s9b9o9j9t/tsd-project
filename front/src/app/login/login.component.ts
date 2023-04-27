@@ -40,7 +40,6 @@ export class LoginComponent {
       saveID(response.id);
       this.moveToHome();
     }).catch((error) => {
-      console.log(error);
       console.log("User not found, creating new user");
       this.api.post({ endpoint: '/User', data: { name: name } }).then((response) => {
         console.log(response);
