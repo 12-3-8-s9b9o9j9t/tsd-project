@@ -59,8 +59,6 @@ export class SessionComponent implements OnInit {
   //
   onMessage(): void {
     this.socket.onMessage().subscribe((message: any) => {
-      console.log("Message received");
-      console.log(message);
       if (message.type == "session") {
         this.refreshBoardPlayers(message.session);
         this.refreshUserStory(message.session);
@@ -69,8 +67,8 @@ export class SessionComponent implements OnInit {
     });
   }
 
-  refreshBoard() {
-    this.api.get({ endpoint: '/Session' }).then((response) => {
+  async refreshBoard() {
+    await this.api.get({ endpoint: '/Session' }).then((response) => {
       // refresh players, user stories and player deck
       this.refreshBoardPlayers(response);
       this.refreshUserStory(response);
@@ -128,9 +126,11 @@ export class SessionComponent implements OnInit {
 
   refreshPlayerDeck(session: any) {
     if (session.state == "voting" && !this.hasVoted) {
+      console.log("refreshPlayerDeck --> disabled: false");
       this.disabled = false;
     }
     if (session.state == "discussing") {
+      console.log("refreshPlayerDeck --> disabled: true");
       this.disabled = true;
       this.hasVoted = false;
     }
@@ -138,18 +138,19 @@ export class SessionComponent implements OnInit {
 
 
   // Send the selected card to the server
-  validate(): void {
+  async validate(): Promise<void> {
+    console.log("validate --> disabled: true");
     this.disabled = true;
 
     let cardToSend = this.selectedCard;
     if (cardToSend == "∞") { cardToSend = "1000"; } // convert infinity to string number
     if (cardToSend == "☕") { cardToSend = "0"; } // convert coffee to string
 
-    this.api.post({
+    await this.api.post({
       endpoint: '/Session/voteCurrentUserStory/' + getID() + '/' + cardToSend
     }).then((response) => {
       console.log("Vote sent");
-      console.log(response);
+      //console.log(response);
       this.hasVoted = true;
     }).catch((error) => {
       console.log("error while sending vote");

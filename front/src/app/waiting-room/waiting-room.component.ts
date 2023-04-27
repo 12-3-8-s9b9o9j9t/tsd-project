@@ -47,8 +47,6 @@ export class WaitingRoomComponent implements OnInit {
 
   onMessage(): void {
     this.socket.onMessage().subscribe((message: any) => {
-      console.log("Message received");
-      console.log(message);
       if (message.type == "session") {
         this.refreshCurrentPlayers(message.session);
       } else if (message.type == "userStoriesProposition") {
@@ -88,8 +86,6 @@ export class WaitingRoomComponent implements OnInit {
 
   async refreshWaitingRoom() {
     await this.api.get({ endpoint: '/Session' }).then((response) => {
-      console.log("Getting session state :");
-      console.log(response);
       this.refreshCurrentPlayers(response);
     }).catch((error) => {
       console.log(error);

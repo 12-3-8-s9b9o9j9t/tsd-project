@@ -23,7 +23,11 @@ export class SocketService {
 
 	public onMessage(): Observable<any> {
 		return new Observable<any>(observer => {
-			this.socket.onmessage = (event) => observer.next(JSON.parse(event.data));
+			this.socket.onmessage = (event) => {
+				console.log("Message received");
+      			console.log(JSON.parse(event.data));
+				observer.next(JSON.parse(event.data));
+			}
 		});
 	}
 
