@@ -49,8 +49,11 @@ export class WaitingRoomComponent implements OnInit {
     this.socket.onMessage().subscribe((message: any) => {
       console.log("Message received");
       console.log(message);
-      this.refreshCurrentPlayers(message);
-      this.refreshUserStories();
+      if (message.type == "session") {
+        this.refreshCurrentPlayers(message.session);
+      } else if (message.type == "userStoriesProposition") {
+        this.refreshUserStories(message.userStoriesProposition);
+      }
     });
   }
 
@@ -59,8 +62,6 @@ export class WaitingRoomComponent implements OnInit {
   ///////////////////////////////////////////
   async setReady() {
     await this.api.post({ endpoint: '/Session/start/' + getID() }).then((response) => {
-
-      //console.log(response);
       console.log("User ready");
     }).catch((error) => {
       console.log(error);
@@ -90,7 +91,6 @@ export class WaitingRoomComponent implements OnInit {
       console.log("Getting session state :");
       console.log(response);
       this.refreshCurrentPlayers(response);
-      this.refreshUserStories();
     }).catch((error) => {
       console.log(error);
       console.log("Error getting session");
@@ -98,18 +98,10 @@ export class WaitingRoomComponent implements OnInit {
   }
 
   refreshCurrentPlayers(response: any) {
-    // refresh every 1 second
-
     // Get players in the session
       this.currentPlayers = []
-      console.log(response);
-      console.log(response.users);
       response.users.forEach((user: any) => {
-        if (user.name != undefined) {
           this.currentPlayers.push(new Player(user.name, user.id));
-        } else {
-          this.currentPlayers.push(new Player(user.Name, user.Id));
-        }
       });
       // update user status for each player
       let ids = Object.keys(response.usersNotes);
@@ -144,26 +136,18 @@ export class WaitingRoomComponent implements OnInit {
   /////////////////////////////////////////////////////////
   ////////////////// Add user story part //////////////////
   /////////////////////////////////////////////////////////
- async refreshUserStories(): Promise<void> {
-    await this.api.get({endpoint:'/UserStoryProposition'}).then((response) => {
+ async refreshUserStories(response: any): Promise<void> {
       // for each user story, create a new UserStory object and add it to the list
       this.userStories = [];
       response.map((us: any) => {
         this.userStories.push(new UserSory(us.description, us.id));
-      })
-    }).catch((error) => {
-      console.log(error);
-      console.log("Error getting user stories");
-    });
-
-    //refresh user stories every 1 second
-    // setTimeout(() => { this.refreshUserStories(); }, 1000);
+      });
   }
 
   async postUserStory(): Promise<void> {
     const us: string = this.inputFormControl.value;
     try {
-      await this.api.post({endpoint:'/UserStoryProposition', data:{"description":us}});
+      await this.api.post({endpoint:'/Session/createUserStoryProposition', data:{"description":us}});
       this.inputFormControl.setValue("");
     }
     catch (e) {
