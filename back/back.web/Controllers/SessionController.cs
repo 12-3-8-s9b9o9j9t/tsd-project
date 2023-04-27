@@ -66,7 +66,7 @@ public class SessionController : ControllerBase
             return BadRequest("current session is null.");
         }
 
-        var usersIDList = currentSession.users.Select(u => u.Id);
+        var usersIDList = currentSession.users.Select(u => u.id);
 
         if (!usersIDList.Contains(userID))
         {
@@ -96,7 +96,7 @@ public class SessionController : ControllerBase
             return BadRequest("current session is null.");
         }
         
-        var usersIDList = currentSession.users.Select(u => u.Id);
+        var usersIDList = currentSession.users.Select(u => u.id);
 
         if (!usersIDList.Contains(userID))
         {
@@ -114,6 +114,14 @@ public class SessionController : ControllerBase
         
         return Ok(await _sessionService.getCurrentSession());
         
+    }
+
+    [HttpPost("createUserStoryProposition")]
+    public async Task<ActionResult<UserStoryPropositionEntity>> createUserStoryProposition([FromBody] UserStoryPropositionInput usInput)
+    {
+        var us = await _sessionService.createUserStoryProposition(usInput);
+        await _sessionService.sendUSToAllWS();
+        return Ok(us);
     }
 }
 

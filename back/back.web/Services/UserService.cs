@@ -25,7 +25,7 @@ public class UserService : IUserService
     public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
     {
         var users = await _databaseContext.Users.OrderBy(u => u.id).ToListAsync();
-        return users.Select(u => new UserDTO { Id = u.id, Name = u.name });
+        return users.Select(u => new UserDTO { id = u.id, name = u.name });
     }
 
     public async Task<UserDTO> CreateUserAsync(UserInput userInput)
@@ -45,7 +45,7 @@ public class UserService : IUserService
         _databaseContext.Users.Add(userToAdd);
         await _databaseContext.SaveChangesAsync();
 
-        return new UserDTO { Id = userToAdd.id, Name = userToAdd.name };
+        return new UserDTO { id = userToAdd.id, name = userToAdd.name };
     }
 
     public async Task<UserDTO> GetUserByNameAsync(string name)
@@ -61,7 +61,7 @@ public class UserService : IUserService
             return null;
         }
 
-        return new UserDTO { Id = user.id, Name = user.name };
+        return new UserDTO { id = user.id, name = user.name };
     }
 
     public async Task<UserDTO> GetByID(int id)
@@ -73,6 +73,6 @@ public class UserService : IUserService
             return null;
         }
 
-        return new UserDTO { Id = user.id, Name = user.name };
+        return new UserDTO { id = user.id, name = user.name };
     }
 }

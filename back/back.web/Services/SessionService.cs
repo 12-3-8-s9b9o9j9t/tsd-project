@@ -1,5 +1,7 @@
 using System.Collections.Specialized;
 using System.Net.WebSockets;
+using System.Text;
+using System.Text.Json;
 using back.Classes;
 using back.Classes.SessionState;
 using back.DAL;
@@ -16,17 +18,21 @@ public interface ISessionService
 
     public SessionDTO createSession();
 
-    public Task<NoteEntity> createNote(int userID, int cardNumber);
+    // public Task<NoteEntity> createNote(int userID, int cardNumber);
 
     public Task<bool> voteForCurrentUS(int userID, int cardNumber);
     
     public Task<bool> userStartSession(int userID);
+
+    public Task<UserStoryPropositionEntity> createUserStoryProposition(UserStoryPropositionInput usInput);
 
     public void addWS(WebSocket webSocket);
 
     public void removeWS(WebSocket webSocket);
 
     public Task sendSessionToAllWS();
+
+    public Task sendUSToAllWS();
 }
 
 public class SessionService : ISessionService
@@ -57,15 +63,15 @@ public class SessionService : ISessionService
             return null;
         }
 
-        if (_currentSession._joinedUsersID == null || _currentSession._allUserStories == null)
+        if (_currentSession._joinedUsers == null || _currentSession._allUserStories == null)
         {
             return null;
         }
         
         var sessionDTO = new SessionDTO();
         sessionDTO.currentUserStory = _currentSession.currentUserStoryDiscussed();
-        var users = _currentSession._joinedUsersID.Select(id => _userService.GetByID(id).Result);
-        sessionDTO.users = new List<UserDTO>(users);
+        var users = _currentSession._joinedUsers;
+        sessionDTO.users = new List<UserDTO>(users.Select(user => new UserDTO { id = user.id, name = user.name}));
         sessionDTO.state = _currentSession._state.ToString();
         sessionDTO.usersNotes = _currentSession._state.getUsersVote();
         sessionDTO.nb_ws = _currentSession._WebSockets.Count;
@@ -86,25 +92,25 @@ public class SessionService : ISessionService
         }
         
         // if user already in session
-        if (_currentSession._joinedUsersID.Contains(id))
+        if (_currentSession._joinedUsers.Select(user => user.id).Contains(id))
         {
             return false;
         }
-        
-        _currentSession.addUser(id);
+
+        UserDTO user = await _userService.GetByID(id);
+        _currentSession.addUser(new UserEntity { id = user.id, name = user.name});
         
         return true;
     }
 
     public SessionDTO createSession()
     {
-        var allUS = _userStoryPropositionService.getAll().OrderByDescending(u => u.id);
         Session.createInstance();
         _currentSession = Session.getInstance();
 
         SessionDTO result = new SessionDTO();
-        var users = _currentSession._joinedUsersID.Select(id => _userService.GetByID(id).Result);
-        result.users = new List<UserDTO>(users);
+        var users = _currentSession._joinedUsers;
+        result.users = new List<UserDTO>(users.Select(user => new UserDTO { id = user.id, name = user.name }));
         result.currentUserStory = _currentSession.currentUserStoryDiscussed();
         result.state = _currentSession._state.ToString();
         result.usersNotes = null;
@@ -112,39 +118,39 @@ public class SessionService : ISessionService
         return result; 
     }
 
-    public async Task<NoteEntity> createNote(int userID, int cardNumber)
-    {
-        Session session = _currentSession;
-        if (session == null)
-        {
-            return null;
-        }
-
-        // no more user story to discuss (the session should end)
-        if (session.currentUserStoryDiscussed() == null)
-        {
-            return null;
-        }
-        
-        int usID = _currentSession.currentUserStoryDiscussed().id;
-
-        // this user has already set a note for the user story currently discussed
-        if (_databaseContext.Notes.SingleOrDefault(n =>
-                n.UserStoryPropositionEntity.id == usID && n.UserEntity.id == userID) != null)
-        {
-            return null;
-        }
-
-        NoteEntity noteToSave = new NoteEntity();
-        noteToSave.note = cardNumber;
-        noteToSave.UserEntity = _databaseContext.Users.Find(userID);
-        noteToSave.UserStoryPropositionEntity = _databaseContext.UserStoriesProposition.Find(usID);
-
-        _databaseContext.Notes.Add(noteToSave);
-        await _databaseContext.SaveChangesAsync();
-
-        return noteToSave;
-    }
+    // public async Task<NoteEntity> createNote(int userID, int cardNumber)
+    // {
+    //     Session session = _currentSession;
+    //     if (session == null)
+    //     {
+    //         return null;
+    //     }
+    //
+    //     // no more user story to discuss (the session should end)
+    //     if (session.currentUserStoryDiscussed() == null)
+    //     {
+    //         return null;
+    //     }
+    //     
+    //     int usID = _currentSession.currentUserStoryDiscussed().id;
+    //
+    //     // this user has already set a note for the user story currently discussed
+    //     if (_databaseContext.Notes.SingleOrDefault(n =>
+    //             n.UserStoryPropositionEntity.id == usID && n.UserEntity.id == userID) != null)
+    //     {
+    //         return null;
+    //     }
+    //
+    //     NoteEntity noteToSave = new NoteEntity();
+    //     noteToSave.note = cardNumber;
+    //     noteToSave.UserEntity = _databaseContext.Users.Find(userID);
+    //     noteToSave.UserStoryPropositionEntity = _databaseContext.UserStoriesProposition.Find(usID);
+    //
+    //     _databaseContext.Notes.Add(noteToSave);
+    //     await _databaseContext.SaveChangesAsync();
+    //
+    //     return noteToSave;
+    // }
 
     public async Task<bool> userStartSession(int userID)
     {
@@ -165,6 +171,7 @@ public class SessionService : ISessionService
     {
         bool ans = _currentSession.userVoted(userID, cardNumber);
 
+        // all users have voted the same card
         if (_currentSession._CanSaveCurrentUS)
         {
             await storeCurrentUS();
@@ -194,6 +201,13 @@ public class SessionService : ISessionService
         await _databaseContext.SaveChangesAsync();
     }
 
+    public async Task<UserStoryPropositionEntity> createUserStoryProposition(UserStoryPropositionInput usInput)
+    {
+        var us = await _userStoryPropositionService.create(usInput);
+
+        return us.Value;
+    }
+
     public void addWS(WebSocket webSocket)
     {
         if (_currentSession == null)
@@ -216,8 +230,22 @@ public class SessionService : ISessionService
 
     public async Task sendSessionToAllWS()
     {
-        SessionDTO sdto = await getCurrentSession();
+        await _currentSession.sendSessionToAllWS();
+    }
 
-        await _currentSession.sendSessionToAllWS(sdto);
+    public async Task sendUSToAllWS()
+    {
+        var payload = new { type = "userStoriesProposition", userStoriesProposition = _userStoryPropositionService.getAll() };
+        string json = JsonSerializer.Serialize(payload);
+        byte[] data = Encoding.UTF8.GetBytes(json);
+        
+        foreach (WebSocket ws in _currentSession._WebSockets)
+        {
+            await ws.SendAsync(
+                new ArraySegment<byte>(data, 0, data.Length),
+                WebSocketMessageType.Text,
+                WebSocketMessageFlags.EndOfMessage,
+                CancellationToken.None);
+        }
     }
 }

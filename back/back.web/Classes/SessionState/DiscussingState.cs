@@ -35,7 +35,7 @@ public class DiscussingState : ASessionState
         // in order to know if we can store in db the us
         _session._CanSaveCurrentUS = sameRes;
 
-        Task.Delay(5000).ContinueWith(_ =>
+        Task.Delay(_session.DiscussingTime).ContinueWith(async _ =>
         {
             _session._CanSaveCurrentUS = false;
             // OK, we can vote the next user story
@@ -55,6 +55,8 @@ public class DiscussingState : ASessionState
             {
                 _session.setState(new VotingState(_session));
             }
+
+            await _session.sendSessionToAllWS();
         });
     }
 

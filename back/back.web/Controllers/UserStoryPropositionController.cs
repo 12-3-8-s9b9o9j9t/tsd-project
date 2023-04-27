@@ -35,11 +35,11 @@ public class UserStoryPropositionController : ControllerBase
         return userStoryP;
     }
 
-    [HttpPost]
-    public async Task<ActionResult<UserStoryPropositionEntity>> create([FromBody] UserStoryPropositionInput userStoryP)
-    {
-        return await _service.create(userStoryP);
-    }
+    // [HttpPost]
+    // public async Task<ActionResult<UserStoryPropositionEntity>> create([FromBody] UserStoryPropositionInput userStoryP)
+    // {
+    //     return await _service.create(userStoryP);
+    // }
 
     [HttpDelete("{id:int}")]
     public async Task<ActionResult<UserStoryPropositionEntity>> delete(int id)

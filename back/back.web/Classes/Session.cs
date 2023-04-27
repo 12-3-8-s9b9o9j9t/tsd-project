@@ -12,7 +12,7 @@ namespace back.Classes;
 public class Session
 {
     public ASessionState _state { get; set; }
-    public HashSet<int> _joinedUsersID { get; set; }
+    public HashSet<UserEntity> _joinedUsers { get; set; }
     
     public Stack<UserStoryPropositionEntity> _allUserStories { get; set; }
     
@@ -28,9 +28,11 @@ public class Session
     
     public HashSet<WebSocket> _WebSockets { get; set; }
 
+    public readonly int DiscussingTime = 5000;
+
     private Session()
     {
-        _joinedUsersID = new HashSet<int>();
+        _joinedUsers = new HashSet<UserEntity>();
         _allUserStories = new Stack<UserStoryPropositionEntity>();
         _startSessionMap = new OrderedDictionary();
         _currentUSVoted = new OrderedDictionary();
@@ -69,11 +71,11 @@ public class Session
         _allUserStories = new Stack<UserStoryPropositionEntity>(allUS);
     }
 
-    public void addUser(int id)
+    public void addUser(UserEntity user)
     {
-        _joinedUsersID.Add(id);
-        _startSessionMap.Add(id, false);
-        _currentUSVoted.Add(id, -1);
+        _joinedUsers.Add(user);
+        _startSessionMap.Add(user.id, false);
+        _currentUSVoted.Add(user.id, -1);
     }
 
     public bool userStart(int userID)
@@ -96,13 +98,7 @@ public class Session
         }
         
         _currentUSVoted[(Object)userID] = note;
-
-        foreach (DictionaryEntry entry in _currentUSVoted)
-        {
-            Console.WriteLine(entry.Key + " : " + entry.Value);
-        }
         
-
         _state.onUserVote();
         return true;
     }
@@ -116,7 +112,7 @@ public class Session
     {
         _currentUSVoted.Clear();
 
-        foreach (int userID in _joinedUsersID)
+        foreach (int userID in _joinedUsers.Select(user => user.id))
         {
             _currentUSVoted.Add(userID, -1);
         }
@@ -127,9 +123,19 @@ public class Session
         _state.onDiscussing();
     }
 
-    public async Task sendSessionToAllWS(SessionDTO currentSession)
+    public async Task sendSessionToAllWS()
     {
-        string json = JsonSerializer.Serialize(currentSession);
+        SessionDTO sdto = new SessionDTO
+        {
+            currentUserStory = currentUserStoryDiscussed(),
+            nb_ws = _WebSockets.Count,
+            users = _joinedUsers.Select(user => new UserDTO { id = user.id, name = user.name }).ToList(),
+            usersNotes = _state.getUsersVote(),
+            state = _state.ToString()
+        };
+        
+        var payload = new { type = "session", session = sdto };
+        string json = JsonSerializer.Serialize(payload);
         byte[] data = Encoding.UTF8.GetBytes(json);
         
         foreach (WebSocket ws in _WebSockets)
