@@ -174,6 +174,7 @@ public class SessionService : ISessionService
         // all users have voted the same card
         if (_currentSession._CanSaveCurrentUS)
         {
+            await sendSessionToAllWS();
             await storeCurrentUS();
         }
 

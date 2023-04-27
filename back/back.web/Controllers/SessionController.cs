@@ -110,7 +110,8 @@ public class SessionController : ControllerBase
             return BadRequest("note " + cardNumber + " for user " + userID + " for this user story already exist");
         }
         
-        await _sessionService.sendSessionToAllWS();
+        // comment because we send the session once when all the users have voted
+        // await _sessionService.sendSessionToAllWS();
         
         return Ok(await _sessionService.getCurrentSession());
         
