@@ -87,7 +87,7 @@ export class SessionComponent implements OnInit {
         this.boardPlayers.push(new Player(user.name, user.id));
       }
       if (user.Name != undefined && user.Name != getName()) {
-        this.boardPlayers.push(new Player(user.Name, user.id));
+        this.boardPlayers.push(new Player(user.Name, user.Id));
       }
     });
 
@@ -102,9 +102,9 @@ export class SessionComponent implements OnInit {
       // update player card for each player
       this.boardPlayers.forEach((player) => {
         session.users.forEach((user: any) => {
-          if (user.name == player.name) {
+          if (user.Name == player.name) {
             if (ids.includes(player.id.toString())) {
-              let cardToAdd = notes[user.id - 1];
+              let cardToAdd = notes[user.Id - 1];
               if (cardToAdd == "1000") { cardToAdd = "∞"; } // convert infinity to string number
               if (cardToAdd == "0") { cardToAdd = "☕"; } // convert coffee to string
               player.card = cardToAdd;
