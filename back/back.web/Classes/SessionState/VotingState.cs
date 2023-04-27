@@ -9,7 +9,7 @@ public class VotingState : ASessionState
     {
     }
 
-    public override void onUserVote()
+    public override async void onUserVote()
     {
         foreach (DictionaryEntry entry in _session._currentUSVoted)
         {
@@ -22,6 +22,9 @@ public class VotingState : ASessionState
 
         //_session.resetCurrentUSVoted();
         _session.setState(new DiscussingState(_session));
+
+        await _session.sendSessionToAllWS();
+        
         _session.startDiscussing();
         Console.WriteLine("all dev have voted");
     }
