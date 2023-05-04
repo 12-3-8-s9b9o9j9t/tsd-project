@@ -23,14 +23,14 @@ export class LoginComponent {
   ) { }
 
 
-  enter(): void {
+  async enter(): Promise<void> {
     if (!this.formGroup.valid) {
       return;
     }
     let name: string | null = this.nameControl.value;
 
 
-    this.api.get({ endpoint: '/User/' + name }).then((response) => {
+    await this.api.get({ endpoint: '/User/' + name }).then((response) => {
       console.log("User found");
       console.log(response);
       if (name === null) {
@@ -39,9 +39,9 @@ export class LoginComponent {
       saveName(name);
       saveID(response.id);
       this.moveToHome();
-    }).catch((error) => {
+    }).catch(async (error) => {
       console.log("User not found, creating new user");
-      this.api.post({ endpoint: '/User', data: { name: name } }).then((response) => {
+      await this.api.post({ endpoint: '/User', data: { name: name } }).then((response) => {
         console.log(response);
         if (name === null) {
           return;

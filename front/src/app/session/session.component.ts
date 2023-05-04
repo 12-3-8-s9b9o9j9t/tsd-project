@@ -59,8 +59,6 @@ export class SessionComponent implements OnInit {
   //
   onMessage(): void {
     this.socket.onMessage().subscribe((message: any) => {
-      console.log("Message received");
-      console.log(message);
       if (message.type == "session") {
         this.refreshBoardPlayers(message.session);
         this.refreshUserStory(message.session);
@@ -69,8 +67,8 @@ export class SessionComponent implements OnInit {
     });
   }
 
-  refreshBoard() {
-    this.api.get({ endpoint: '/Session' }).then((response) => {
+  async refreshBoard() {
+    await this.api.get({ endpoint: '/Session' }).then((response) => {
       // refresh players, user stories and player deck
       this.refreshBoardPlayers(response);
       this.refreshUserStory(response);
@@ -92,25 +90,38 @@ export class SessionComponent implements OnInit {
 
     // if the session is in discussing state, show the cards
     if (session.state == "discussing") {
-      let ids = Object.keys(session.usersNotes);
-      let notes: string[] = [];
-      for (const id of ids) {
-        notes.push(session.usersNotes[id]);
-      }
       this.showCards = true;
-      // update player card for each player
+      let ids = Object.keys(session.usersNotes);
+      console.log(session.usersNotes);
+      console.log(session.usersNotes[ids[0]]);
+      console.log(session.usersNotes[ids[1]])
+
+      // for every player, get the note and update the card
       this.boardPlayers.forEach((player) => {
-        session.users.forEach((user: any) => {
-          if (user.name == player.name) {
-            if (ids.includes(player.id.toString())) {
-              let cardToAdd = notes[user.id - 1];
-              if (cardToAdd == "1000") { cardToAdd = "∞"; } // convert infinity to string number
-              if (cardToAdd == "0") { cardToAdd = "☕"; } // convert coffee to string
-              player.card = cardToAdd;
-            }
-          }
-        });
+        let cardToAdd = session.usersNotes[player.id];
+        if (cardToAdd == "1000") { cardToAdd = "∞"; } // convert infinity to string number
+        if (cardToAdd == "0") { cardToAdd = "☕"; } // convert coffee to string
+        player.card = cardToAdd;
       });
+      
+
+
+      // let notes: string[] = [];
+      // for (const id of ids) { notes.push(session.usersNotes[id]); }
+      // update player card for each player
+      // let counter = 0;
+      // this.boardPlayers.forEach((player) => {
+      //   session.users.forEach((user: any) => {
+      //     if (user.name == player.name) {
+      //       if (ids.includes(player.id.toString())) {
+      //         let cardToAdd = notes[counter];
+      //         if (cardToAdd == "1000") { cardToAdd = "∞"; } // convert infinity to string number
+      //         if (cardToAdd == "0") { cardToAdd = "☕"; } // convert coffee to string
+      //         player.card = cardToAdd;
+      //       }
+      //     }
+      //   });
+      // });
       console.log(this.boardPlayers);
     } else {
       this.showCards = false;
@@ -122,15 +133,18 @@ export class SessionComponent implements OnInit {
     if (session.state === "end") {
       this.socket.disconnect();
       this.router.navigate(['/session', this.gameId, 'end'])
+    } else {
+      this.currentUserStory = session.currentUserStory.description;
     }
-    this.currentUserStory = session.currentUserStory.description;
   }
 
   refreshPlayerDeck(session: any) {
     if (session.state == "voting" && !this.hasVoted) {
+      console.log("refreshPlayerDeck --> disabled: false");
       this.disabled = false;
     }
     if (session.state == "discussing") {
+      console.log("refreshPlayerDeck --> disabled: true");
       this.disabled = true;
       this.hasVoted = false;
     }
@@ -138,19 +152,20 @@ export class SessionComponent implements OnInit {
 
 
   // Send the selected card to the server
-  validate(): void {
+  async validate(): Promise<void> {
+    console.log("validate --> disabled: true");
     this.disabled = true;
 
     let cardToSend = this.selectedCard;
     if (cardToSend == "∞") { cardToSend = "1000"; } // convert infinity to string number
     if (cardToSend == "☕") { cardToSend = "0"; } // convert coffee to string
 
+    this.hasVoted = true;
     this.api.post({
       endpoint: '/Session/voteCurrentUserStory/' + getID() + '/' + cardToSend
     }).then((response) => {
       console.log("Vote sent");
-      console.log(response);
-      this.hasVoted = true;
+      //console.log(response);
     }).catch((error) => {
       console.log("error while sending vote");
       console.log(error);
