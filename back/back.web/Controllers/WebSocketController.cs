@@ -14,14 +14,15 @@ public class WebSocketController : ControllerBase
         _sessionService = sessionService;
     }
     
-    [Route("/ws")]
+    [Route("/ws/{sessionIdentifier}")]
     [HttpGet]
-    public async Task Get()
+    public async Task Get(string sessionIdentifier)
     {
         if (HttpContext.WebSockets.IsWebSocketRequest)
         {
             using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-            _sessionService.addWS(webSocket);
+            
+            _sessionService.addWS(webSocket, sessionIdentifier);
 
             var buffer = new byte[1024 * 4];
             var receiveResult = await webSocket.ReceiveAsync(
@@ -34,7 +35,7 @@ public class WebSocketController : ControllerBase
             }
             
             await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "bieng", CancellationToken.None);
-            _sessionService.removeWS(webSocket);
+            _sessionService.removeWS(webSocket, sessionIdentifier);
         }
         else
         {

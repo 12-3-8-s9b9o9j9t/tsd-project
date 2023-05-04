@@ -12,27 +12,27 @@ namespace back.Services;
 
 public interface ISessionService
 {
-    public Task<SessionDTO> getCurrentSession();
+    public Task<SessionDTO> getSession(string sessionIdentifier);
 
-    public Task<bool> addUserToSession(int id);
+    public Task<bool> addUserToSession(int id, string sessionIdentifier);
 
     public SessionDTO createSession();
 
     // public Task<NoteEntity> createNote(int userID, int cardNumber);
 
-    public Task<bool> voteForCurrentUS(int userID, int cardNumber);
+    public Task<bool> voteForCurrentUS(int userID, int cardNumber, string sessionIdentifier);
     
-    public Task<bool> userStartSession(int userID);
+    public Task<bool> userStartSession(int userID, string sessionIdentifier);
 
-    public Task<UserStoryPropositionEntity> createUserStoryProposition(UserStoryPropositionInput usInput);
+    public Task<UserStoryPropositionEntity> createUserStoryProposition(UserStoryPropositionInput usInput, string sessionIdentifier);
 
-    public void addWS(WebSocket webSocket);
+    public void addWS(WebSocket webSocket, string sessionIdentifier);
 
-    public void removeWS(WebSocket webSocket);
+    public void removeWS(WebSocket webSocket, string sessionIdentifier);
 
-    public Task sendSessionToAllWS();
+    public Task sendSessionToAllWS(string sessionIdentifier);
 
-    public Task sendUSToAllWS();
+    public Task sendUSToAllWS(string sessionIdentifier);
 }
 
 public class SessionService : ISessionService
@@ -45,42 +45,45 @@ public class SessionService : ISessionService
 
     private readonly IUserService _userService;
     
-    private Session _currentSession { get; set; }
+    //private Session _currentSession { get; set; }
 
     public SessionService(IUserStoryPropositionService userStoryPropositionService, IUserStoryService userStoryService,DatabaseContext databaseContext, IUserService userService)
     {
         _userStoryPropositionService = userStoryPropositionService;
         _userStoryService = userStoryService;
-        _currentSession = Session.getInstance();
         _databaseContext = databaseContext;
         _userService = userService;
     }
 
-    public async Task<SessionDTO> getCurrentSession()
+    public async Task<SessionDTO> getSession(string sessionIdentifier)
     {
-        if (_currentSession == null)
+        Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
+        
+        if (session == null)
         {
             return null;
         }
 
-        if (_currentSession._joinedUsers == null || _currentSession._allUserStories == null)
+        if (session._joinedUsers == null || session._allUserStories == null)
         {
             return null;
         }
         
         var sessionDTO = new SessionDTO();
-        sessionDTO.currentUserStory = _currentSession.currentUserStoryDiscussed();
-        var users = _currentSession._joinedUsers;
+        sessionDTO.currentUserStory = session.currentUserStoryDiscussed();
+        var users = session._joinedUsers;
         sessionDTO.users = new List<UserDTO>(users.Select(user => new UserDTO { id = user.id, name = user.name}));
-        sessionDTO.state = _currentSession._state.ToString();
-        sessionDTO.usersNotes = _currentSession._state.getUsersVote();
-        sessionDTO.nb_ws = _currentSession._WebSockets.Count;
+        sessionDTO.state = session._state.ToString();
+        sessionDTO.usersNotes = session._state.getUsersVote();
+        sessionDTO.nb_ws = session._WebSockets.Count;
         return sessionDTO;
     }
 
-    public async Task<bool> addUserToSession(int id)
+    public async Task<bool> addUserToSession(int id, string sessionIdentifier)
     {
-        if (_currentSession == null)
+        Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
+
+        if (session == null)
         {
             return false;
         }
@@ -92,30 +95,51 @@ public class SessionService : ISessionService
         }
         
         // if user already in session
-        if (_currentSession._joinedUsers.Select(user => user.id).Contains(id))
+        if (session._joinedUsers.Select(user => user.id).Contains(id))
         {
             return false;
         }
 
         UserDTO user = await _userService.GetByID(id);
-        _currentSession.addUser(new UserEntity { id = user.id, name = user.name});
+        session.addUser(new UserEntity { id = user.id, name = user.name});
         
         return true;
     }
 
     public SessionDTO createSession()
     {
-        Session.createInstance();
-        _currentSession = Session.getInstance();
-
+        Session newSession = new Session();
+        string identifier = GenerateUniqueId();
+        newSession.Identifier = identifier;
+        
+        // keep track of every sessions
+        SessionList.Add(newSession);
+        
         SessionDTO result = new SessionDTO();
-        var users = _currentSession._joinedUsers;
+        var users = newSession._joinedUsers;
         result.users = new List<UserDTO>(users.Select(user => new UserDTO { id = user.id, name = user.name }));
-        result.currentUserStory = _currentSession.currentUserStoryDiscussed();
-        result.state = _currentSession._state.ToString();
+        result.currentUserStory = newSession.currentUserStoryDiscussed();
+        result.state = newSession._state.ToString();
         result.usersNotes = null;
+        result.identifier = newSession.Identifier;
 
         return result; 
+    }
+    
+    private string GenerateUniqueId()
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // The character set to use
+        var random = new Random();
+        string id;
+
+        // Generate a 10 character long string by selecting random characters from the character set
+        id = new string(Enumerable.Repeat(chars, 10)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        
+        // Keep generating new strings until we find one that is not already in the SessionList
+        //while (SessionList.Sessions.Find(s => s.Identifier.Equals(id)) != new Session());
+
+        return id;
     }
 
     // public async Task<NoteEntity> createNote(int userID, int cardNumber)
@@ -152,42 +176,56 @@ public class SessionService : ISessionService
     //     return noteToSave;
     // }
 
-    public async Task<bool> userStartSession(int userID)
+    public async Task<bool> userStartSession(int userID, string sessionIdentifier)
     {
-        bool ans = _currentSession.userStart(userID);
+        Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
+
+        if (session == null)
+        {
+            return false;
+        }
+
+        bool ans = session.userStart(userID);
 
         // session is now in voting state, so we can push the user stories in it
-        if (_currentSession._state is VotingState)
-        {
-            var allUS = _databaseContext.UserStoriesProposition.ToList();
-            allUS.Reverse();
-            _currentSession.setAllUserStories(allUS);
-        }
+        // if (session._state is VotingState)
+        // {
+        //     var allUS = _databaseContext.UserStoriesProposition.ToList();
+        //     allUS.Reverse();
+        //     session.setAllUserStories(allUS);
+        // }
 
         return ans;  
     }
 
-    public async Task<bool> voteForCurrentUS(int userID, int cardNumber)
+    public async Task<bool> voteForCurrentUS(int userID, int cardNumber, string sessionIdentifier)
     {
-        bool ans = _currentSession.userVoted(userID, cardNumber);
+        Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
+
+        if (session == null)
+        {
+            return false;
+        }
+
+        bool ans = session.userVoted(userID, cardNumber);
 
         // all users have voted the same card
-        if (_currentSession._CanSaveCurrentUS)
+        if (session._CanSaveCurrentUS)
         {
-            await storeCurrentUS();
+            await storeCurrentUS(session);
         }
 
         return ans;
     }
 
-    private async Task storeCurrentUS()
+    private async Task storeCurrentUS(Session session)
     {
-        var currentUS = _currentSession.currentUserStoryDiscussed();
+        var currentUS = session.currentUserStoryDiscussed();
 
         // store in UserStory table
         // get the first value in dictionary
-        int[] values = new int[_currentSession._currentUSVoted.Count];
-        _currentSession._currentUSVoted.Values.CopyTo(values, 0);
+        int[] values = new int[session._currentUSVoted.Count];
+        session._currentUSVoted.Values.CopyTo(values, 0);
         int cost = values[0];
         
         UserStoryInput userStoryToAdd = new UserStoryInput
@@ -201,45 +239,71 @@ public class SessionService : ISessionService
         await _databaseContext.SaveChangesAsync();
     }
 
-    public async Task<UserStoryPropositionEntity> createUserStoryProposition(UserStoryPropositionInput usInput)
+    public async Task<UserStoryPropositionEntity> createUserStoryProposition(UserStoryPropositionInput usInput, string sessionIdentifier)
     {
         var us = await _userStoryPropositionService.create(usInput);
+        
+        Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
 
+        if (session != null && us.Value != null)
+        {
+            session._allUserStories.Push(us.Value);
+        }
+
+        
         return us.Value;
     }
 
-    public void addWS(WebSocket webSocket)
+    public void addWS(WebSocket webSocket, string sessionIdentifier)
     {
-        if (_currentSession == null)
+        Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
+
+        if (session == null)
+        {
+            return;
+        }
+
+        session._WebSockets.Add(webSocket);
+    }
+
+    public void removeWS(WebSocket webSocket, string sessionIdentifier)
+    {
+        Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
+
+        if (session == null)
+        {
+            return;
+        }
+
+        session._WebSockets.Remove(webSocket);
+    }
+
+    public async Task sendSessionToAllWS(string sessionIdentifier)
+    {
+        Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
+
+        if (session == null)
         {
             return;
         }
         
-        _currentSession._WebSockets.Add(webSocket);
+        await session.sendSessionToAllWS();
     }
 
-    public void removeWS(WebSocket webSocket)
+    public async Task sendUSToAllWS(string sessionIdentifier)
     {
-        if (_currentSession == null)
+        Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
+
+        if (session == null)
         {
             return;
         }
-
-        _currentSession._WebSockets.Remove(webSocket);
-    }
-
-    public async Task sendSessionToAllWS()
-    {
-        await _currentSession.sendSessionToAllWS();
-    }
-
-    public async Task sendUSToAllWS()
-    {
-        var payload = new { type = "userStoriesProposition", userStoriesProposition = _userStoryPropositionService.getAll() };
+        
+        var payload = new { type = "userStoriesProposition", userStoriesProposition = session._allUserStories };
         string json = JsonSerializer.Serialize(payload);
         byte[] data = Encoding.UTF8.GetBytes(json);
         
-        foreach (WebSocket ws in _currentSession._WebSockets)
+        foreach (WebSocket ws in session._WebSockets)
         {
             await ws.SendAsync(
                 new ArraySegment<byte>(data, 0, data.Length),

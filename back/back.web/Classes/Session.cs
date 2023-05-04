@@ -28,9 +28,11 @@ public class Session
     
     public HashSet<WebSocket> _WebSockets { get; set; }
 
-    public readonly int DiscussingTime = 5000;
+    public readonly int DiscussingTime = 5000; // in secondes
+    
+    public string Identifier { get; set; }
 
-    private Session()
+    public Session()
     {
         _joinedUsers = new HashSet<UserEntity>();
         _allUserStories = new Stack<UserStoryPropositionEntity>();
@@ -56,20 +58,20 @@ public class Session
         _allUserStories.Pop();
     }
 
-    public static Session getInstance()
-    {
-        return _instance;
-    }
+    // public static Session getInstance()
+    // {
+    //     return _instance;
+    // }
+    //
+    // public static void createInstance()
+    // {
+    //     _instance = new Session();
+    // }
 
-    public static void createInstance()
-    {
-        _instance = new Session();
-    }
-
-    public void setAllUserStories(List<UserStoryPropositionEntity> allUS)
-    {
-        _allUserStories = new Stack<UserStoryPropositionEntity>(allUS);
-    }
+    // public void setAllUserStories(List<UserStoryPropositionEntity> allUS)
+    // {
+    //     _allUserStories = new Stack<UserStoryPropositionEntity>(allUS);
+    // }
 
     public void addUser(UserEntity user)
     {
@@ -131,7 +133,8 @@ public class Session
             nb_ws = _WebSockets.Count,
             users = _joinedUsers.Select(user => new UserDTO { id = user.id, name = user.name }).ToList(),
             usersNotes = _state.getUsersVote(),
-            state = _state.ToString()
+            state = _state.ToString(),
+            identifier = Identifier
         };
         
         var payload = new { type = "session", session = sdto };
@@ -159,6 +162,8 @@ public class SessionDTO
     public OrderedDictionary usersNotes { get; set; }
     
     public string state { get; set; }
+    
+    public string identifier { get; set; }
 
     public int? nb_ws { get; set; }
 }

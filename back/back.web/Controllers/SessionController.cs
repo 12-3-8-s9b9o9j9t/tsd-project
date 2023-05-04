@@ -22,45 +22,45 @@ public class SessionController : ControllerBase
         _userService = userService;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<Session>> get()
+    [HttpGet("{sessionIdentifier}")]
+    public async Task<ActionResult<Session>> get(string sessionIdentifier)
     {
-        var result = await _sessionService.getCurrentSession();
+        var result = await _sessionService.getSession(sessionIdentifier);
 
         if (result == null)
         {
-            return BadRequest("current session is null.");
+            return BadRequest("session is null.");
         }
         return Ok(result);
     }
 
-    [HttpPost("addUser/{id:int}")]
-    public async Task<ActionResult<Session>> addUser(int id)
+    [HttpPost("addUser/{id:int}/{sessionIdentifier}")]
+    public async Task<ActionResult<Session>> addUser(int id, string sessionIdentifier)
     {
-        bool result = await _sessionService.addUserToSession(id);
+        bool result = await _sessionService.addUserToSession(id, sessionIdentifier);
 
         if (!result)
         {
             return BadRequest("User " + id + " already in current session or current session is null or does not exist");
         }
 
-        await _sessionService.sendSessionToAllWS();
+        await _sessionService.sendSessionToAllWS(sessionIdentifier);
 
-        return Ok(await _sessionService.getCurrentSession());
+        return Ok(await _sessionService.getSession(sessionIdentifier));
     }
 
     [HttpPost("createSession")]
     public async Task<ActionResult<Session>> createSession()
     {
-        _sessionService.createSession();
+        var result = _sessionService.createSession();
         
-        return Ok(await _sessionService.getCurrentSession());
+        return Ok(result);
     }
 
-    [HttpPost("start/{userID:int}")]
-    public async Task<ActionResult<Session>> userStart(int userID)
+    [HttpPost("start/{userID:int}/{sessionIdentifier}")]
+    public async Task<ActionResult<Session>> userStart(int userID, string sessionIdentifier)
     {
-        var currentSession = await _sessionService.getCurrentSession();
+        var currentSession = await _sessionService.getSession(sessionIdentifier);
         if (currentSession == null)
         {
             return BadRequest("current session is null.");
@@ -73,24 +73,24 @@ public class SessionController : ControllerBase
             return BadRequest("user " + userID + " is not in current session.");
         }
 
-        bool result = await _sessionService.userStartSession(userID);
+        bool result = await _sessionService.userStartSession(userID, sessionIdentifier);
 
         if (!result)
         {
             return BadRequest("bad start");
         }
         
-        await _sessionService.sendSessionToAllWS();
+        await _sessionService.sendSessionToAllWS(sessionIdentifier);
 
-        return Ok(await _sessionService.getCurrentSession());
+        return Ok(await _sessionService.getSession(sessionIdentifier));
 
     }
 
-    [HttpPost("voteCurrentUserStory/{userID:int}/{cardNumber:int}")]
-    public async Task<ActionResult<Session>> voteForCurrentUS(int userID, int cardNumber)
+    [HttpPost("voteCurrentUserStory/{userID:int}/{cardNumber:int}/{sessionIdentifier}")]
+    public async Task<ActionResult<Session>> voteForCurrentUS(int userID, int cardNumber, string sessionIdentifier)
     {
         Console.WriteLine("user id : " + userID + " card : " + cardNumber);
-        var currentSession = await _sessionService.getCurrentSession();
+        var currentSession = await _sessionService.getSession(sessionIdentifier);
         if (currentSession == null)
         {
             return BadRequest("current session is null.");
@@ -103,7 +103,7 @@ public class SessionController : ControllerBase
             return BadRequest("user " + userID + " is not in current session.");
         }
 
-        bool result = await _sessionService.voteForCurrentUS(userID, cardNumber);
+        bool result = await _sessionService.voteForCurrentUS(userID, cardNumber, sessionIdentifier);
 
         if (!result)
         {
@@ -113,15 +113,15 @@ public class SessionController : ControllerBase
         // comment because we send the session once when all the users have voted
         // await _sessionService.sendSessionToAllWS();
         
-        return Ok(await _sessionService.getCurrentSession());
+        return Ok(await _sessionService.getSession(sessionIdentifier));
         
     }
 
-    [HttpPost("createUserStoryProposition")]
-    public async Task<ActionResult<UserStoryPropositionEntity>> createUserStoryProposition([FromBody] UserStoryPropositionInput usInput)
+    [HttpPost("createUserStoryProposition/{sessionIdentifier}")]
+    public async Task<ActionResult<UserStoryPropositionEntity>> createUserStoryProposition([FromBody] UserStoryPropositionInput usInput, string sessionIdentifier)
     {
-        var us = await _sessionService.createUserStoryProposition(usInput);
-        await _sessionService.sendUSToAllWS();
+        var us = await _sessionService.createUserStoryProposition(usInput, sessionIdentifier);
+        await _sessionService.sendUSToAllWS(sessionIdentifier);
         return Ok(us);
     }
 }
