@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiHelperService } from '../services/api-helper.service';
-import { getName, saveID, saveName } from "../services/storage.service";
+import { getName, saveID, saveName, saveSessionIdentifier } from "../services/storage.service";
 
 @Component({
   selector: 'app-home',
@@ -29,11 +29,16 @@ export class HomeComponent {
     if (!this.formGroup.valid) {
       return;
     }
-    let session: string | null = this.joinSessionControl.value;
-    // TODO: check if session exists
+    let sessionIdentifier: string | null = this.joinSessionControl.value;
+
+    if (sessionIdentifier == null) {
+      return ;
+    }
+    
+    saveSessionIdentifier(sessionIdentifier);
 
     // TODO: move to session
-    this.moveToSession(this.sessionCode);
+    this.moveToSession(sessionIdentifier);
 
   }
 
@@ -47,10 +52,13 @@ export class HomeComponent {
     this.api.post({ endpoint: '/Session/createSession' }).then((response) => {
       console.log(response);
       console.log("Session created");
-      this.moveToSession(this.sessionCode);
+
+      saveSessionIdentifier(response.identifier);
+
+      this.moveToSession(response.identifier);
     }
     ).catch((error) => {
-      console.log(error);
+      console.error("Error when creating session :", error);
     });
   }
 }

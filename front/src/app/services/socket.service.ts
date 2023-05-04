@@ -1,6 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
+import { getSessionIdentifier } from './storage.service';
 // import { WebSocket as ws } from 'ws';
 
 @Injectable({
@@ -8,12 +9,16 @@ import { environment } from '../environments/environment';
 })
 export class SocketService {
 
-	api_url = environment.ws_url;
+	base_ws_url = environment.ws_url;
 	private socket!: WebSocket;
 
 	public connect(): void {
-		this.socket = new WebSocket(this.api_url);
-		console.log("Websocket connected");
+		const sessionIdentifier: string = getSessionIdentifier();
+		this.socket = new WebSocket(this.base_ws_url + "/" + sessionIdentifier);
+
+		this.socket.onopen = () => {
+			console.log("Websocket connected");
+		}
 	}
 
 	public disconnect(): void {

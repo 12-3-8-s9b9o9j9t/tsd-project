@@ -1,5 +1,6 @@
 const NAME_KEY : string = "NAME";
 const ID_KEY   : string = "ID";
+const SESSION_KEY: string = "SESSION";
 
 export function saveName(name: string) : void {
     localStorage.setItem(NAME_KEY, name);
@@ -23,4 +24,18 @@ export function getID() : number {
     return -1;
   }
   return +id;
+}
+
+export function saveSessionIdentifier(sessionIdentifier: string): void {
+  localStorage.setItem(SESSION_KEY, sessionIdentifier);
+}
+
+export function getSessionIdentifier(): string {
+  const sessionIdentifier: string | null = localStorage.getItem(SESSION_KEY);
+
+  if (sessionIdentifier == null) {
+    return "";
+  }
+
+  return sessionIdentifier;
 }

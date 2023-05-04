@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiHelperService } from '../services/api-helper.service';
-import { getID, getName } from '../services/storage.service';
+import { getID, getName, getSessionIdentifier } from '../services/storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { SocketService } from '../services/socket.service';
@@ -68,7 +68,7 @@ export class SessionComponent implements OnInit {
   }
 
   async refreshBoard() {
-    await this.api.get({ endpoint: '/Session' }).then((response) => {
+    await this.api.get({ endpoint: '/Session/' + getSessionIdentifier() }).then((response) => {
       // refresh players, user stories and player deck
       this.refreshBoardPlayers(response);
       this.refreshUserStory(response);
@@ -162,7 +162,7 @@ export class SessionComponent implements OnInit {
 
     this.hasVoted = true;
     this.api.post({
-      endpoint: '/Session/voteCurrentUserStory/' + getID() + '/' + cardToSend
+      endpoint: '/Session/voteCurrentUserStory/' + getID() + '/' + cardToSend + "/" + getSessionIdentifier()
     }).then((response) => {
       console.log("Vote sent");
       //console.log(response);

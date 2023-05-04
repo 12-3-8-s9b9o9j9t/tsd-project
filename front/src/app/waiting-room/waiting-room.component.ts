@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiHelperService } from '../services/api-helper.service';
-import { getID, getName } from '../services/storage.service';
+import { getID, getName, getSessionIdentifier } from '../services/storage.service';
 import { FormControl } from '@angular/forms';
 import { SocketService } from '../services/socket.service';
 
@@ -12,8 +12,6 @@ import { SocketService } from '../services/socket.service';
 })
 export class WaitingRoomComponent implements OnInit {
 
-  gameId: string;
-
   displayedColumns: string[] = ['name', 'status'];
   player: Player;
   currentPlayers: Player[] = [];
@@ -21,12 +19,11 @@ export class WaitingRoomComponent implements OnInit {
   inputFormControl: FormControl = new FormControl('');
   userStories: UserSory[] = [];
 
+  sessionIdentifier: string;
+
   constructor(private api: ApiHelperService, private socket: SocketService, private router: Router, private route:ActivatedRoute) {
     this.player = new Player(getName(), getID());
-    this.gameId = "";
-    this.route.params.subscribe(params => {
-      this.gameId = params['id'];
-    });
+    this.sessionIdentifier = getSessionIdentifier();
   }
 
   async ngOnInit(): Promise<void> {
@@ -35,7 +32,7 @@ export class WaitingRoomComponent implements OnInit {
     this.onMessage();
 
     // post this user in the session
-    await this.api.post({ endpoint: '/Session/addUser/' + getID() }).then((response) => {
+    await this.api.post({ endpoint: '/Session/addUser/' + getID() + "/" + getSessionIdentifier() }).then((response) => {
       console.log("User added to session");
     }).catch((error) => {
       console.log(error);
@@ -60,7 +57,7 @@ export class WaitingRoomComponent implements OnInit {
   ///////////////////////////////////////////
   async setReady() {
     this.player.isPlayerReady = true;
-    await this.api.post({ endpoint: '/Session/start/' + getID() }).then((response) => {
+    await this.api.post({ endpoint: '/Session/start/' + getID() + "/" + getSessionIdentifier() }).then((response) => {
       console.log("User ready");
     }).catch((error) => {
       console.log(error);
@@ -84,7 +81,7 @@ export class WaitingRoomComponent implements OnInit {
   }
 
   async refreshWaitingRoom() {
-    await this.api.get({ endpoint: '/Session' }).then((response) => {
+    await this.api.get({ endpoint: '/Session' + "/" + getSessionIdentifier() }).then((response) => {
       this.refreshCurrentPlayers(response);
     }).catch((error) => {
       console.log(error);
@@ -108,7 +105,7 @@ export class WaitingRoomComponent implements OnInit {
 
       // if session state is "voting", redirect to session page
       if (session.state == "voting") {
-        this.router.navigate(['/session', this.gameId, 'game'])
+        this.router.navigate(['/session', getSessionIdentifier(), 'game'])
       }
 
 
@@ -129,7 +126,7 @@ export class WaitingRoomComponent implements OnInit {
   async postUserStory(): Promise<void> {
     const us: string = this.inputFormControl.value;
     try {
-      await this.api.post({endpoint:'/Session/createUserStoryProposition', data:{"description":us}});
+      await this.api.post({endpoint:'/Session/createUserStoryProposition/' + getSessionIdentifier(), data:{"description":us}});
       this.inputFormControl.setValue("");
     }
     catch (e) {
