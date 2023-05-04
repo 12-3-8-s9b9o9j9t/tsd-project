@@ -57,7 +57,7 @@ public class SessionController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("start/{userID:int}/{sessionIdentifier}")]
+    [HttpPost("ready/{userID:int}/{sessionIdentifier}")]
     public async Task<ActionResult<Session>> userStart(int userID, string sessionIdentifier)
     {
         var currentSession = await _sessionService.getSession(sessionIdentifier);
@@ -73,7 +73,36 @@ public class SessionController : ControllerBase
             return BadRequest("user " + userID + " is not in current session.");
         }
 
-        bool result = await _sessionService.userStartSession(userID, sessionIdentifier);
+        bool result = await _sessionService.userReadySession(userID, sessionIdentifier);
+
+        if (!result)
+        {
+            return BadRequest("bad start");
+        }
+        
+        await _sessionService.sendSessionToAllWS(sessionIdentifier);
+
+        return Ok(await _sessionService.getSession(sessionIdentifier));
+
+    }
+    
+    [HttpPost("notready/{userID:int}/{sessionIdentifier}")]
+    public async Task<ActionResult<Session>> userNotReady(int userID, string sessionIdentifier)
+    {
+        var currentSession = await _sessionService.getSession(sessionIdentifier);
+        if (currentSession == null)
+        {
+            return BadRequest("current session is null.");
+        }
+
+        var usersIDList = currentSession.users.Select(u => u.id);
+
+        if (!usersIDList.Contains(userID))
+        {
+            return BadRequest("user " + userID + " is not in current session.");
+        }
+
+        bool result = await _sessionService.userNotReadySession(userID, sessionIdentifier);
 
         if (!result)
         {

@@ -22,7 +22,10 @@ public interface ISessionService
 
     public Task<bool> voteForCurrentUS(int userID, int cardNumber, string sessionIdentifier);
     
-    public Task<bool> userStartSession(int userID, string sessionIdentifier);
+    public Task<bool> userReadySession(int userID, string sessionIdentifier);
+    
+    public Task<bool> userNotReadySession(int userID, string sessionIdentifier);
+
 
     public Task<UserStoryPropositionEntity> createUserStoryProposition(UserStoryPropositionInput usInput, string sessionIdentifier);
 
@@ -176,7 +179,7 @@ public class SessionService : ISessionService
     //     return noteToSave;
     // }
 
-    public async Task<bool> userStartSession(int userID, string sessionIdentifier)
+    public async Task<bool> userReadySession(int userID, string sessionIdentifier)
     {
         Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
 
@@ -185,7 +188,7 @@ public class SessionService : ISessionService
             return false;
         }
 
-        bool ans = session.userStart(userID);
+        bool ans = session.userReady(userID);
 
         // session is now in voting state, so we can push the user stories in it
         // if (session._state is VotingState)
@@ -196,6 +199,20 @@ public class SessionService : ISessionService
         // }
 
         return ans;  
+    }
+
+    public async Task<bool> userNotReadySession(int userID, string sessionIdentifier)
+    {
+        Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
+
+        if (session == null)
+        {
+            return false;
+        }
+
+        bool ans = session.userNotReady(userID);
+
+        return ans;
     }
 
     public async Task<bool> voteForCurrentUS(int userID, int cardNumber, string sessionIdentifier)

@@ -80,7 +80,7 @@ public class Session
         _currentUSVoted.Add(user.id, -1);
     }
 
-    public bool userStart(int userID)
+    public bool userReady(int userID)
     {
         if (!_startSessionMap.Contains(userID))
         {
@@ -89,6 +89,17 @@ public class Session
 
         _startSessionMap[(Object)userID] = true;
         _state.onUserStart();
+        return true;
+    }
+
+    public bool userNotReady(int userID)
+    {
+        if (!_startSessionMap.Contains(userID))
+        {
+            return false;
+        }
+        
+        _startSessionMap[(Object)userID] = false;
         return true;
     }
 
