@@ -57,7 +57,7 @@ export class WaitingRoomComponent implements OnInit {
   ///////////////////////////////////////////
   async setReady() {
     this.player.isPlayerReady = true;
-    await this.api.post({ endpoint: '/Session/start/' + getID() + "/" + getSessionIdentifier() }).then((response) => {
+    await this.api.post({ endpoint: '/Session/ready/' + getID() + "/" + getSessionIdentifier() }).then((response) => {
       console.log("User ready");
     }).catch((error) => {
       console.log(error);
@@ -65,13 +65,19 @@ export class WaitingRoomComponent implements OnInit {
     });
   }
 
-  setNotReady() {
+  async setNotReady() {
     // this.api.post({ endpoint: '/Session/stop/' + getID() }).then((response) => {
     //   console.log("User not ready");
     // }).catch((error) => {
     //   console.log(error);
     //   console.log("Error sending not ready");
     // });
+
+    try {
+      await this.api.post({ endpoint: '/Session/notready/' + getID() + "/" + getSessionIdentifier() })
+    }catch(e) {
+      console.error("Error whit post not ready :", e);
+    }
 
     this.player.isPlayerReady = false;
   }
