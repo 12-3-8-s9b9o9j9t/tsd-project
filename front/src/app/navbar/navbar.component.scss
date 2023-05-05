@@ -1,29 +1,20 @@
 .toolbar {
-  background-color: #fff;
+  background-color: #3f51b5;
+  color: white;
   display: flex;
   justify-content: center;
-  align-items: center;
-  position: relative;
-  margin-bottom: 1rem;
+  height: 64px;
 }
 
 .title-container {
-  text-align: center;
-}
-
-.title {
-  color: #2600ff;
   font-family: 'Pacifico', cursive;
-  font-size: 3rem;
-  text-align: center;
+  font-size: 100px;
 }
 
 .title-underline {
-  position: absolute;
-  bottom: -0.5rem;
-  left: 2rem;
-  right: 2rem;
-  height: 0.15rem;
-  background-color: #2600ff;
+  width: 100%;
+  height: 2px;
+  background-color: white;
+  margin-top: 5px;
+  margin: 5px 1rem
 }
-
