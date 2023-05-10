@@ -46,7 +46,7 @@ module.exports = function (config) {
       xmlVersion: null // use '1' if reporting to be per SonarQube 6.2 XML format
     },
 
-    browsers: ['Chrome'],
+    browsers: ['Chrome', 'ChromeHeadless', 'ChromeHeadlessCustom'],
     restartOnFileChange: true,
 
     customLaunchers: {
