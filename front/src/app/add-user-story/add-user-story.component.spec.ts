@@ -1,6 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AddUserStoryComponent } from './add-user-story.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 describe('AddUserStoryComponent', () => {
   let component: AddUserStoryComponent;
@@ -8,7 +12,13 @@ describe('AddUserStoryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AddUserStoryComponent ]
+      declarations: [ AddUserStoryComponent ],
+      imports: [
+        HttpClientTestingModule,
+        RouterTestingModule,
+        MatCardModule,
+        MatFormFieldModule
+      ]
     })
     .compileComponents();
 
