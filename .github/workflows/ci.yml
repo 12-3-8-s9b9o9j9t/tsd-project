@@ -3,7 +3,7 @@ name: ci
 on: [push]
 
 jobs:
-  build-test-back:
+  test-back:
     defaults:
       run:
         working-directory: back
@@ -31,7 +31,7 @@ jobs:
           path: back/TestResults/*.trx
           reporter: dotnet-trx
 
-  build-test-front:
+  test-front:
     defaults:
       run:
         working-directory: front
