@@ -5,6 +5,9 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('AddUserStoryComponent', () => {
   let component: AddUserStoryComponent;
@@ -17,8 +20,11 @@ describe('AddUserStoryComponent', () => {
         HttpClientTestingModule,
         RouterTestingModule,
         MatCardModule,
-        MatFormFieldModule
-      ]
+        MatFormFieldModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        BrowserAnimationsModule
+      ],
     })
     .compileComponents();
 

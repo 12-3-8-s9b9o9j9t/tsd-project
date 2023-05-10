@@ -3,11 +3,11 @@ name: cd
 on:
   push:
     branches:
-      - develop
+      - main
 
 jobs:
-  build:
-    # if: github.event.pull_request.merged == true
+  build-push-images:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       -

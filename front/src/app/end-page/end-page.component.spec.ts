@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EndPageComponent } from './end-page.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('EndPageComponent', () => {
   let component: EndPageComponent;
@@ -10,7 +11,10 @@ describe('EndPageComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ EndPageComponent ],
-      imports: [ MatFormFieldModule]
+      imports: [
+        HttpClientTestingModule,
+        MatFormFieldModule
+      ]
     })
     .compileComponents();
 

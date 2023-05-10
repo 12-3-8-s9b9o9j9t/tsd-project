@@ -4,7 +4,8 @@ import { SessionComponent } from './session.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MatCardModule } from '@angular/material/card';
-import { MatRadioModule } from '@angular/material/radio';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { FormsModule } from '@angular/forms';
 
 describe('SessionComponent', () => {
   let component: SessionComponent;
@@ -17,7 +18,8 @@ describe('SessionComponent', () => {
         HttpClientTestingModule,
         RouterTestingModule,
         MatCardModule,
-        MatRadioModule
+        MatButtonToggleModule,
+        FormsModule
       ]
     })
     .compileComponents();
