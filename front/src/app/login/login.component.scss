@@ -1,0 +1,24 @@
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 50%
+  }
+  
+  .mat-form-field {
+    width: 100%;
+    max-width: 20rem;
+  }
+  
+  .button {
+    margin-top: 0rem;
+    font-size: 1.1rem;
+    width: 10rem;
+  }
+
+  .button:hover {
+    background-color: #2188ff;
+    transition: 0.3s;
+  }
+  

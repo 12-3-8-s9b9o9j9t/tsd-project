@@ -1,0 +1,73 @@
+<div class="session">
+
+  <!-- Board -->
+  <div class="board">
+    <mat-card class="boardPlayer-card" *ngFor="let player of boardPlayers">
+      <mat-card-header>
+        <mat-card-title>{{player.name}}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="card-container">
+
+          <div *ngIf="!showCards; then thenBlock else elseBlock"></div>
+
+          <ng-template #thenBlock>
+            <div class="hidden">hidden</div>
+          </ng-template>
+
+          <ng-template #elseBlock>
+            <mat-card-content class="number-boardPlayer">{{player.card}}</mat-card-content>
+          </ng-template>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+
+  <!-- User Story -->
+  <div class="user-story">{{currentUserStory}}</div>
+
+  <!-- Player Deck -->
+  <div class="player-deck">
+
+    <mat-card class="player-card">
+      <mat-card-header>
+        <mat-card-title>Selected card</mat-card-title>
+      </mat-card-header>
+
+      <div class="card-container">
+        <div *ngIf="!selectedCard; then thenBlock else elseBlock"></div>
+
+        <ng-template #thenBlock>
+          <div class="no-card-selected">select a card</div>
+        </ng-template>
+
+        <ng-template #elseBlock>
+          <mat-card-content class="number" [@fade]>
+            <p>{{selectedCard}}</p>
+          </mat-card-content>          
+        </ng-template>
+      </div>
+
+
+    </mat-card>
+
+    <mat-card>
+      <mat-button-toggle-group name="fontStyle" appearance="legacy" aria-label="Font Style" [(ngModel)]="selectedCard">
+        <mat-button-toggle class="button-toggle" [disabled]="disabled" *ngFor="let card of tabCards" [value]="card">
+          {{card}}
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <mat-card-content>
+        <section class="button-section">
+          <button mat-flat-button class="button-validate" color="primary" [disabled]="disabled" (click)="validate()">
+            Validate card
+          </button>
+        </section>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+</div>
