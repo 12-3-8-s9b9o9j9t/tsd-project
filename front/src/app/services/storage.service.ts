@@ -3,11 +3,11 @@ const ID_KEY   : string = "ID";
 const SESSION_KEY: string = "SESSION";
 
 export function saveName(name: string) : void {
-    localStorage.setItem(NAME_KEY, name);
+    sessionStorage.setItem(NAME_KEY, name);
 }
 
 export function getName() : string {
-  let name: string | null = localStorage.getItem(NAME_KEY);
+  let name: string | null = sessionStorage.getItem(NAME_KEY);
   if (name == null) {
     return "";
   }
@@ -15,11 +15,11 @@ export function getName() : string {
 }
 
 export function saveID(id: number) : void {
-  localStorage.setItem(ID_KEY, String(id));
+  sessionStorage.setItem(ID_KEY, String(id));
 }
 
 export function getID() : number {
-  let id: string | null = localStorage.getItem(ID_KEY);
+  let id: string | null = sessionStorage.getItem(ID_KEY);
   if (id == null) {
     return -1;
   }
@@ -27,11 +27,11 @@ export function getID() : number {
 }
 
 export function saveSessionIdentifier(sessionIdentifier: string): void {
-  localStorage.setItem(SESSION_KEY, sessionIdentifier);
+  sessionStorage.setItem(SESSION_KEY, sessionIdentifier);
 }
 
 export function getSessionIdentifier(): string {
-  const sessionIdentifier: string | null = localStorage.getItem(SESSION_KEY);
+  const sessionIdentifier: string | null = sessionStorage.getItem(SESSION_KEY);
 
   if (sessionIdentifier == null) {
     return "";
