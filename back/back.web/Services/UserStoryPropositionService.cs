@@ -79,10 +79,15 @@ public class UserStoryPropositionService : IUserStoryPropositionService
         
         await _userStoryPropositionContext.SaveChangesAsync();
         
-        Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(input.sessionIdentifier));
+        Session? session = SessionList.Sessions.Find(s => s._allUserStories.Select(usp => usp.id).Contains(id));
 
         if (session != null)
         {
+            var ups = session._allUserStories.Where(usp => usp.id == id);
+
+            ups.First().description = input.description;
+            ups.First().tasks = input.tasks;
+            
             await session.sendSessionToAllWS();
         }
 
