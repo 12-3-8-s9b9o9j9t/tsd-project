@@ -16,7 +16,7 @@ public interface ISessionService
 
     public Task<bool> addUserToSession(int id, string sessionIdentifier);
 
-    public SessionDTO createSession();
+    public SessionDTO createSession(IFormFile jiraFile);
 
     // public Task<NoteEntity> createNote(int userID, int cardNumber);
 
@@ -112,7 +112,7 @@ public class SessionService : ISessionService
         return true;
     }
 
-    public SessionDTO createSession()
+    public SessionDTO createSession(IFormFile jiraFile) //TO DO: handle jira file
     {
         Session newSession = new Session();
         string identifier = GenerateUniqueId();

@@ -50,9 +50,9 @@ public class SessionController : ControllerBase
     }
 
     [HttpPost("createSession")]
-    public async Task<ActionResult<Session>> createSession()
+    public async Task<ActionResult<Session>> createSession(IFormFile jiraFile)
     {
-        var result = _sessionService.createSession();
+        var result = _sessionService.createSession(jiraFile);
         
         return Ok(result);
     }
