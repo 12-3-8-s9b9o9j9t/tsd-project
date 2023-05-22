@@ -15,12 +15,16 @@ public class UserStoryEntity
     [Required]
     public int? estimatedCost { get; set; }
     
+    [Required]
+    public string? tasks { get; set; }
+    
     public UserStoryEntity() {}
 
-    public UserStoryEntity(string? descr, int? cost)
+    public UserStoryEntity(string? descr, int? cost, string? tasks)
     {
         this.description = descr;
         this.estimatedCost = cost;
+        this.tasks = tasks;
     }
 }
 
@@ -29,4 +33,6 @@ public class UserStoryInput
     public string? description { get; set; }
     
     public int? estimatedCost { get; set; }
+    
+    public string? tasks { get; set; }
 }

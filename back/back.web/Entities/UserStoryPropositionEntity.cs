@@ -12,15 +12,21 @@ public class UserStoryPropositionEntity
     [Required]
     public string? description { get; set; }
     
+    [Required]
+    public string? tasks { get; set; }  // in json format 
+    
     public UserStoryPropositionEntity() {}
 
     public UserStoryPropositionEntity(string? descr)
     {
         this.description = descr;
+        this.tasks = "{tasks:[]}"; 
     }
 }
 
 public class UserStoryPropositionInput
 {
     public string? description { get; set; }
+    
+    public string? tasks { get; set; }
 }
