@@ -1,3 +1,4 @@
+using back.Classes;
 using back.DAL;
 using back.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -71,7 +72,19 @@ public class UserStoryPropositionService : IUserStoryPropositionService
             userStoryP.Value.description = input.description;
         }
 
+        if (input.tasks != null)
+        {
+            userStoryP.Value.tasks = input.tasks;
+        }
+        
         await _userStoryPropositionContext.SaveChangesAsync();
+        
+        Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(input.sessionIdentifier));
+
+        if (session != null)
+        {
+            await session.sendSessionToAllWS();
+        }
 
         return userStoryP.Value;
     }

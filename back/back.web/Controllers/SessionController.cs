@@ -153,6 +153,13 @@ public class SessionController : ControllerBase
         await _sessionService.sendUSToAllWS(sessionIdentifier);
         return Ok(us);
     }
+
+    [HttpGet("showVotesOfEveryone/{sessionIdentifier}")]
+    public async Task<ActionResult> showVotesOfEveryone(string sessionIdentifier)
+    {
+        await _sessionService.showVotesOfEveryone(sessionIdentifier);
+        return Ok();
+    }
 }
 
 

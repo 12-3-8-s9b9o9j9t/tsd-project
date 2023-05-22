@@ -36,6 +36,9 @@ public interface ISessionService
     public Task sendSessionToAllWS(string sessionIdentifier);
 
     public Task sendUSToAllWS(string sessionIdentifier);
+
+    public Task showVotesOfEveryone(string sessionIdentifier);
+
 }
 
 public class SessionService : ISessionService
@@ -328,5 +331,28 @@ public class SessionService : ISessionService
                 WebSocketMessageFlags.EndOfMessage,
                 CancellationToken.None);
         }
+    }
+
+    public async Task showVotesOfEveryone(string sessionIdentifier)
+    {
+        Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
+
+        if (session == null)
+        {
+            return;
+        }
+
+        if (!(session._state is VotingState))
+        {
+            return;
+        }
+        
+        // so the frontend know it must display all user votes
+        session.setState(new DiscussingState(session));
+        
+        // to go back to voting state after x seconds 
+        session._state.onDiscussing();
+
+        await session.sendSessionToAllWS();
     }
 }

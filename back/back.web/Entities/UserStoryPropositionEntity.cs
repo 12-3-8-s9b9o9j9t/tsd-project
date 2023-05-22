@@ -29,4 +29,6 @@ public class UserStoryPropositionInput
     public string? description { get; set; }
     
     public string? tasks { get; set; }
+    
+    public string? sessionIdentifier { get; set; }
 }

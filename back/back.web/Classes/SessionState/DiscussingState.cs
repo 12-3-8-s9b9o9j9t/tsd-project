@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Specialized;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 
 namespace back.Classes.SessionState;
 
@@ -25,7 +26,7 @@ public class DiscussingState : ASessionState
 
         foreach (DictionaryEntry entry in _session._currentUSVoted)
         {
-            if ((int) entry.Value != firstVote)
+            if ((int) entry.Value != firstVote || (int) entry.Value < 0)
             {
                 sameRes = false;    
                 break;
