@@ -12,10 +12,6 @@ export class EndPageComponent {
   constructor(private api: ApiHelperService, private router: Router) { }
 
   onHomeClick(): void {
-
-    //// To be deleted
-    this.api.post({ endpoint: '/Session/createSession' }).then((response) => { }).catch((error) => { console.log(error); });
-
     this.router.navigate(['/home']);
   }
 }
