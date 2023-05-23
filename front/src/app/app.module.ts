@@ -23,6 +23,8 @@ import { EndPageComponent } from './end-page/end-page.component';
 import { MatButtonToggleModule}  from '@angular/material/button-toggle';
 import { LoginComponent } from './login/login.component';
 import { SocketService } from './services/socket.service';
+import { MatIconModule } from '@angular/material/icon';
+
 
 @NgModule({
   declarations: [
@@ -51,6 +53,7 @@ import { SocketService } from './services/socket.service';
     MatCheckboxModule,
     MatTableModule,
     MatButtonToggleModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]
