@@ -7,6 +7,7 @@ using back.Classes.SessionState;
 using back.DAL;
 using back.Entities;
 using Microsoft.AspNetCore.Components;
+using Microsoft.VisualBasic.FileIO;
 
 namespace back.Services;
 
@@ -16,7 +17,7 @@ public interface ISessionService
 
     public Task<bool> addUserToSession(int id, string sessionIdentifier);
 
-    public SessionDTO createSession(IFormFile jiraFile);
+    public Task<SessionDTO> createSession(IFormFile jiraFile);
 
     // public Task<NoteEntity> createNote(int userID, int cardNumber);
 
@@ -112,7 +113,7 @@ public class SessionService : ISessionService
         return true;
     }
 
-    public SessionDTO createSession(IFormFile jiraFile) //TO DO: handle jira file
+    public async Task<SessionDTO> createSession(IFormFile? jiraFile) //TO DO: handle jira file
     {
         Session newSession = new Session();
         string identifier = GenerateUniqueId();
@@ -120,7 +121,14 @@ public class SessionService : ISessionService
         
         // keep track of every sessions
         SessionList.Add(newSession);
-        
+
+        // parsing of jira file
+        if (jiraFile != null && jiraFile.FileName.Substring(jiraFile.FileName.Length-4).Equals(".csv"))
+        {
+            await parseJiraFile(newSession, jiraFile);
+            await sendUSToAllWS(newSession.Identifier);
+        }
+
         SessionDTO result = new SessionDTO();
         var users = newSession._joinedUsers;
         result.users = new List<UserDTO>(users.Select(user => new UserDTO { id = user.id, name = user.name }));
@@ -130,6 +138,53 @@ public class SessionService : ISessionService
         result.identifier = newSession.Identifier;
 
         return result; 
+    }
+
+    private async Task parseJiraFile(Session session, IFormFile jiraFile)
+    {
+        using (var reader = new StreamReader(jiraFile.OpenReadStream()))
+        {
+            using (var csvParser = new TextFieldParser(reader))
+            {
+                csvParser.SetDelimiters(",");
+                csvParser.HasFieldsEnclosedInQuotes = true;
+
+                // Read the header row
+                var headerFields = csvParser.ReadFields();
+
+                // Find the index of the summary column
+                int summaryColumnIndex = Array.IndexOf(headerFields, "Summary");
+
+                List<string> summaryValues = new List<string>();
+
+                while (!csvParser.EndOfData)
+                {
+                    var fields = csvParser.ReadFields();
+                        
+                    // Check if the row has enough columns
+                    if (fields.Length > summaryColumnIndex)
+                    {
+                        summaryValues.Add(fields[summaryColumnIndex]);
+                    }
+                }
+
+                // add users stories to the session
+                Stack<UserStoryPropositionEntity> uspList = new Stack<UserStoryPropositionEntity>();
+
+                foreach (string summary in summaryValues)
+                {
+                    UserStoryPropositionInput newusp = new UserStoryPropositionInput();
+                    newusp.description = summary;
+                                        
+                    await _userStoryPropositionService.create(newusp);
+                                        
+                    uspList.Push(new UserStoryPropositionEntity(summary));
+                }
+                
+                session._allUserStories = new Stack<UserStoryPropositionEntity>(uspList);
+
+            }
+        }
     }
     
     private string GenerateUniqueId()
