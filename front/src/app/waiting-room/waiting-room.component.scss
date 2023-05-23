@@ -39,7 +39,7 @@
     display: flex;
     align-items: center;
     justify-content: end;
-}
+  }
 
 
   .ready {
@@ -58,7 +58,7 @@
 /// 2. Container for the user stories table /////
 /////////////////////////////////////////////////
 .container-user-stories {
-  
+
 
   .text {
     margin: auto;
@@ -106,6 +106,27 @@
     width: 100%;
     margin: 1rem 0;
     color: #747474;
+
+    mat-card-title {
+      display: flex;
+      
+
+      .delete-button {
+        flex-shrink: 0;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+      }
+
+      .delete-button button {
+        height: 100%;
+        /* Définit la hauteur du bouton à 100% de sa div parente */
+        width: 100%;
+        /* Définit la largeur du bouton à 100% de sa div parente */
+        min-width: 0;
+        /* Annule la largeur minimale par défaut du bouton */
+      }
+    }
   }
 }
 
@@ -138,4 +159,3 @@
   text-align: center;
   font-weight: normal;
 }
-
