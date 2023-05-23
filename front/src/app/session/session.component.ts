@@ -96,9 +96,6 @@ export class SessionComponent implements OnInit {
     if (session.state == "discussing") {
       this.showCards = true;
       let ids = Object.keys(session.usersNotes);
-      console.log(session.usersNotes);
-      console.log(session.usersNotes[ids[0]]);
-      console.log(session.usersNotes[ids[1]])
 
       // for every player, get the note and update the card
       this.boardPlayers.forEach((player) => {
@@ -124,6 +121,11 @@ export class SessionComponent implements OnInit {
       if (session.currentUserStory.description != this.currentUserStory.description) {
         this.currentUserStory = new UserStory(session.currentUserStory.id, session.currentUserStory.description, session.currentUserStory.tasks);
       }
+      console.log("Avant : "+this.currentUserStory.tasks);
+      console.log(session.currentUserStory.tasks);
+      this.currentUserStory.tasks = JSON.parse(session.currentUserStory.tasks).tasks;
+      console.log("Après : "+this.currentUserStory.tasks);
+
     }
   }
 
@@ -171,7 +173,7 @@ export class SessionComponent implements OnInit {
         endpoint: '/UserStoryProposition/' + this.currentUserStory.id,
         data: {
           description: this.currentUserStory.description,
-          tasks: JSON.stringify(this.currentUserStory.tasks),
+          tasks: JSON.stringify({tasks: this.currentUserStory.tasks}),
           sessionIdentifier: getSessionIdentifier()
         }
       }).then((response) => {
@@ -195,7 +197,7 @@ export class SessionComponent implements OnInit {
       endpoint: '/UserStoryProposition/' + this.currentUserStory.id,
       data: {
         description: this.currentUserStory.description,
-        tasks: JSON.stringify(this.currentUserStory.tasks),
+        tasks: JSON.stringify({tasks: this.currentUserStory.tasks}),
         sessionIdentifier: getSessionIdentifier()
       }
     }).then((response) => {
@@ -236,7 +238,7 @@ class Player {
 class UserStory {
   id: number;
   description: string;
-  public tasks: string[];
+  tasks: string[];
 
   constructor(public _id: number, public _description: string, public _tasks: string[]) {
     this.id = _id;

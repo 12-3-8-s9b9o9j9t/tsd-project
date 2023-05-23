@@ -48,7 +48,7 @@ export class HomeComponent {
 
   createSession(): void {
     //TODO create session and get code
-    this.api.post({ endpoint: '/Session/createSession' }).then((response) => {
+    this.api.post({ endpoint: '/Session/createSession', data: null }).then((response) => {
       console.log(response);
       console.log("Session created");
 
