@@ -1,6 +1,7 @@
 const NAME_KEY : string = "NAME";
 const ID_KEY   : string = "ID";
 const SESSION_KEY: string = "SESSION";
+const OWNER: string = "OWNER";
 
 export function saveName(name: string) : void {
     sessionStorage.setItem(NAME_KEY, name);
@@ -38,4 +39,20 @@ export function getSessionIdentifier(): string {
   }
 
   return sessionIdentifier;
+}
+
+export function setOwner(): void {
+  sessionStorage.setItem(OWNER, String(getID()));
+}
+
+export function getOwner(): number {
+  const owner: string | null = sessionStorage.getItem(OWNER);
+  if (owner == null) {
+    return -1;
+  }
+  return +owner;
+}
+
+export function isOwner(): boolean {
+  return getID() == getOwner()
 }
