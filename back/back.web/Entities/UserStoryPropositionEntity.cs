@@ -20,7 +20,7 @@ public class UserStoryPropositionEntity
     public UserStoryPropositionEntity(string? descr)
     {
         this.description = descr;
-        this.tasks = "{tasks:[]}"; 
+        this.tasks = "{\"tasks\":[]}"; 
     }
 }
 
