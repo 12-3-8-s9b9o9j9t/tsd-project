@@ -11,6 +11,9 @@ public interface IUserService
     Task<UserDTO> GetUserByNameAsync(string name);
 
     Task<UserDTO> GetByID(int id);
+
+    Task<List<SessionEntity>> getUserSessions(int userId);
+
 }
 
 public class UserService : IUserService
@@ -74,5 +77,15 @@ public class UserService : IUserService
         }
 
         return new UserDTO { id = user.id, name = user.name };
+    }
+
+    public async Task<List<SessionEntity>> getUserSessions(int userId)
+    {
+        var sessions = await _databaseContext.Sessions
+            .Include(s => s.users)
+            .Where(s => s.users.Select(u => u.id).Contains(userId))
+            .ToListAsync();
+
+        return sessions;
     }
 }

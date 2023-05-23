@@ -21,4 +21,6 @@ public class DatabaseContext : DbContext
     public DbSet<NoteEntity> Notes { get; set; }
     
     public DbSet<UserEntity> Users { get; set; }
+    
+    public DbSet<SessionEntity> Sessions { get; set; }
 }

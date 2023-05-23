@@ -1,4 +1,3 @@
-using back.DAL;
 using back.Entities;
 using back.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -51,6 +50,14 @@ public class UserController : ControllerBase
             return NotFound($"User with id '{id}' not found.");
         }
         return Ok(user);
+    }
+
+    [HttpGet("{id:int}/sessions")]
+    public async Task<ActionResult<List<SessionEntity>>> getUserSession(int id)
+    {
+        var sessions = await _userService.getUserSessions(id);
+
+        return Ok(sessions);
     }
 
 }
