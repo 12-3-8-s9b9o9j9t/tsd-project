@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiHelperService } from '../services/api-helper.service';
-import { getName, saveID, saveName, saveSessionIdentifier } from "../services/storage.service";
+import { getName, saveID, saveName, saveSessionIdentifier, setOwner } from "../services/storage.service";
 
 @Component({
   selector: 'app-home',
@@ -44,7 +44,6 @@ export class HomeComponent {
 
   moveToSession(code: string): void {
     this.router.navigate(['/session', code, 'waiting-room']);
-
   }
 
   createSession(): void {
@@ -54,6 +53,7 @@ export class HomeComponent {
       console.log("Session created");
 
       saveSessionIdentifier(response.identifier);
+      setOwner();
 
       this.moveToSession(response.identifier);
     }

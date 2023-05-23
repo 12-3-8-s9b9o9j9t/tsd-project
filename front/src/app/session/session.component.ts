@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiHelperService } from '../services/api-helper.service';
-import { getID, getName, getSessionIdentifier } from '../services/storage.service';
+import { getID, getName, getSessionIdentifier, isOwner } from '../services/storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { SocketService } from '../services/socket.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 
 
@@ -33,15 +34,18 @@ export class SessionComponent implements OnInit {
   showCards: boolean = false;
 
   // user stories
-  currentUserStory: string = "Loading...";
-  tabCards: string[] = ['☕', '1', '2', '3', '5', '8', '13', '∞'];
+  currentUserStory: UserStory = new UserStory(-1, "Loading...",[]);
+  taskControl = new FormControl('', [Validators.required]);
+  formGroup = new FormGroup({ task: this.taskControl });
 
   // player deck
+  tabCards: string[] = ['☕', '1', '2', '3', '5', '8', '13', '∞'];
   selectedCard: string | undefined;
 
 
   disabled: boolean = false;
   hasVoted: boolean = false;
+  isOwner: boolean = false;
 
 
   constructor(private api: ApiHelperService, private socket: SocketService, private router: Router, private route: ActivatedRoute) {
@@ -49,6 +53,7 @@ export class SessionComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.gameId = params['id'];
     });
+    this.isOwner = isOwner();
   }
 
   ngOnInit(): void {
@@ -56,7 +61,6 @@ export class SessionComponent implements OnInit {
     this.onMessage();
   }
 
-  //
   onMessage(): void {
     this.socket.onMessage().subscribe((message: any) => {
       if (message.type == "session") {
@@ -101,27 +105,10 @@ export class SessionComponent implements OnInit {
         let cardToAdd = session.usersNotes[player.id];
         if (cardToAdd == "1000") { cardToAdd = "∞"; } // convert infinity to string number
         if (cardToAdd == "0") { cardToAdd = "☕"; } // convert coffee to string
+        if (cardToAdd == "-1") { cardToAdd = "?"; } // convert null to string
         player.card = cardToAdd;
       });
-      
 
-
-      // let notes: string[] = [];
-      // for (const id of ids) { notes.push(session.usersNotes[id]); }
-      // update player card for each player
-      // let counter = 0;
-      // this.boardPlayers.forEach((player) => {
-      //   session.users.forEach((user: any) => {
-      //     if (user.name == player.name) {
-      //       if (ids.includes(player.id.toString())) {
-      //         let cardToAdd = notes[counter];
-      //         if (cardToAdd == "1000") { cardToAdd = "∞"; } // convert infinity to string number
-      //         if (cardToAdd == "0") { cardToAdd = "☕"; } // convert coffee to string
-      //         player.card = cardToAdd;
-      //       }
-      //     }
-      //   });
-      // });
       console.log(this.boardPlayers);
     } else {
       this.showCards = false;
@@ -134,7 +121,9 @@ export class SessionComponent implements OnInit {
       this.socket.disconnect();
       this.router.navigate(['/session', this.gameId, 'end'])
     } else {
-      this.currentUserStory = session.currentUserStory.description;
+      if (session.currentUserStory.description != this.currentUserStory.description) {
+        this.currentUserStory = new UserStory(session.currentUserStory.id, session.currentUserStory.description, session.currentUserStory.tasks);
+      }
     }
   }
 
@@ -172,6 +161,63 @@ export class SessionComponent implements OnInit {
     });
 
   }
+
+
+  async addTask() {
+    if (this.taskControl.value && this.taskControl.valid) {
+      this.currentUserStory.tasks.push(this.taskControl.value);
+
+      await this.api.put({
+        endpoint: '/UserStoryProposition/' + this.currentUserStory.id,
+        data: {
+          description: this.currentUserStory.description,
+          tasks: JSON.stringify(this.currentUserStory.tasks),
+          sessionIdentifier: getSessionIdentifier()
+        }
+      }).then((response) => {
+        console.log("Task added");
+        console.log(response);
+      }).catch((error) => {
+        console.log("error while adding task");
+        console.log(error);
+      });
+        
+
+      this.taskControl.reset();
+    }
+  }
+
+  async deleteTask(task: string) {
+    this.currentUserStory.tasks = this.currentUserStory.tasks.filter((t) => t != task);
+
+
+    await this.api.put({
+      endpoint: '/UserStoryProposition/' + this.currentUserStory.id,
+      data: {
+        description: this.currentUserStory.description,
+        tasks: JSON.stringify(this.currentUserStory.tasks),
+        sessionIdentifier: getSessionIdentifier()
+      }
+    }).then((response) => {
+      console.log("Task deleted");
+      console.log(response);
+    }).catch((error) => {
+      console.log("error while deleting task");
+      console.log(error);
+    });
+  }
+
+  forceShow() {
+    this.api.get({
+      endpoint: '/Session/showVotesOfEveryone/' + getSessionIdentifier()
+    }).then((response) => {
+      console.log("Force show sent");
+      //console.log(response);
+    }).catch((error) => {
+      console.log("error while sending force show");
+      console.log(error);
+    });
+  }
 }
 
 class Player {
@@ -184,5 +230,21 @@ class Player {
     this.name = _name;
     this.id = _id;
     this.card = undefined;
+  }
+}
+
+class UserStory {
+  id: number;
+  description: string;
+  public tasks: string[];
+
+  constructor(public _id: number, public _description: string, public _tasks: string[]) {
+    this.id = _id;
+    this.description = _description;
+    if (!_tasks){
+      this.tasks = _tasks;
+    } else {
+      this.tasks = []
+    }
   }
 }
