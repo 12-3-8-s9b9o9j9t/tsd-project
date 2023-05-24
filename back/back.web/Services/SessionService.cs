@@ -329,7 +329,7 @@ public class SessionService : ISessionService
         return us.Value;
     }
 
-    public void addWS(WebSocket webSocket, string sessionIdentifier)
+    public async Task addWS(WebSocket webSocket, string sessionIdentifier)
     {
         Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
 
@@ -339,6 +339,7 @@ public class SessionService : ISessionService
         }
 
         session._WebSockets.Add(webSocket);
+        await sendUSToAllWS(session.Identifier);
     }
 
     public void removeWS(WebSocket webSocket, string sessionIdentifier)
