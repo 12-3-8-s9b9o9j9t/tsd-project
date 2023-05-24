@@ -30,7 +30,7 @@ public interface ISessionService
 
     public Task<UserStoryPropositionEntity> createUserStoryProposition(UserStoryPropositionInput usInput, string sessionIdentifier);
 
-    public void addWS(WebSocket webSocket, string sessionIdentifier);
+    public Task addWS(WebSocket webSocket, string sessionIdentifier);
 
     public void removeWS(WebSocket webSocket, string sessionIdentifier);
 
