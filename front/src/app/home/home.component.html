@@ -29,4 +29,8 @@
     Create
   </button>
 
+  <input #csvInput hidden="true" type="file" onclick="this.value=null" (change)="csvInputChange($event)" accept=".csv"/>
+  <button mat-button color="primary" (click)="csvInput.click()">Create from file</button>
+
+
 </div>

@@ -22,8 +22,8 @@ import { AddUserStoryComponent } from './add-user-story/add-user-story.component
 import { EndPageComponent } from './end-page/end-page.component';
 import { MatButtonToggleModule}  from '@angular/material/button-toggle';
 import { LoginComponent } from './login/login.component';
-import { SocketService } from './services/socket.service';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 
 @NgModule({
@@ -53,7 +53,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatCheckboxModule,
     MatTableModule,
     MatButtonToggleModule,
-    MatIconModule
+    MatIconModule,
+    MatSnackBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]
