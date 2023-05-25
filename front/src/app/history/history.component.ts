@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserStory } from '../session/session.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-history',
@@ -9,7 +10,7 @@ import { UserStory } from '../session/session.component';
 export class HistoryComponent implements OnInit {
   sessions: Session[] = [];
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
     // TODO get sessions from backend
@@ -26,6 +27,11 @@ export class HistoryComponent implements OnInit {
       ]),
     ];
   }
+
+  goToHome() {
+    this.router.navigate(['/home']);
+  }
+
 
 }
 
