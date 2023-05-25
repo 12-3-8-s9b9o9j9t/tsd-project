@@ -1,3 +1,4 @@
+using back.Classes;
 using back.DAL;
 using back.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ public interface IUserService
 
     Task<UserDTO> GetByID(int id);
 
-    Task<List<SessionEntity>> getUserSessions(int userId);
+    Task<List<SessionSecondDTO>> getUserSessions(int userId);
 
 }
 
@@ -79,18 +80,27 @@ public class UserService : IUserService
         return new UserDTO { id = user.id, name = user.name };
     }
 
-    public async Task<List<SessionEntity>> getUserSessions(int userId)
+    public async Task<List<SessionSecondDTO>> getUserSessions(int userId)
     {
         if (await GetByID(userId) == null)
         {
             return null;
         }
-        
-        var sessions = await _databaseContext.Sessions
-            .Include(s => s.users)
-            .Where(s => s.users.Select(u => u.id).Contains(userId))
-            .ToListAsync();
 
-        return sessions;
+        var sessions = SessionList.Sessions.Where(s => s._joinedUsers.Select(u => u.id).Contains(userId));
+
+        List<SessionSecondDTO> sdto = new List<SessionSecondDTO>();
+
+        foreach (var se in sessions)
+        {
+            sdto.Add(new SessionSecondDTO
+            {
+                identifier = se.Identifier,
+                userStories = se._allVotedUserStories.ToList(),
+                users = se._joinedUsers.Select(u => new UserDTO { id = u.id, name = u.name }).ToList()
+            } );
+        }
+
+        return sdto;
     }
 }

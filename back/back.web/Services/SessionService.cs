@@ -258,10 +258,10 @@ public class SessionService : ISessionService
         bool ans = session.userReady(userID);
 
         // session has started so we can store it in db as well as update users
-        if (session._state is VotingState)
-        {
-            await storeSession(session);
-        }
+        // if (session._state is VotingState)
+        // {
+        //     await storeSession(session);
+        // }
 
         return ans;  
     }
@@ -300,19 +300,20 @@ public class SessionService : ISessionService
         return ans;
     }
 
-    private async Task storeSession(Session session)
-    {
-        SessionEntity se = new SessionEntity { users = new List<UserEntity>(session._joinedUsers), identifier = session.Identifier};
-        _databaseContext.Sessions.Add(se);
-
-        foreach (var user in session._joinedUsers)
-        {
-            user.sessions.Add(se);
-        }
-        
-        await _databaseContext.SaveChangesAsync();
-    } 
-
+    // private async Task storeSession(Session session)
+    // {
+    //     SessionEntity se = new SessionEntity { identifier = session.Identifier};
+    //     //_databaseContext.Sessions.Add(se);
+    //
+    //     foreach (var user in session._joinedUsers)
+    //     {
+    //         user.sessions.Add(se);
+    //     }
+    //     
+    //     await _databaseContext.SaveChangesAsync();
+    // } 
+    
+    
     private async Task storeCurrentUS(Session session)
     {
         var currentUS = session.currentUserStoryDiscussed();
@@ -334,11 +335,11 @@ public class SessionService : ISessionService
         await _userStoryPropositionService.delete(currentUS.id);
         
         // add us to session entity
-        SessionEntity se = _databaseContext.Sessions.Single(s => s.identifier.Equals(session.Identifier));
-        if (se != null)
-        {
-            se.userStories.Add(us);
-        }
+        // SessionEntity se = _databaseContext.Sessions.Single(s => s.identifier.Equals(session.Identifier));
+        // if (se != null)
+        // {
+        //     se.userStories.Add(us);
+        // }
 
         // saving changes
         await _databaseContext.SaveChangesAsync();

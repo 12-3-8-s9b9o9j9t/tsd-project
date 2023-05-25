@@ -181,3 +181,12 @@ public class SessionDTO
 
     public int? nb_ws { get; set; }
 }
+
+public class SessionSecondDTO
+{
+    public string identifier { get; set; }
+    
+    public List<UserDTO> users { get; set; }
+    
+    public List<UserStoryEntity> userStories { get; set; }
+}
