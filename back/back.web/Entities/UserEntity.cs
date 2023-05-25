@@ -11,6 +11,9 @@ public class UserEntity
     
     [Required]
     public string name { get; set; }
+    
+    [Required]
+    public List<SessionEntity> sessions { get; set; }
 }
 
 public class UserInput

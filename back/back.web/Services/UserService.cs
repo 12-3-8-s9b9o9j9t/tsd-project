@@ -81,6 +81,11 @@ public class UserService : IUserService
 
     public async Task<List<SessionEntity>> getUserSessions(int userId)
     {
+        if (await GetByID(userId) == null)
+        {
+            return null;
+        }
+        
         var sessions = await _databaseContext.Sessions
             .Include(s => s.users)
             .Where(s => s.users.Select(u => u.id).Contains(userId))

@@ -57,6 +57,11 @@ public class UserController : ControllerBase
     {
         var sessions = await _userService.getUserSessions(id);
 
+        if (sessions == null)
+        {
+            return NotFound();
+        }
+        
         return Ok(sessions);
     }
 

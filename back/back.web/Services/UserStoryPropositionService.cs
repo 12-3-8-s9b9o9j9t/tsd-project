@@ -9,10 +9,10 @@ namespace back.Services;
 public interface IUserStoryPropositionService
 {
     public IEnumerable<UserStoryPropositionEntity> getAll();
-    public Task<ActionResult<UserStoryPropositionEntity>> getByID(int id);
-    public Task<ActionResult<UserStoryPropositionEntity>> create(UserStoryPropositionInput userStoryP);
+    public Task<UserStoryPropositionEntity> getByID(int id);
+    public Task<UserStoryPropositionEntity> create(UserStoryPropositionInput userStoryP);
     public Task<bool> delete(int id);
-    public Task<ActionResult<UserStoryPropositionEntity>> update(int id, UserStoryPropositionInput input);
+    public Task<UserStoryPropositionEntity> update(int id, UserStoryPropositionInput input);
 }
 
 public class UserStoryPropositionService : IUserStoryPropositionService
@@ -29,13 +29,13 @@ public class UserStoryPropositionService : IUserStoryPropositionService
         return _userStoryPropositionContext.UserStoriesProposition.OrderBy(u => u.id);
     }
     
-    public async Task<ActionResult<UserStoryPropositionEntity>> getByID(int id)
+    public async Task<UserStoryPropositionEntity> getByID(int id)
     {
         var userStoryP = await _userStoryPropositionContext.UserStoriesProposition.FindAsync(id);
         return userStoryP;
     }
     
-    public async Task<ActionResult<UserStoryPropositionEntity>> create(UserStoryPropositionInput userStoryP)
+    public async Task<UserStoryPropositionEntity> create(UserStoryPropositionInput userStoryP)
     {
         UserStoryPropositionEntity userStoryPropositionToAdd = new UserStoryPropositionEntity(userStoryP.description);
         _userStoryPropositionContext.UserStoriesProposition.Add(userStoryPropositionToAdd);
@@ -53,28 +53,28 @@ public class UserStoryPropositionService : IUserStoryPropositionService
             return false;
         }
 
-        _userStoryPropositionContext.UserStoriesProposition.Remove(userStoryPropositionToDelete.Value);
+        _userStoryPropositionContext.UserStoriesProposition.Remove(userStoryPropositionToDelete);
         await _userStoryPropositionContext.SaveChangesAsync();
         return true;
     }
     
-    public async Task<ActionResult<UserStoryPropositionEntity>> update(int id, UserStoryPropositionInput input)
+    public async Task<UserStoryPropositionEntity> update(int id, UserStoryPropositionInput input)
     {
         var userStoryP = await getByID(id);
 
-        if (userStoryP.Value == null)
+        if (userStoryP == null)
         {
             return null;
         }
         
         if (input.description != null)
         {
-            userStoryP.Value.description = input.description;
+            userStoryP.description = input.description;
         }
 
         if (input.tasks != null)
         {
-            userStoryP.Value.tasks = input.tasks;
+            userStoryP.tasks = input.tasks;
         }
         
         await _userStoryPropositionContext.SaveChangesAsync();
@@ -91,6 +91,6 @@ public class UserStoryPropositionService : IUserStoryPropositionService
             await session.sendSessionToAllWS();
         }
 
-        return userStoryP.Value;
+        return userStoryP;
     }
 }

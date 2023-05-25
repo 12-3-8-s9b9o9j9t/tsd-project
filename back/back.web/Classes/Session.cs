@@ -16,6 +16,8 @@ public class Session
     
     public Stack<UserStoryPropositionEntity> _allUserStories { get; set; }
     
+    public Stack<UserStoryEntity> _allVotedUserStories { get; set; }
+    
     public OrderedDictionary _startSessionMap { get; set; }
     
     public OrderedDictionary _currentUSVoted { get; set; }
@@ -36,6 +38,7 @@ public class Session
     {
         _joinedUsers = new HashSet<UserEntity>();
         _allUserStories = new Stack<UserStoryPropositionEntity>();
+        _allVotedUserStories = new Stack<UserStoryEntity>();
         _startSessionMap = new OrderedDictionary();
         _currentUSVoted = new OrderedDictionary();
         _state = new StartState(this);
