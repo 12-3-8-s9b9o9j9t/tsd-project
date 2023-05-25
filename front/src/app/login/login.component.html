@@ -1,10 +1,18 @@
 <form [formGroup]="formGroup" (submit)="enter()">
-    <mat-form-field>
-      <mat-label>Name</mat-label>
-      <input matInput [formControl]="nameControl">
-    </mat-form-field>
 
-    <button mat-raised-button class="button" color="primary" appeareace="fill" type="submit">
-      Login
-    </button>
-  </form>
+  <p>Username</p>
+  <mat-form-field>
+    <mat-label>Username</mat-label>
+    <input matInput [formControl]="nameControl">
+  </mat-form-field>
+
+  <p>Password</p>
+  <mat-form-field>
+    <mat-label>Password</mat-label>
+    <input matInput [formControl]="passwordControl">
+  </mat-form-field>
+
+  <button mat-raised-button class="button" color="primary" appeareace="fill" type="submit">
+    Login
+  </button>
+</form>

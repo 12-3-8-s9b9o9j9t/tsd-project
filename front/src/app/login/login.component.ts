@@ -12,9 +12,11 @@ import { saveName, saveID } from '../services/storage.service';
 export class LoginComponent {
 
   nameControl = new FormControl('', [Validators.required]);
+  passwordControl = new FormControl('', [Validators.required]);
 
   formGroup = new FormGroup({
     name: this.nameControl,
+    password: this.passwordControl
   });
 
   constructor(
@@ -30,53 +32,38 @@ export class LoginComponent {
     let name: string | null = this.nameControl.value;
 
 
-    await this.api.get({ endpoint: '/User/' + name }).then((response) => {
+    try {
+      const response = await this.api.get({ endpoint: '/User/' + name });
       console.log("User found");
-      console.log(response);
+
       if (name === null) {
         return;
       }
+    
       saveName(name);
       saveID(response.id);
       this.moveToHome();
-    }).catch(async (error) => {
+    } catch (error) {
       console.log("User not found, creating new user");
-      await this.api.post({ endpoint: '/User', data: { name: name } }).then((response) => {
+    
+      try {
+        const response = await this.api.post({ endpoint: '/User', data: { name: name } });
         console.log(response);
+    
         if (name === null) {
           return;
         }
+    
         saveName(name);
         saveID(response.id);
         this.moveToHome();
-      }
-      ).catch((error) => {
+      } catch (error) {
         console.log(error);
       }
-      );
-    });
+    }    
   }
 
   moveToHome() {
     this.router.navigateByUrl('/home');
-
-
-    // this.api.get({ endpoint: '/Session' }).then((response) => {
-    //   console.log("Session found");
-    //   this.router.navigateByUrl('/waiting-room');
-    // }).catch((error) => {
-    //   console.log(error);
-    //   console.log("Session not found, creating new session");
-    //   this.api.post({ endpoint: '/Session/createSession' }).then((response) => {
-    //     console.log(response);
-    //     console.log("Session created");
-    //     this.router.navigateByUrl('/waiting-room');
-    //   }
-    //   ).catch((error) => {
-    //     console.log(error);
-    //   }
-    //   );
-    // });
   }
-
 }
