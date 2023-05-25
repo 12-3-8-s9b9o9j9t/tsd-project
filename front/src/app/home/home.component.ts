@@ -25,6 +25,10 @@ export class HomeComponent {
     this.user = getName();
   }
 
+  goToHistory(): void {
+    this.router.navigate(['/history']);
+  }
+
 
   enter(): void {
     if (!this.formGroup.valid) {
