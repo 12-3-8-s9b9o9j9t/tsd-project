@@ -1,4 +1,4 @@
-using System.Collections.Specialized;
+using System.Globalization;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -6,7 +6,7 @@ using back.Classes;
 using back.Classes.SessionState;
 using back.DAL;
 using back.Entities;
-using Microsoft.AspNetCore.Components;
+using CsvHelper;
 using Microsoft.VisualBasic.FileIO;
 
 namespace back.Services;
@@ -40,6 +40,15 @@ public interface ISessionService
 
     public Task showVotesOfEveryone(string sessionIdentifier);
 
+    public CustomFile downloadCSV(string sessionIdentifier);
+
+}
+
+public class CustomFile
+{
+    public byte[] FileContents { get; set; }
+    public string ContentType { get; set; }
+    public string FileName { get; set; }
 }
 
 public class SessionService : ISessionService
@@ -414,4 +423,33 @@ public class SessionService : ISessionService
 
         await session.sendSessionToAllWS();
     }
+
+    public CustomFile downloadCSV(string sessionIdentifier)
+    {
+        Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
+
+        if (session == null)
+        {
+            return null;
+        }
+
+        List<UserStoryEntity> data = new List<UserStoryEntity>(session._allVotedUserStories);
+        
+        // Create a memory stream to write the CSV data
+    using (var memoryStream = new MemoryStream())
+    {
+        using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8))
+        using (var csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture))
+        {
+            csvWriter.WriteRecords(data);
+        }
+
+        var file = new CustomFile
+            { FileContents = memoryStream.ToArray(), FileName = "data.csv", ContentType = "text/csv" };
+
+        // Return the file as a FileStreamResult
+        return file;
+    }
+    }
+    
 }

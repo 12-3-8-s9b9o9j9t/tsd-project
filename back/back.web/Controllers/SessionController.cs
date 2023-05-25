@@ -160,6 +160,19 @@ public class SessionController : ControllerBase
         await _sessionService.showVotesOfEveryone(sessionIdentifier);
         return Ok();
     }
+
+    [HttpGet("{sessionIdentifier}/download")]
+    public ActionResult downloadCSV(string sessionIdentifier)
+    {
+        var file = _sessionService.downloadCSV(sessionIdentifier);
+
+        if (file == null)
+        {
+            return NotFound("session " + sessionIdentifier + " not found.");
+        }
+        
+        return File(file.FileContents, file.ContentType, file.FileName);
+    }    
 }
 
 
