@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiHelperService } from '../services/api-helper.service';
-import { getName, saveID, saveName, saveSessionIdentifier, setOwner } from "../services/storage.service";
+import { getName, saveSessionIdentifier, setOwner } from "../services/storage.service";
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-home',
@@ -20,7 +21,7 @@ export class HomeComponent {
     sessionCode: this.joinSessionControl,
   });
 
-  constructor(private api: ApiHelperService, private router: Router) {
+  constructor(private api: ApiHelperService, private router: Router, private snackBar: MatSnackBar) {
     this.user = getName();
   }
 
@@ -60,4 +61,24 @@ export class HomeComponent {
       console.error("Error when creating session :", error);
     });
   }
+
+  csvInputChange(fileInputEvent: any) {
+    let file = fileInputEvent.target.files[0];
+
+    const formData: FormData = new FormData();
+    formData.append('jiraFile', file, file.name);
+
+    this.api.post({ endpoint: '/Session/createSession', data: formData }).then((response) => {
+      console.log(response);
+      console.log("Session created");
+
+      saveSessionIdentifier(response.identifier);
+      setOwner();
+
+      this.moveToSession(response.identifier);
+    }
+    ).catch((error) => {
+      console.error("Error when creating session :", error);
+    });  }
+  
 }
