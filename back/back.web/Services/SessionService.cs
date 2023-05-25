@@ -176,9 +176,9 @@ public class SessionService : ISessionService
                     UserStoryPropositionInput newusp = new UserStoryPropositionInput();
                     newusp.description = summary;
                                         
-                    await _userStoryPropositionService.create(newusp);
+                    UserStoryPropositionEntity usp = await _userStoryPropositionService.create(newusp);
                                         
-                    uspList.Push(new UserStoryPropositionEntity(summary));
+                    uspList.Push(usp);
                 }
                 
                 session._allUserStories = new Stack<UserStoryPropositionEntity>(uspList);
@@ -304,8 +304,11 @@ public class SessionService : ISessionService
         int cost = values[0];
         
         UserStoryInput userStoryToAdd = new UserStoryInput
-            { description = currentUS.description, estimatedCost = cost };
-        await _userStoryService.CreateUserStoryAsync(userStoryToAdd);
+            { description = currentUS.description, estimatedCost = cost, tasks = currentUS.tasks };
+        UserStoryEntity us = await _userStoryService.CreateUserStoryAsync(userStoryToAdd);
+        
+        // store the final us in the session in order to export a .csv file if needed
+        session._allVotedUserStories.Push(us);
         
         // delete the proposition because we can now store in UserStory table
         await _userStoryPropositionService.delete(currentUS.id);
@@ -320,13 +323,13 @@ public class SessionService : ISessionService
         
         Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
 
-        if (session != null && us.Value != null)
+        if (session != null && us != null)
         {
-            session._allUserStories.Push(us.Value);
+            session._allUserStories.Push(us);
         }
 
         
-        return us.Value;
+        return us;
     }
 
     public async Task addWS(WebSocket webSocket, string sessionIdentifier)

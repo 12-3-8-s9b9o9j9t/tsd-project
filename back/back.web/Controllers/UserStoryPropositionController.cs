@@ -57,7 +57,7 @@ public class UserStoryPropositionController : ControllerBase
         {
             return NotFound();
         }
-        return Ok(ans.Value);
+        return Ok(ans);
     }
 }
 
