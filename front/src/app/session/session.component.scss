@@ -3,6 +3,14 @@
     flex-direction: row;
     height: 100%;
 
+    .show-card-indicator {
+        position: absolute;
+        top: 6.5rem;
+        left: 1.5rem;
+        color: #5c5c5c;
+        font-size: 2.5rem;
+    }
+
     // Board+User story //////////////////////////////////////////////////////
     .board-user-story-deck {
 
@@ -157,6 +165,8 @@
             flex-direction: column;
             align-items: center;
             margin-bottom: 10%;
+            margin-top: 2rem;
+
         }
 
         .tasks {
