@@ -18,6 +18,9 @@ public class UserStoryEntity
     [Required]
     public string? tasks { get; set; }
     
+    [Required]
+    public List<SessionEntity> sessions { get; set; }
+    
     public UserStoryEntity() {}
 
     public UserStoryEntity(string? descr, int? cost, string? tasks)
