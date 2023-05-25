@@ -105,8 +105,6 @@ export class SessionComponent implements OnInit {
         if (cardToAdd == "-1") { cardToAdd = "?"; } // convert null to string
         player.card = cardToAdd;
       });
-
-      console.log(this.boardPlayers);
     } else {
       this.showCards = false;
     }
@@ -118,7 +116,7 @@ export class SessionComponent implements OnInit {
       this.socket.disconnect();
       this.router.navigate(['/session', this.gameId, 'end'])
     } else {
-      if (session.currentUserStory.description != this.currentUserStory.description) {
+      if (session.currentUserStory.id != this.currentUserStory.id) {
         this.currentUserStory = new UserStory(session.currentUserStory.id, session.currentUserStory.description, session.currentUserStory.tasks);
       } else {
         this.currentUserStory.tasks = JSON.parse(session.currentUserStory.tasks).tasks;
@@ -128,11 +126,9 @@ export class SessionComponent implements OnInit {
 
   refreshPlayerDeck(session: any) {
     if (session.state == "voting" && !this.hasVoted) {
-      console.log("refreshPlayerDeck --> disabled: false");
       this.disabled = false;
     }
     if (session.state == "discussing") {
-      console.log("refreshPlayerDeck --> disabled: true");
       this.disabled = true;
       this.hasVoted = false;
     }
@@ -141,7 +137,6 @@ export class SessionComponent implements OnInit {
 
   // Send the selected card to the server
   async validate(): Promise<void> {
-    console.log("validate --> disabled: true");
     this.disabled = true;
 
     let cardToSend = this.selectedCard;
@@ -149,11 +144,10 @@ export class SessionComponent implements OnInit {
     if (cardToSend == "☕") { cardToSend = "0"; } // convert coffee to string
 
     this.hasVoted = true;
-    this.api.post({
+    await this.api.post({
       endpoint: '/Session/voteCurrentUserStory/' + getID() + '/' + cardToSend + "/" + getSessionIdentifier()
     }).then((response) => {
       console.log("Vote sent");
-      //console.log(response);
     }).catch((error) => {
       console.log("error while sending vote");
       console.log(error);
@@ -175,7 +169,6 @@ export class SessionComponent implements OnInit {
         }
       }).then((response) => {
         console.log("Task added");
-        console.log(response);
       }).catch((error) => {
         console.log("error while adding task");
         console.log(error);
@@ -199,7 +192,6 @@ export class SessionComponent implements OnInit {
       }
     }).then((response) => {
       console.log("Task deleted");
-      console.log(response);
     }).catch((error) => {
       console.log("error while deleting task");
       console.log(error);
@@ -211,7 +203,6 @@ export class SessionComponent implements OnInit {
       endpoint: '/Session/showVotesOfEveryone/' + getSessionIdentifier()
     }).then((response) => {
       console.log("Force show sent");
-      //console.log(response);
     }).catch((error) => {
       console.log("error while sending force show");
       console.log(error);
