@@ -6,17 +6,16 @@
                 <mat-expansion-panel-header class="header">
                     <mat-panel-title>{{ session.id }}</mat-panel-title>
                 </mat-expansion-panel-header>
-                <mat-list class="body">
+                <mat-list class="story-list">
                     <div class="story" *ngFor="let story of session.userStories">
                         <mat-list-item>
                             <div class="description">{{ story.description }}</div>
-                            <div class="task" *ngFor="let task of story.tasks">
-                                <mat-list-item>
-                                    <div class="description">{{ task }}</div>
-                                </mat-list-item>
-                            </div>
+                            <ul class="tasks" *ngFor="let task of story.tasks">
+                                <li class="task">{{ task }}</li>
+                            </ul>
+                            <div CLASS="estimation"> ESTIMATION: {{story.note}}</div>
                         </mat-list-item>
-                        <mat-divider></mat-divider>
+                        <mat-divider class="custom-divider"></mat-divider>
                     </div>
                 </mat-list>
             </mat-expansion-panel>

@@ -233,9 +233,9 @@ export class UserStory {
     this.id = _id;
     this.description = _description;
     if (!_tasks){
-      this.tasks = _tasks;
-    } else {
       this.tasks = []
+    } else {
+      this.tasks = _tasks;
     }
     if (_note) {
       this.note = _note;
