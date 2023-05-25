@@ -10,6 +10,9 @@ public class SessionEntity
     public int id { get; set; }
     
     [Required]
+    public string identifier { get; set; }
+    
+    [Required]
     public List<UserEntity> users { get; set; }
     
     [Required]

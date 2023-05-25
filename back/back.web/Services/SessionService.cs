@@ -257,13 +257,11 @@ public class SessionService : ISessionService
 
         bool ans = session.userReady(userID);
 
-        // session is now in voting state, so we can push the user stories in it
-        // if (session._state is VotingState)
-        // {
-        //     var allUS = _databaseContext.UserStoriesProposition.ToList();
-        //     allUS.Reverse();
-        //     session.setAllUserStories(allUS);
-        // }
+        // session has started so we can store it in db as well as update users
+        if (session._state is VotingState)
+        {
+            await storeSession(session);
+        }
 
         return ans;  
     }
@@ -302,6 +300,19 @@ public class SessionService : ISessionService
         return ans;
     }
 
+    private async Task storeSession(Session session)
+    {
+        SessionEntity se = new SessionEntity { users = new List<UserEntity>(session._joinedUsers), identifier = session.Identifier};
+        _databaseContext.Sessions.Add(se);
+
+        foreach (var user in session._joinedUsers)
+        {
+            user.sessions.Add(se);
+        }
+        
+        await _databaseContext.SaveChangesAsync();
+    } 
+
     private async Task storeCurrentUS(Session session)
     {
         var currentUS = session.currentUserStoryDiscussed();
@@ -322,6 +333,13 @@ public class SessionService : ISessionService
         // delete the proposition because we can now store in UserStory table
         await _userStoryPropositionService.delete(currentUS.id);
         
+        // add us to session entity
+        SessionEntity se = _databaseContext.Sessions.Single(s => s.identifier.Equals(session.Identifier));
+        if (se != null)
+        {
+            se.userStories.Add(us);
+        }
+
         // saving changes
         await _databaseContext.SaveChangesAsync();
     }
@@ -436,20 +454,20 @@ public class SessionService : ISessionService
         List<UserStoryEntity> data = new List<UserStoryEntity>(session._allVotedUserStories);
         
         // Create a memory stream to write the CSV data
-    using (var memoryStream = new MemoryStream())
-    {
-        using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8))
-        using (var csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture))
+        using (var memoryStream = new MemoryStream())
         {
-            csvWriter.WriteRecords(data);
-        }
+            using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8))
+            using (var csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture))
+            {
+                csvWriter.WriteRecords(data);
+            }
 
-        var file = new CustomFile
+            var file = new CustomFile
             { FileContents = memoryStream.ToArray(), FileName = "data.csv", ContentType = "text/csv" };
 
-        // Return the file as a FileStreamResult
-        return file;
-    }
+            // Return the file as a FileStreamResult
+            return file;
+        }
     }
     
 }

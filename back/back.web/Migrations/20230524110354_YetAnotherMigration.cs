@@ -28,7 +28,8 @@ namespace back.web.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    identifier = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
