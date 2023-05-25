@@ -120,12 +120,9 @@ export class SessionComponent implements OnInit {
     } else {
       if (session.currentUserStory.description != this.currentUserStory.description) {
         this.currentUserStory = new UserStory(session.currentUserStory.id, session.currentUserStory.description, session.currentUserStory.tasks);
+      } else {
+        this.currentUserStory.tasks = JSON.parse(session.currentUserStory.tasks).tasks;
       }
-      console.log("Avant : "+this.currentUserStory.tasks);
-      console.log(session.currentUserStory.tasks);
-      this.currentUserStory.tasks = JSON.parse(session.currentUserStory.tasks).tasks;
-      console.log("Après : "+this.currentUserStory.tasks);
-
     }
   }
 
