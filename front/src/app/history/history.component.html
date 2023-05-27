@@ -1,0 +1,38 @@
+<div class="history">
+    <button class="home-button" mat-fab color="primary" (click)="goToHome()">
+        <mat-icon>home</mat-icon>
+      </button>
+    <div class="sessions">
+        <p class="title"> Previous sessions</p>
+        <mat-accordion class="session-list">
+            <mat-expansion-panel class="session-panel" *ngFor="let session of sessions">
+                <mat-expansion-panel-header class="header">
+                    <mat-panel-title>{{ session.id }}</mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-list class="story-list">
+                    <div class="story" *ngFor="let story of session.userStories">
+                        <mat-list-item>
+                            <div class="description">{{ story.description }}</div>
+                            <ul class="tasks" *ngFor="let task of story.tasks">
+                                <li class="task">{{ task }}</li>
+                            </ul>
+                            <div CLASS="estimation"> ESTIMATION: {{story.note}}</div>
+                        </mat-list-item>
+                        <mat-divider class="custom-divider"></mat-divider>
+                    </div>
+                </mat-list>
+            </mat-expansion-panel>
+        </mat-accordion>
+
+    </div>
+
+    <!-- <div class="session-details">
+        <div class=no-session-selected *ngIf="!selectedSession; else elseBlock">SELECT A SESSION</div>
+
+        <ng-template class="session-selected" #elseBlock>
+            <div class="session-title">{{selectedSession?.id}}</div>
+
+        </ng-template>
+
+    </div> -->
+</div>
