@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UserStory } from '../session/session.component';
 import { Router } from '@angular/router';
+import { ApiHelperService } from '../services/api-helper.service';
+import { getID } from '../services/storage.service';
 
 @Component({
   selector: 'app-history',
@@ -10,20 +12,27 @@ import { Router } from '@angular/router';
 export class HistoryComponent implements OnInit {
   sessions: Session[] = [];
 
-  constructor(private router: Router) { }
+  constructor(private api: ApiHelperService, private router: Router) { }
 
-  ngOnInit(): void {
-    // TODO get sessions from backend
+  async ngOnInit(): Promise<void> {
+    try {
+      const response = await this.api.get({ endpoint: '/User/' + getID() + '/sessions' })
+      console.log(response);
+    } catch (error) {
+      console.log(" Error getting previous sessions");
+    }
+    
+
     this.sessions = [
       new Session("AB445", [
-        new UserStory(1, 'As a user, I want to be able to add a user story to the session', ["task 1","task 2","task 3"], "5"),
-        new UserStory(2, 'As a user, I want to be able to vote on a user story', ["task 1","task 2","task 3"], "8"),
-        new UserStory(3, 'As a user, I want to be able to see the results of the vote', ["task 1","task 2","task 3"], "13"),
+        new UserStory(1, 'As a user, I want to be able to add a user story to the session', ["task 1", "task 2", "task 3"], "5"),
+        new UserStory(2, 'As a user, I want to be able to vote on a user story', ["task 1", "task 2", "task 3"], "8"),
+        new UserStory(3, 'As a user, I want to be able to see the results of the vote', ["task 1", "task 2", "task 3"], "13"),
       ]),
       new Session("AB446", [
-        new UserStory(1, 'As a user, I want to be able to add a user story to the session', ["task 1","task 2","task 3"], "5"),
-        new UserStory(2, 'As a user, I want to be able to vote on a user story', ["task 1","task 2","task 3"], "8"),
-        new UserStory(3, 'As a user, I want to be able to see the results of the vote', ["task 1","task 2","task 3"], "13"),
+        new UserStory(1, 'As a user, I want to be able to add a user story to the session', ["task 1", "task 2", "task 3"], "5"),
+        new UserStory(2, 'As a user, I want to be able to vote on a user story', ["task 1", "task 2", "task 3"], "8"),
+        new UserStory(3, 'As a user, I want to be able to see the results of the vote', ["task 1", "task 2", "task 3"], "13"),
       ]),
     ];
   }
