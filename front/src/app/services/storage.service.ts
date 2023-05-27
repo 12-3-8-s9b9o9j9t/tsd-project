@@ -41,6 +41,10 @@ export function getSessionIdentifier(): string {
   return sessionIdentifier;
 }
 
+export function resetOwner(): void {
+  sessionStorage.setItem(OWNER, "NotOwner");
+}
+
 export function setOwner(): void {
   sessionStorage.setItem(OWNER, String(getID()));
 }
