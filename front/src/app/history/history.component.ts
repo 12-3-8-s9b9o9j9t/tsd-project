@@ -18,23 +18,19 @@ export class HistoryComponent implements OnInit {
     try {
       const response = await this.api.get({ endpoint: '/User/' + getID() + '/sessions' })
       console.log(response);
+      for (let session of response) {
+        let userStories: UserStory[] = [];
+        for (let userStory of session.userStories) {
+          let tasks = JSON.parse(userStory.tasks).tasks;
+          console.log(tasks);
+          userStories.push(new UserStory(userStory.id, userStory.description, tasks, userStory.estimatedCost));
+        }
+        console.log(userStories);
+        this.sessions.push(new Session(session.identifier, userStories));
+      }
     } catch (error) {
       console.log(" Error getting previous sessions");
     }
-    
-
-    this.sessions = [
-      new Session("AB445", [
-        new UserStory(1, 'As a user, I want to be able to add a user story to the session', ["task 1", "task 2", "task 3"], "5"),
-        new UserStory(2, 'As a user, I want to be able to vote on a user story', ["task 1", "task 2", "task 3"], "8"),
-        new UserStory(3, 'As a user, I want to be able to see the results of the vote', ["task 1", "task 2", "task 3"], "13"),
-      ]),
-      new Session("AB446", [
-        new UserStory(1, 'As a user, I want to be able to add a user story to the session', ["task 1", "task 2", "task 3"], "5"),
-        new UserStory(2, 'As a user, I want to be able to vote on a user story', ["task 1", "task 2", "task 3"], "8"),
-        new UserStory(3, 'As a user, I want to be able to see the results of the vote', ["task 1", "task 2", "task 3"], "13"),
-      ]),
-    ];
   }
 
   goToHome() {

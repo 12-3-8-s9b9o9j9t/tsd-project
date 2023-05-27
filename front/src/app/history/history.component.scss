@@ -6,6 +6,14 @@
         left: 2rem;
     }
 
+    .no-session {
+        font-size: 2rem;
+        font-weight: 400;
+        color: #747474;
+        text-align: center;
+        margin-top: 5rem;
+    }
+
     .sessions {
         display: flex;
         flex-direction: column;
@@ -41,7 +49,7 @@
                         }
                         .description {
                             font-weight: 530;
-                            font-size: 105%;
+                            font-size: 120%;
                             margin-bottom: 0.4rem;
                         }
 
