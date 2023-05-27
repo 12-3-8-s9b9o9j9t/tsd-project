@@ -18,9 +18,6 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
         style({ opacity: 0 }),
         animate('300ms ease-in', style({ opacity: 1 }))
       ]),
-      transition(':leave', [
-        animate('300ms ease-in', style({ opacity: 0 }))
-      ])
     ])
   ]
 
@@ -126,6 +123,7 @@ export class SessionComponent implements OnInit {
 
   refreshPlayerDeck(session: any) {
     if (session.state == "voting" && !this.hasVoted) {
+      this.selectedCard = undefined;
       this.disabled = false;
     }
     if (session.state == "discussing") {
@@ -202,6 +200,7 @@ export class SessionComponent implements OnInit {
     this.api.get({
       endpoint: '/Session/showVotesOfEveryone/' + getSessionIdentifier()
     }).then((response) => {
+      this.selectedCard = "?"
       console.log("Force show sent");
     }).catch((error) => {
       console.log("error while sending force show");
