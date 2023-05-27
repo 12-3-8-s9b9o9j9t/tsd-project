@@ -117,7 +117,7 @@ export class SessionComponent implements OnInit {
       this.router.navigate(['/session', this.gameId, 'end'])
     } else {
       if (session.currentUserStory.id != this.currentUserStory.id) {
-        this.currentUserStory = new UserStory(session.currentUserStory.id, session.currentUserStory.description, session.currentUserStory.tasks);
+        this.currentUserStory = new UserStory(session.currentUserStory.id, session.currentUserStory.description, JSON.parse(session.currentUserStory.tasks).tasks);
       } else {
         this.currentUserStory.tasks = JSON.parse(session.currentUserStory.tasks).tasks;
       }
