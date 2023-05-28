@@ -1,4 +1,5 @@
 using back.Classes;
+using back.Classes.SessionState;
 using back.DAL;
 using back.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -14,8 +15,9 @@ public interface IUserService
     Task<UserDTO> GetByID(int id);
 
     Task<List<SessionSecondDTO>> getUserSessions(int userId);
-    
-    
+
+    Task<UserDTO> authLogin(UserInput userInput);
+
 
 }
 
@@ -72,6 +74,23 @@ public class UserService : IUserService
         return new UserDTO { id = user.id, name = user.name };
     }
 
+    public async Task<UserDTO> authLogin(UserInput userInput)
+    {
+        UserEntity? user = await _databaseContext.Users.SingleOrDefaultAsync(u => u.name.Equals(userInput.name));
+
+        if (user == null)
+        {
+            throw new BadHttpRequestException("");
+        }
+
+        if (!BCrypt.Net.BCrypt.Verify(userInput.password, user.password))
+        {
+            throw new UnauthorizedAccessException("");
+        }
+
+        return await GetByID(user.id);
+    }
+
     public async Task<UserDTO> GetByID(int id)
     {
         var user = await _databaseContext.Users.FindAsync(id);
@@ -91,7 +110,7 @@ public class UserService : IUserService
             return null;
         }
 
-        var sessions = SessionList.Sessions.Where(s => s._joinedUsers.Select(u => u.id).Contains(userId));
+        var sessions = SessionList.Sessions.Where(s => s._joinedUsers.Select(u => u.id).Contains(userId)).Where(s => s._state is EndState);
 
         List<SessionSecondDTO> sdto = new List<SessionSecondDTO>();
 
