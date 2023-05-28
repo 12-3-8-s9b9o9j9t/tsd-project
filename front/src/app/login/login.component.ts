@@ -14,6 +14,8 @@ export class LoginComponent {
   nameControl = new FormControl('', [Validators.required]);
   passwordControl = new FormControl('', [Validators.required]);
 
+  isRegister = false;
+
   formGroup = new FormGroup({
     name: this.nameControl,
     password: this.passwordControl
@@ -25,42 +27,56 @@ export class LoginComponent {
   ) { }
 
 
-  async enter(): Promise<void> {
+  async signIn(): Promise<void> {
     if (!this.formGroup.valid) {
       return;
     }
-    let name: string | null = this.nameControl.value;
+    let name: string = ""
+    let password: string = ""
 
+    if (this.nameControl.value !== null && this.passwordControl.value !== null) {
+      name = this.nameControl.value;
+      password = this.passwordControl.value;
+    }
 
     try {
-      const response = await this.api.get({ endpoint: '/User/' + name });
+      const response = await this.api.post({ endpoint: '/User/auth/login', data: { name: name, password: password }});
       console.log("User found");
 
       if (name === null) {
         return;
       }
     
-      saveName(name);
+      saveName(response.name);
       saveID(response.id);
       this.moveToHome();
     } catch (error) {
-      console.log("User not found, creating new user");
-    
-      try {
-        const response = await this.api.post({ endpoint: '/User', data: { name: name } });
-        console.log(response);
-    
-        if (name === null) {
-          return;
-        }
-    
-        saveName(name);
-        saveID(response.id);
-        this.moveToHome();
-      } catch (error) {
-        console.log(error);
-      }
+      console.log("User not found");
     }    
+  }
+
+  async register(): Promise<void> {
+
+    if (!this.formGroup.valid) {
+      return;
+    }
+
+    let name: string = ""
+    let password: string = ""
+
+    if (this.nameControl.value !== null && this.passwordControl.value !== null) {
+      name = this.nameControl.value;
+      password = this.passwordControl.value;
+    }
+
+    try {
+      const response = await this.api.post({ endpoint: '/User/auth/register', data: { name: name, password: password }});
+      console.log("User created");
+      this.signIn();
+    } catch (error) {
+      console.log("Erorr creating user");
+    }
+    
   }
 
   moveToHome() {
