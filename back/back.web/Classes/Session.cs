@@ -14,7 +14,7 @@ public class Session
     public ASessionState _state { get; set; }
     public HashSet<UserEntity> _joinedUsers { get; set; }
     
-    public Stack<UserStoryPropositionEntity> _allUserStories { get; set; }
+    public Queue<UserStoryPropositionEntity> _allUserStories { get; set; }
     
     public Stack<UserStoryEntity> _allVotedUserStories { get; set; }
     
@@ -37,7 +37,7 @@ public class Session
     public Session()
     {
         _joinedUsers = new HashSet<UserEntity>();
-        _allUserStories = new Stack<UserStoryPropositionEntity>();
+        _allUserStories = new Queue<UserStoryPropositionEntity>();
         _allVotedUserStories = new Stack<UserStoryEntity>();
         _startSessionMap = new OrderedDictionary();
         _currentUSVoted = new OrderedDictionary();
@@ -58,7 +58,7 @@ public class Session
 
     public void nextUserStory()
     {
-        _allUserStories.Pop();
+        _allUserStories.Dequeue();
     }
 
     // public static Session getInstance()

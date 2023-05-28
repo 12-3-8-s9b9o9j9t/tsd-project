@@ -190,7 +190,7 @@ public class SessionService : ISessionService
                     uspList.Push(usp);
                 }
                 
-                session._allUserStories = new Stack<UserStoryPropositionEntity>(uspList);
+                session._allUserStories = new Queue<UserStoryPropositionEntity>(uspList);
 
             }
         }
@@ -353,7 +353,7 @@ public class SessionService : ISessionService
 
         if (session != null && us != null)
         {
-            session._allUserStories.Push(us);
+            session._allUserStories.Enqueue(us);
         }
 
         
@@ -452,23 +452,39 @@ public class SessionService : ISessionService
             return null;
         }
 
-        List<UserStoryEntity> data = new List<UserStoryEntity>(session._allVotedUserStories);
-        
+        List<string> descriptions = session._allVotedUserStories
+            .Select(us => us.description)
+            .ToList();
+
         // Create a memory stream to write the CSV data
         using (var memoryStream = new MemoryStream())
         {
             using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8))
             using (var csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture))
             {
-                csvWriter.WriteRecords(data);
+                // Write the header
+                csvWriter.WriteField("Summary");
+                csvWriter.NextRecord();
+
+                // Write the descriptions
+                foreach (string description in descriptions)
+                {
+                    csvWriter.WriteField(description);
+                    csvWriter.NextRecord();
+                }
             }
 
             var file = new CustomFile
-            { FileContents = memoryStream.ToArray(), FileName = "data.csv", ContentType = "text/csv" };
+            {
+                FileContents = memoryStream.ToArray(),
+                FileName = "data.csv",
+                ContentType = "text/csv"
+            };
 
             // Return the file as a FileStreamResult
             return file;
         }
     }
+
     
 }
