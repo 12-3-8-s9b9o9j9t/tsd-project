@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiHelperService } from '../services/api-helper.service';
-import { getName, saveSessionIdentifier, setOwner } from "../services/storage.service";
+import { getName, resetOwner, saveSessionIdentifier, setOwner } from "../services/storage.service";
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -25,6 +25,10 @@ export class HomeComponent {
     this.user = getName();
   }
 
+  goToHistory(): void {
+    this.router.navigate(['/history']);
+  }
+
 
   enter(): void {
     if (!this.formGroup.valid) {
@@ -38,7 +42,7 @@ export class HomeComponent {
     
     saveSessionIdentifier(sessionIdentifier);
 
-    // TODO: move to session
+    resetOwner();
     this.moveToSession(sessionIdentifier);
 
   }
@@ -47,8 +51,8 @@ export class HomeComponent {
     this.router.navigate(['/session', code, 'waiting-room']);
   }
 
-  createSession(): void {
-    this.api.post({ endpoint: '/Session/createSession', data: null }).then((response) => {
+  async createSession(): Promise<void> {
+    await this.api.post({ endpoint: '/Session/createSession', data: null }).then((response) => {
       console.log(response);
       console.log("Session created");
 

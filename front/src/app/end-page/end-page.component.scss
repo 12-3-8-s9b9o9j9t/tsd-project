@@ -1,4 +1,4 @@
-div{
+div {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -6,8 +6,16 @@ div{
   height: 50%;
 }
 
-p{
+p {
     font-size: 24px;
     color: #747474;
+}
+
+button {
+  margin: 0.5rem 0; 
+}
+
+.arrow {
+  
 }
   

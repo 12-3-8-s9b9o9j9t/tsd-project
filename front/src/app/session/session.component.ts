@@ -18,9 +18,6 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
         style({ opacity: 0 }),
         animate('300ms ease-in', style({ opacity: 1 }))
       ]),
-      transition(':leave', [
-        animate('300ms ease-in', style({ opacity: 0 }))
-      ])
     ])
   ]
 
@@ -117,7 +114,7 @@ export class SessionComponent implements OnInit {
       this.router.navigate(['/session', this.gameId, 'end'])
     } else {
       if (session.currentUserStory.id != this.currentUserStory.id) {
-        this.currentUserStory = new UserStory(session.currentUserStory.id, session.currentUserStory.description, session.currentUserStory.tasks);
+        this.currentUserStory = new UserStory(session.currentUserStory.id, session.currentUserStory.description, JSON.parse(session.currentUserStory.tasks).tasks);
       } else {
         this.currentUserStory.tasks = JSON.parse(session.currentUserStory.tasks).tasks;
       }
@@ -126,6 +123,7 @@ export class SessionComponent implements OnInit {
 
   refreshPlayerDeck(session: any) {
     if (session.state == "voting" && !this.hasVoted) {
+      this.selectedCard = undefined;
       this.disabled = false;
     }
     if (session.state == "discussing") {
@@ -202,6 +200,7 @@ export class SessionComponent implements OnInit {
     this.api.get({
       endpoint: '/Session/showVotesOfEveryone/' + getSessionIdentifier()
     }).then((response) => {
+      this.selectedCard = "?"
       console.log("Force show sent");
     }).catch((error) => {
       console.log("error while sending force show");
@@ -223,18 +222,22 @@ class Player {
   }
 }
 
-class UserStory {
+export class UserStory {
   id: number;
   description: string;
   tasks: string[];
+  note: string | undefined;
 
-  constructor(public _id: number, public _description: string, public _tasks: string[]) {
+  constructor(_id: number, _description: string, _tasks: string[], _note?: string) {
     this.id = _id;
     this.description = _description;
     if (!_tasks){
-      this.tasks = _tasks;
-    } else {
       this.tasks = []
+    } else {
+      this.tasks = _tasks;
+    }
+    if (_note) {
+      this.note = _note;
     }
   }
 }

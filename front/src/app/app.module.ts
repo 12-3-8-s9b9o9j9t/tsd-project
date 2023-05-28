@@ -24,6 +24,11 @@ import { MatButtonToggleModule}  from '@angular/material/button-toggle';
 import { LoginComponent } from './login/login.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { HistoryComponent } from './history/history.component';
+import { MatListModule } from '@angular/material/list';
+import { MatExpansionModule } from '@angular/material/expansion';
+
+
 
 
 @NgModule({
@@ -35,7 +40,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     WaitingRoomComponent,
     AddUserStoryComponent,
     EndPageComponent,
-    LoginComponent
+    LoginComponent,
+    HistoryComponent,
+    
   ],
   imports: [
     HttpClientModule,
@@ -54,7 +61,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatTableModule,
     MatButtonToggleModule,
     MatIconModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatListModule,
+    MatExpansionModule
   ],
   providers: [],
   bootstrap: [AppComponent]

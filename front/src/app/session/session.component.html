@@ -1,5 +1,7 @@
 <div class="session">
 
+  <div class="show-card-indicator" *ngIf="showCards">SHOWING CARDS</div>
+
   <!-- Board + User story -->
   <div class="board-user-story-deck">
     <!-- Board -->
@@ -67,12 +69,12 @@
 
         <mat-card-content>
           <section class="button-section">
-            <button mat-flat-button class="button-validate" color="primary" [disabled]="disabled" (click)="validate()">
+            <button mat-flat-button class="button-validate" color="primary" [disabled]="disabled || !selectedCard" (click)="validate()">
               Validate card
             </button>
             <div *ngIf="isOwner" class="button-force">
               <button mat-flat-button class="button-reset" color="warn" (click)="forceShow()">
-                Force show cards
+                Force cards
               </button>
             </div>
           </section>
