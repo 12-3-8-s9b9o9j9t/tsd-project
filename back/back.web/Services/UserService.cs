@@ -14,6 +14,8 @@ public interface IUserService
     Task<UserDTO> GetByID(int id);
 
     Task<List<SessionSecondDTO>> getUserSessions(int userId);
+    
+    
 
 }
 
@@ -39,13 +41,15 @@ public class UserService : IUserService
             throw new BadHttpRequestException("Name must be valid.");
         }
 
-        var existingUser = await _databaseContext.Users.SingleOrDefaultAsync(u => u.name == userInput.name);
+        var existingUser = await _databaseContext.Users.SingleOrDefaultAsync(u => u.name.Equals(userInput.name));
         if (existingUser != null)
         {
             throw new BadHttpRequestException($"User with name '{userInput.name}' already exists.");
         }
 
-        var userToAdd = new UserEntity { name = userInput.name };
+        var passwordHash = BCrypt.Net.BCrypt.HashPassword(userInput.password); 
+        
+        var userToAdd = new UserEntity { name = userInput.name, password = passwordHash };
         _databaseContext.Users.Add(userToAdd);
         await _databaseContext.SaveChangesAsync();
 
