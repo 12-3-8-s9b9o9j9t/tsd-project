@@ -1,25 +1,72 @@
-<form [formGroup]="formGroup" (submit)="enter()">
+<div class="login">
 
-    <p>Sign in</p>
+  <div *ngIf="!isRegister; else elseBlock">
+    <form class="form" [formGroup]="formGroup" (submit)="signIn()">
+      <p class="title">Sign in</p>
 
-    <mat-form-field>
-      <mat-label>Name</mat-label>
-      <input matInput [formControl]="nameControl">
-    </mat-form-field>
+      <div class="username">
+        <p class="sub-title">Username</p>
+        <mat-form-field>
+          <mat-label>Username</mat-label>
+          <input matInput [formControl]="nameControl">
+        </mat-form-field>
+      </div>
+      <div class="password">
+        <p class="sub-title">Password</p>
+        <mat-form-field>
+          <mat-label>Password</mat-label>
+          <input matInput [formControl]="passwordControl" type="password">
+        </mat-form-field>
+      </div>
 
-  <p>Username</p>
-  <mat-form-field>
-    <mat-label>Username</mat-label>
-    <input matInput [formControl]="nameControl">
-  </mat-form-field>
+      <div *ngIf="isError" class="error-message">
+        Incorrect username or password.
+      </div>
 
-  <p>Password</p>
-  <mat-form-field>
-    <mat-label>Password</mat-label>
-    <input matInput [formControl]="passwordControl">
-  </mat-form-field>
+      <div class="button-section">
+        <button mat-raised-button class="button-login" color="primary" appeareace="fill" type="submit">
+          Login
+        </button>
+        <button mat-button class="button-register" color="primary" appeareace="fill" type="button"
+          (click)="moveToRegister(true)">
+          Don't have an account? Register now
+        </button>
+      </div>
+    </form>
+  </div>
 
-  <button mat-raised-button class="button" color="primary" appeareace="fill" type="submit">
-    Login
-  </button>
-</form>
+  <ng-template #elseBlock>
+    <form class="form" [formGroup]="formGroup" (submit)="register()">
+      <p class="title">Register</p>
+
+      <div class="username">
+        <p class="sub-title">Username</p>
+        <mat-form-field>
+          <mat-label>Username</mat-label>
+          <input matInput [formControl]="nameControl">
+        </mat-form-field>
+      </div>
+      <div class="password">
+        <p class="sub-title">Password</p>
+        <mat-form-field>
+          <mat-label>Password</mat-label>
+          <input matInput [formControl]="passwordControl" type="password">
+        </mat-form-field>
+      </div>
+
+      <div *ngIf="isError" class="error-message">
+        Incorrect username or password.
+      </div>
+
+      <div class="button-section">
+        <button mat-raised-button class="button-login" color="primary" appeareace="fill" type="submit">
+          Register
+        </button>
+        <button mat-button class="button-register" color="primary" appeareace="fill" type="button"
+          (click)="moveToRegister(false)">
+          Already have an account ? Sign in
+        </button>
+      </div>
+    </form>
+  </ng-template>
+</div>

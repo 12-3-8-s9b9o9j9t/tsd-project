@@ -1,7 +1,6 @@
 <div class="home">
 
   <button mat-stroked-button class="history-button" color="primary" (click)="goToHistory()">History</button>
-
   <!-- title -->
   <h1 class="title">Welcome <span class="title-bold">{{user}}</span></h1>
 
@@ -34,5 +33,8 @@
   <input #csvInput hidden="true" type="file" onclick="this.value=null" (change)="csvInputChange($event)" accept=".csv"/>
   <button mat-button color="primary" (click)="csvInput.click()">Create from file</button>
 
+  <button mat-fab class="logout-button" color="primary" (click)="logout()">
+    <mat-icon>logout</mat-icon>
+  </button>
 
 </div>
