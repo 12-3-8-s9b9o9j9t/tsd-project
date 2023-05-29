@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
 import { Observable, lastValueFrom } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 
 const base_url: string = environment.api_url;
 
@@ -14,11 +14,13 @@ export class ApiHelperService {
   public get({
     endpoint,
     queryParams = {},
+    responseType = 'json', // Valeur par défaut : JSON
   }: {
     endpoint: string;
     queryParams?: any;
-  }): Promise<any> {environment
-    return this.request({ endpoint, method: 'GET', queryParams });
+    responseType?: 'json' | 'text' | 'blob' | 'arraybuffer';
+  }): Promise<any> {
+    return this.request({ endpoint, method: 'GET', queryParams, responseType });
   }
 
   public post({
@@ -62,11 +64,13 @@ export class ApiHelperService {
     method = 'GET',
     data = {},
     queryParams = {},
+    responseType = 'json',
   }: {
     endpoint: string;
     method?: string;
     data?: object;
     queryParams?: any;
+    responseType?: 'json' | 'text' | 'blob' | 'arraybuffer';
   }): Promise<any> {
     const methodWanted = method.toLowerCase();
 
@@ -74,11 +78,12 @@ export class ApiHelperService {
 
     const requestOptions = {
       params: queryParams,
+      responseType: responseType as 'json', // Conversion de string à type responseType
     };
 
     console.log(method, url, JSON.stringify(requestOptions), JSON.stringify(data));
 
-    let req: Observable<any>;
+    let req: Observable<HttpResponse<any>>;
     if (methodWanted === 'get') {
       req = this.http.get(url, { ...requestOptions, observe: 'response' });
     } else if (methodWanted === 'post') {

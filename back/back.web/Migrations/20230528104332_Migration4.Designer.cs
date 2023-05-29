@@ -12,18 +12,48 @@ using back.DAL;
 namespace back.web.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230327142310_Initial")]
-    partial class Initial
+    [Migration("20230528104332_Migration4")]
+    partial class Migration4
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.4")
+                .HasAnnotation("ProductVersion", "7.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("SessionEntityUserEntity", b =>
+                {
+                    b.Property<int>("sessionsid")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("usersid")
+                        .HasColumnType("integer");
+
+                    b.HasKey("sessionsid", "usersid");
+
+                    b.HasIndex("usersid");
+
+                    b.ToTable("SessionEntityUserEntity");
+                });
+
+            modelBuilder.Entity("SessionEntityUserStoryEntity", b =>
+                {
+                    b.Property<int>("sessionsid")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("userStoriesid")
+                        .HasColumnType("integer");
+
+                    b.HasKey("sessionsid", "userStoriesid");
+
+                    b.HasIndex("userStoriesid");
+
+                    b.ToTable("SessionEntityUserStoryEntity");
+                });
 
             modelBuilder.Entity("back.Entities.NoteEntity", b =>
                 {
@@ -51,6 +81,23 @@ namespace back.web.Migrations
                     b.ToTable("note");
                 });
 
+            modelBuilder.Entity("back.Entities.SessionEntity", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+
+                    b.Property<string>("identifier")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("id");
+
+                    b.ToTable("session");
+                });
+
             modelBuilder.Entity("back.Entities.UserEntity", b =>
                 {
                     b.Property<int>("id")
@@ -60,6 +107,10 @@ namespace back.web.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("password")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -84,6 +135,10 @@ namespace back.web.Migrations
                         .IsRequired()
                         .HasColumnType("integer");
 
+                    b.Property<string>("tasks")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("id");
 
                     b.ToTable("userStory");
@@ -101,9 +156,43 @@ namespace back.web.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("tasks")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("id");
 
                     b.ToTable("userStoryProposition");
+                });
+
+            modelBuilder.Entity("SessionEntityUserEntity", b =>
+                {
+                    b.HasOne("back.Entities.SessionEntity", null)
+                        .WithMany()
+                        .HasForeignKey("sessionsid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("back.Entities.UserEntity", null)
+                        .WithMany()
+                        .HasForeignKey("usersid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SessionEntityUserStoryEntity", b =>
+                {
+                    b.HasOne("back.Entities.SessionEntity", null)
+                        .WithMany()
+                        .HasForeignKey("sessionsid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("back.Entities.UserStoryEntity", null)
+                        .WithMany()
+                        .HasForeignKey("userStoriesid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("back.Entities.NoteEntity", b =>

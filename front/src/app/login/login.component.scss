@@ -1,24 +1,58 @@
-form {
+.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 75%;
+
+  .form {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 50%
-  }
-  
-  .mat-form-field {
-    width: 100%;
-    max-width: 20rem;
-  }
-  
-  .button {
-    margin-top: 0rem;
-    font-size: 1.1rem;
-    width: 10rem;
-  }
 
-  .button:hover {
-    background-color: #2188ff;
-    transition: 0.3s;
+    .title {
+      font-size: 250%;
+      color: #747474;
+      margin-bottom: 2.3rem;
+    }
+
+    .sub-title {
+      text-align: left;
+    }
+
+    mat-form-field {
+      width: 100%;
+      max-width: 20rem;
+    }
+
+    .button-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      .button-login {
+        margin-top: 0rem;
+        font-size: 1.1rem;
+        width: 10rem;
+      }
+
+      .button-login:hover {
+        background-color: #2188ff;
+        transition: 0.3s;
+      }
+
+      .button-register {
+        font-size: small;
+        
+      }
+    }
   }
-  
+}
+
+.error-message {
+  margin-top: -1rem;
+  font-size: 80%;
+  margin-bottom: 0.5rem ;
+  color: red;
+}

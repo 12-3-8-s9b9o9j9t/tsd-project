@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiHelperService } from '../services/api-helper.service';
-import { getID, getName, getSessionIdentifier } from '../services/storage.service';
+import { getID, getName, getSessionIdentifier, isOwner } from '../services/storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { SocketService } from '../services/socket.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 
 
@@ -17,9 +18,6 @@ import { SocketService } from '../services/socket.service';
         style({ opacity: 0 }),
         animate('300ms ease-in', style({ opacity: 1 }))
       ]),
-      transition(':leave', [
-        animate('300ms ease-in', style({ opacity: 0 }))
-      ])
     ])
   ]
 
@@ -33,15 +31,18 @@ export class SessionComponent implements OnInit {
   showCards: boolean = false;
 
   // user stories
-  currentUserStory: string = "Loading...";
-  tabCards: string[] = ['☕', '1', '2', '3', '5', '8', '13', '∞'];
+  currentUserStory: UserStory = new UserStory(-1, "Loading...",[]);
+  taskControl = new FormControl('', [Validators.required]);
+  formGroup = new FormGroup({ task: this.taskControl });
 
   // player deck
+  tabCards: string[] = ['☕', '1', '2', '3', '5', '8', '13', '∞'];
   selectedCard: string | undefined;
 
 
   disabled: boolean = false;
   hasVoted: boolean = false;
+  isOwner: boolean = false;
 
 
   constructor(private api: ApiHelperService, private socket: SocketService, private router: Router, private route: ActivatedRoute) {
@@ -49,6 +50,7 @@ export class SessionComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.gameId = params['id'];
     });
+    this.isOwner = isOwner();
   }
 
   ngOnInit(): void {
@@ -56,7 +58,6 @@ export class SessionComponent implements OnInit {
     this.onMessage();
   }
 
-  //
   onMessage(): void {
     this.socket.onMessage().subscribe((message: any) => {
       if (message.type == "session") {
@@ -92,37 +93,15 @@ export class SessionComponent implements OnInit {
     if (session.state == "discussing") {
       this.showCards = true;
       let ids = Object.keys(session.usersNotes);
-      console.log(session.usersNotes);
-      console.log(session.usersNotes[ids[0]]);
-      console.log(session.usersNotes[ids[1]])
 
       // for every player, get the note and update the card
       this.boardPlayers.forEach((player) => {
         let cardToAdd = session.usersNotes[player.id];
         if (cardToAdd == "1000") { cardToAdd = "∞"; } // convert infinity to string number
         if (cardToAdd == "0") { cardToAdd = "☕"; } // convert coffee to string
+        if (cardToAdd == "-1") { cardToAdd = "?"; } // convert null to string
         player.card = cardToAdd;
       });
-      
-
-
-      // let notes: string[] = [];
-      // for (const id of ids) { notes.push(session.usersNotes[id]); }
-      // update player card for each player
-      // let counter = 0;
-      // this.boardPlayers.forEach((player) => {
-      //   session.users.forEach((user: any) => {
-      //     if (user.name == player.name) {
-      //       if (ids.includes(player.id.toString())) {
-      //         let cardToAdd = notes[counter];
-      //         if (cardToAdd == "1000") { cardToAdd = "∞"; } // convert infinity to string number
-      //         if (cardToAdd == "0") { cardToAdd = "☕"; } // convert coffee to string
-      //         player.card = cardToAdd;
-      //       }
-      //     }
-      //   });
-      // });
-      console.log(this.boardPlayers);
     } else {
       this.showCards = false;
     }
@@ -134,17 +113,20 @@ export class SessionComponent implements OnInit {
       this.socket.disconnect();
       this.router.navigate(['/session', this.gameId, 'end'])
     } else {
-      this.currentUserStory = session.currentUserStory.description;
+      if (session.currentUserStory.id != this.currentUserStory.id) {
+        this.currentUserStory = new UserStory(session.currentUserStory.id, session.currentUserStory.description, JSON.parse(session.currentUserStory.tasks).tasks);
+      } else {
+        this.currentUserStory.tasks = JSON.parse(session.currentUserStory.tasks).tasks;
+      }
     }
   }
 
   refreshPlayerDeck(session: any) {
     if (session.state == "voting" && !this.hasVoted) {
-      console.log("refreshPlayerDeck --> disabled: false");
+      this.selectedCard = undefined;
       this.disabled = false;
     }
     if (session.state == "discussing") {
-      console.log("refreshPlayerDeck --> disabled: true");
       this.disabled = true;
       this.hasVoted = false;
     }
@@ -153,7 +135,6 @@ export class SessionComponent implements OnInit {
 
   // Send the selected card to the server
   async validate(): Promise<void> {
-    console.log("validate --> disabled: true");
     this.disabled = true;
 
     let cardToSend = this.selectedCard;
@@ -161,16 +142,70 @@ export class SessionComponent implements OnInit {
     if (cardToSend == "☕") { cardToSend = "0"; } // convert coffee to string
 
     this.hasVoted = true;
-    this.api.post({
+    await this.api.post({
       endpoint: '/Session/voteCurrentUserStory/' + getID() + '/' + cardToSend + "/" + getSessionIdentifier()
     }).then((response) => {
       console.log("Vote sent");
-      //console.log(response);
     }).catch((error) => {
       console.log("error while sending vote");
       console.log(error);
     });
 
+  }
+
+
+  async addTask() {
+    if (this.taskControl.value && this.taskControl.valid) {
+      this.currentUserStory.tasks.push(this.taskControl.value);
+
+      await this.api.put({
+        endpoint: '/UserStoryProposition/' + this.currentUserStory.id,
+        data: {
+          description: this.currentUserStory.description,
+          tasks: JSON.stringify({tasks: this.currentUserStory.tasks}),
+          sessionIdentifier: getSessionIdentifier()
+        }
+      }).then((response) => {
+        console.log("Task added");
+      }).catch((error) => {
+        console.log("error while adding task");
+        console.log(error);
+      });
+        
+
+      this.taskControl.reset();
+    }
+  }
+
+  async deleteTask(task: string) {
+    this.currentUserStory.tasks = this.currentUserStory.tasks.filter((t) => t != task);
+
+
+    await this.api.put({
+      endpoint: '/UserStoryProposition/' + this.currentUserStory.id,
+      data: {
+        description: this.currentUserStory.description,
+        tasks: JSON.stringify({tasks: this.currentUserStory.tasks}),
+        sessionIdentifier: getSessionIdentifier()
+      }
+    }).then((response) => {
+      console.log("Task deleted");
+    }).catch((error) => {
+      console.log("error while deleting task");
+      console.log(error);
+    });
+  }
+
+  forceShow() {
+    this.api.get({
+      endpoint: '/Session/showVotesOfEveryone/' + getSessionIdentifier()
+    }).then((response) => {
+      this.selectedCard = "?"
+      console.log("Force show sent");
+    }).catch((error) => {
+      console.log("error while sending force show");
+      console.log(error);
+    });
   }
 }
 
@@ -184,5 +219,25 @@ class Player {
     this.name = _name;
     this.id = _id;
     this.card = undefined;
+  }
+}
+
+export class UserStory {
+  id: number;
+  description: string;
+  tasks: string[];
+  note: string | undefined;
+
+  constructor(_id: number, _description: string, _tasks: string[], _note?: string) {
+    this.id = _id;
+    this.description = _description;
+    if (!_tasks){
+      this.tasks = []
+    } else {
+      this.tasks = _tasks;
+    }
+    if (_note) {
+      this.note = _note;
+    }
   }
 }

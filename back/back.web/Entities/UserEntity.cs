@@ -11,11 +11,19 @@ public class UserEntity
     
     [Required]
     public string name { get; set; }
+    
+    [Required]
+    public string password { get; set; }
+    
+    [Required]
+    public List<SessionEntity> sessions { get; set; }
 }
 
 public class UserInput
 {
     public string name { get; set; }
+    
+    public string password { get; set; }
 }
 
 public class UserDTO

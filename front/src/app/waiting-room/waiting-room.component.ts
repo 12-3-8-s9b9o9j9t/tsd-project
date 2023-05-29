@@ -139,6 +139,15 @@ export class WaitingRoomComponent implements OnInit {
       console.log("error when posting users story");
     }
   }
+
+  async deleteUserStory(id: number): Promise<void> {
+    try {
+      await this.api.delete({endpoint:'/Session/deleteUserStoryProposition/' + id});
+    }
+    catch (e) {
+      console.log("error when deleting users story");
+    }
+  }
 }
 
 class Player {

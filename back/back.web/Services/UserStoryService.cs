@@ -36,7 +36,7 @@ public class UserStoryService : IUserStoryService
 
     public async Task<UserStoryEntity> CreateUserStoryAsync(UserStoryInput userStory)
     {
-        UserStoryEntity userStoryToAdd = new UserStoryEntity(userStory.description, userStory.estimatedCost);
+        UserStoryEntity userStoryToAdd = new UserStoryEntity(userStory.description, userStory.estimatedCost, userStory.tasks);
         _userStoryContext.UserStories.Add(userStoryToAdd);
         await _userStoryContext.SaveChangesAsync();
 

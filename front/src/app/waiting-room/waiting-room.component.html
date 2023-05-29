@@ -61,6 +61,11 @@
                 <mat-card class="user-story" *ngFor="let userStory of userStories">
                     <mat-card-title>
                         {{userStory.description}}
+                        <div class="delete-button">
+                            <button mat-fab color="warn" aria-label="delete icon" (click)="deleteUserStory(userStory.id)">
+                              <mat-icon>delete</mat-icon>
+                            </button>
+                          </div>
                     </mat-card-title>
                 </mat-card>
             </div>

@@ -51,7 +51,7 @@ public class UserStoryPropositionController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<UserStoryPropositionEntity>> update(int id, [FromBody] UserStoryPropositionInput input)
     {
-        var ans = _service.update(id, input);
+        var ans = await _service.update(id, input);
 
         if (ans == null)
         {

@@ -22,7 +22,14 @@ import { AddUserStoryComponent } from './add-user-story/add-user-story.component
 import { EndPageComponent } from './end-page/end-page.component';
 import { MatButtonToggleModule}  from '@angular/material/button-toggle';
 import { LoginComponent } from './login/login.component';
-import { SocketService } from './services/socket.service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { HistoryComponent } from './history/history.component';
+import { MatListModule } from '@angular/material/list';
+import { MatExpansionModule } from '@angular/material/expansion';
+
+
+
 
 @NgModule({
   declarations: [
@@ -33,7 +40,9 @@ import { SocketService } from './services/socket.service';
     WaitingRoomComponent,
     AddUserStoryComponent,
     EndPageComponent,
-    LoginComponent
+    LoginComponent,
+    HistoryComponent,
+    
   ],
   imports: [
     HttpClientModule,
@@ -51,6 +60,10 @@ import { SocketService } from './services/socket.service';
     MatCheckboxModule,
     MatTableModule,
     MatButtonToggleModule,
+    MatIconModule,
+    MatSnackBarModule,
+    MatListModule,
+    MatExpansionModule
   ],
   providers: [],
   bootstrap: [AppComponent]

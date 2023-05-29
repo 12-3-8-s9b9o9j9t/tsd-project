@@ -14,7 +14,9 @@ public class Session
     public ASessionState _state { get; set; }
     public HashSet<UserEntity> _joinedUsers { get; set; }
     
-    public Stack<UserStoryPropositionEntity> _allUserStories { get; set; }
+    public Queue<UserStoryPropositionEntity> _allUserStories { get; set; }
+    
+    public Stack<UserStoryEntity> _allVotedUserStories { get; set; }
     
     public OrderedDictionary _startSessionMap { get; set; }
     
@@ -35,7 +37,8 @@ public class Session
     public Session()
     {
         _joinedUsers = new HashSet<UserEntity>();
-        _allUserStories = new Stack<UserStoryPropositionEntity>();
+        _allUserStories = new Queue<UserStoryPropositionEntity>();
+        _allVotedUserStories = new Stack<UserStoryEntity>();
         _startSessionMap = new OrderedDictionary();
         _currentUSVoted = new OrderedDictionary();
         _state = new StartState(this);
@@ -55,7 +58,7 @@ public class Session
 
     public void nextUserStory()
     {
-        _allUserStories.Pop();
+        _allUserStories.Dequeue();
     }
 
     // public static Session getInstance()
@@ -177,4 +180,13 @@ public class SessionDTO
     public string identifier { get; set; }
 
     public int? nb_ws { get; set; }
+}
+
+public class SessionSecondDTO
+{
+    public string identifier { get; set; }
+    
+    public List<UserDTO> users { get; set; }
+    
+    public List<UserStoryEntity> userStories { get; set; }
 }

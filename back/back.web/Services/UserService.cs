@@ -1,3 +1,5 @@
+using back.Classes;
+using back.Classes.SessionState;
 using back.DAL;
 using back.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +13,12 @@ public interface IUserService
     Task<UserDTO> GetUserByNameAsync(string name);
 
     Task<UserDTO> GetByID(int id);
+
+    Task<List<SessionSecondDTO>> getUserSessions(int userId);
+
+    Task<UserDTO> authLogin(UserInput userInput);
+
+
 }
 
 public class UserService : IUserService
@@ -35,13 +43,15 @@ public class UserService : IUserService
             throw new BadHttpRequestException("Name must be valid.");
         }
 
-        var existingUser = await _databaseContext.Users.SingleOrDefaultAsync(u => u.name == userInput.name);
+        var existingUser = await _databaseContext.Users.SingleOrDefaultAsync(u => u.name.Equals(userInput.name));
         if (existingUser != null)
         {
             throw new BadHttpRequestException($"User with name '{userInput.name}' already exists.");
         }
 
-        var userToAdd = new UserEntity { name = userInput.name };
+        var passwordHash = BCrypt.Net.BCrypt.HashPassword(userInput.password); 
+        
+        var userToAdd = new UserEntity { name = userInput.name, password = passwordHash };
         _databaseContext.Users.Add(userToAdd);
         await _databaseContext.SaveChangesAsync();
 
@@ -64,6 +74,23 @@ public class UserService : IUserService
         return new UserDTO { id = user.id, name = user.name };
     }
 
+    public async Task<UserDTO> authLogin(UserInput userInput)
+    {
+        UserEntity? user = await _databaseContext.Users.SingleOrDefaultAsync(u => u.name.Equals(userInput.name));
+
+        if (user == null)
+        {
+            throw new BadHttpRequestException("");
+        }
+
+        if (!BCrypt.Net.BCrypt.Verify(userInput.password, user.password))
+        {
+            throw new UnauthorizedAccessException("");
+        }
+
+        return await GetByID(user.id);
+    }
+
     public async Task<UserDTO> GetByID(int id)
     {
         var user = await _databaseContext.Users.FindAsync(id);
@@ -74,5 +101,29 @@ public class UserService : IUserService
         }
 
         return new UserDTO { id = user.id, name = user.name };
+    }
+
+    public async Task<List<SessionSecondDTO>> getUserSessions(int userId)
+    {
+        if (await GetByID(userId) == null)
+        {
+            return null;
+        }
+
+        var sessions = SessionList.Sessions.Where(s => s._joinedUsers.Select(u => u.id).Contains(userId)).Where(s => s._state is EndState);
+
+        List<SessionSecondDTO> sdto = new List<SessionSecondDTO>();
+
+        foreach (var se in sessions)
+        {
+            sdto.Add(new SessionSecondDTO
+            {
+                identifier = se.Identifier,
+                userStories = se._allVotedUserStories.ToList(),
+                users = se._joinedUsers.Select(u => new UserDTO { id = u.id, name = u.name }).ToList()
+            } );
+        }
+
+        return sdto;
     }
 }

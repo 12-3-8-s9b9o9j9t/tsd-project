@@ -1,73 +1,111 @@
 <div class="session">
 
-  <!-- Board -->
-  <div class="board">
-    <mat-card class="boardPlayer-card" *ngFor="let player of boardPlayers">
-      <mat-card-header>
-        <mat-card-title>{{player.name}}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="card-container">
+  <div class="show-card-indicator" *ngIf="showCards">SHOWING CARDS</div>
 
-          <div *ngIf="!showCards; then thenBlock else elseBlock"></div>
+  <!-- Board + User story -->
+  <div class="board-user-story-deck">
+    <!-- Board -->
+    <div class="board">
+      <mat-card class="boardPlayer-card" *ngFor="let player of boardPlayers">
+        <mat-card-header>
+          <mat-card-title>{{player.name}}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="card-container">
+
+            <div *ngIf="!showCards; then thenBlock else elseBlock"></div>
+
+            <ng-template #thenBlock>
+              <div class="hidden">hidden</div>
+            </ng-template>
+
+            <ng-template #elseBlock>
+              <mat-card-content class="number-boardPlayer">{{player.card}}</mat-card-content>
+            </ng-template>
+          </div>
+
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+
+    <!-- User Story -->
+    <div class="user-stories">
+      <div class="description">{{currentUserStory.description}}</div>
+    </div>
+
+    <!-- Player Deck -->
+    <div class="player-deck">
+
+      <mat-card class="player-card">
+        <mat-card-header>
+          <mat-card-title>Selected card</mat-card-title>
+        </mat-card-header>
+
+        <div class="card-container">
+          <div *ngIf="!selectedCard; then thenBlock else elseBlock"></div>
 
           <ng-template #thenBlock>
-            <div class="hidden">hidden</div>
+            <div class="no-card-selected">select a card</div>
           </ng-template>
 
           <ng-template #elseBlock>
-            <mat-card-content class="number-boardPlayer">{{player.card}}</mat-card-content>
+            <mat-card-content class="number" [@fade]>
+              <p>{{selectedCard}}</p>
+            </mat-card-content>
           </ng-template>
         </div>
 
-      </mat-card-content>
-    </mat-card>
+
+      </mat-card>
+
+      <mat-card>
+        <mat-button-toggle-group name="fontStyle" appearance="legacy" aria-label="Font Style"
+          [(ngModel)]="selectedCard">
+          <mat-button-toggle class="button-toggle" [disabled]="disabled" *ngFor="let card of tabCards" [value]="card">
+            {{card}}
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <mat-card-content>
+          <section class="button-section">
+            <button mat-flat-button class="button-validate" color="primary" [disabled]="disabled || !selectedCard" (click)="validate()">
+              Validate card
+            </button>
+            <div *ngIf="isOwner" class="button-force">
+              <button mat-flat-button class="button-reset" color="warn" (click)="forceShow()">
+                Force cards
+              </button>
+            </div>
+          </section>
+        </mat-card-content>
+      </mat-card>
+    </div>
   </div>
 
+  <!-- Task Management -->
+  <div class="tasks-management">
+    <form class="add-task" [formGroup]="formGroup" (submit)="addTask()">
+      <mat-form-field>
+        <mat-label>Task</mat-label>
+        <input matInput [formControl]="taskControl">
+      </mat-form-field>
+      <button mat-raised-button class="button" color="primary" appeareace="fill" type="submit">
+        Add task
+      </button>
+    </form>
 
-  <!-- User Story -->
-  <div class="user-story">{{currentUserStory}}</div>
-
-  <!-- Player Deck -->
-  <div class="player-deck">
-
-    <mat-card class="player-card">
-      <mat-card-header>
-        <mat-card-title>Selected card</mat-card-title>
-      </mat-card-header>
-
-      <div class="card-container">
-        <div *ngIf="!selectedCard; then thenBlock else elseBlock"></div>
-
-        <ng-template #thenBlock>
-          <div class="no-card-selected">select a card</div>
-        </ng-template>
-
-        <ng-template #elseBlock>
-          <mat-card-content class="number" [@fade]>
-            <p>{{selectedCard}}</p>
-          </mat-card-content>          
-        </ng-template>
-      </div>
-
-
-    </mat-card>
-
-    <mat-card>
-      <mat-button-toggle-group name="fontStyle" appearance="legacy" aria-label="Font Style" [(ngModel)]="selectedCard">
-        <mat-button-toggle class="button-toggle" [disabled]="disabled" *ngFor="let card of tabCards" [value]="card">
-          {{card}}
-        </mat-button-toggle>
-      </mat-button-toggle-group>
-
-      <mat-card-content>
-        <section class="button-section">
-          <button mat-flat-button class="button-validate" color="primary" [disabled]="disabled" (click)="validate()">
-            Validate card
+    <div class="tasks">
+      <h3>Tasks</h3>
+      <div class="task-item" *ngFor="let task of currentUserStory.tasks">
+        {{ task }}
+        <div class="delete-button">
+          <button mat-fab color="primary" aria-label="delete icon" (click)="deleteTask(task)">
+            <mat-icon>delete</mat-icon>
           </button>
-        </section>
-      </mat-card-content>
-    </mat-card>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>

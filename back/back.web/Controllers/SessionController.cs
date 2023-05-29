@@ -50,9 +50,9 @@ public class SessionController : ControllerBase
     }
 
     [HttpPost("createSession")]
-    public async Task<ActionResult<Session>> createSession()
+    public async Task<ActionResult<SessionDTO>> createSession(IFormFile? jiraFile)
     {
-        var result = _sessionService.createSession();
+        var result = await _sessionService.createSession(jiraFile);
         
         return Ok(result);
     }
@@ -153,6 +153,26 @@ public class SessionController : ControllerBase
         await _sessionService.sendUSToAllWS(sessionIdentifier);
         return Ok(us);
     }
+
+    [HttpGet("showVotesOfEveryone/{sessionIdentifier}")]
+    public async Task<ActionResult> showVotesOfEveryone(string sessionIdentifier)
+    {
+        await _sessionService.showVotesOfEveryone(sessionIdentifier);
+        return Ok();
+    }
+
+    [HttpGet("{sessionIdentifier}/download")]
+    public ActionResult downloadCSV(string sessionIdentifier)
+    {
+        var file = _sessionService.downloadCSV(sessionIdentifier);
+
+        if (file == null)
+        {
+            return NotFound("session " + sessionIdentifier + " not found.");
+        }
+        
+        return File(file.FileContents, file.ContentType, file.FileName);
+    }    
 }
 
 

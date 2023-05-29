@@ -12,9 +12,14 @@ import { saveName, saveID } from '../services/storage.service';
 export class LoginComponent {
 
   nameControl = new FormControl('', [Validators.required]);
+  passwordControl = new FormControl('', [Validators.required]);
+
+  isError = false;
+  isRegister = false;
 
   formGroup = new FormGroup({
     name: this.nameControl,
+    password: this.passwordControl
   });
 
   constructor(
@@ -23,60 +28,68 @@ export class LoginComponent {
   ) { }
 
 
-  async enter(): Promise<void> {
+  async signIn(): Promise<void> {
     if (!this.formGroup.valid) {
       return;
     }
-    let name: string | null = this.nameControl.value;
+    let name: string = ""
+    let password: string = ""
 
+    if (this.nameControl.value !== null && this.passwordControl.value !== null) {
+      name = this.nameControl.value;
+      password = this.passwordControl.value;
+    }
 
-    await this.api.get({ endpoint: '/User/' + name }).then((response) => {
+    try {
+      const response = await this.api.post({ endpoint: '/User/auth/login', data: { name: name, password: password }});
       console.log("User found");
-      console.log(response);
+
       if (name === null) {
         return;
       }
-      saveName(name);
+    
+      saveName(response.name);
       saveID(response.id);
       this.moveToHome();
-    }).catch(async (error) => {
-      console.log("User not found, creating new user");
-      await this.api.post({ endpoint: '/User', data: { name: name } }).then((response) => {
-        console.log(response);
-        if (name === null) {
-          return;
-        }
-        saveName(name);
-        saveID(response.id);
-        this.moveToHome();
-      }
-      ).catch((error) => {
-        console.log(error);
-      }
-      );
-    });
+    } catch (error) {
+      this.isError = true;
+      console.log("User not found");
+    }    
+  }
+
+  async register(): Promise<void> {
+
+    if (!this.formGroup.valid) {
+      return;
+    }
+
+    let name: string = ""
+    let password: string = ""
+
+    if (this.nameControl.value !== null && this.passwordControl.value !== null) {
+      name = this.nameControl.value;
+      password = this.passwordControl.value;
+    }
+
+    try {
+      const response = await this.api.post({ endpoint: '/User', data: { name: name, password: password }});
+      console.log("User created");
+      this.signIn();
+    } catch (error) {
+      this.isError = true;
+      console.log("Erorr creating user");
+    }
+    
+  }
+
+  moveToRegister(bool: boolean): void {
+    this.isRegister = bool;
+    this.isError = false;
+    this.nameControl.reset();
+    this.passwordControl.reset();
   }
 
   moveToHome() {
     this.router.navigateByUrl('/home');
-
-
-    // this.api.get({ endpoint: '/Session' }).then((response) => {
-    //   console.log("Session found");
-    //   this.router.navigateByUrl('/waiting-room');
-    // }).catch((error) => {
-    //   console.log(error);
-    //   console.log("Session not found, creating new session");
-    //   this.api.post({ endpoint: '/Session/createSession' }).then((response) => {
-    //     console.log(response);
-    //     console.log("Session created");
-    //     this.router.navigateByUrl('/waiting-room');
-    //   }
-    //   ).catch((error) => {
-    //     console.log(error);
-    //   }
-    //   );
-    // });
   }
-
 }

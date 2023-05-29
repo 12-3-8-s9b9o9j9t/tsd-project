@@ -6,6 +6,14 @@
   height: 50%;
 }
 
+.history-button {
+  // place elements to the right
+  margin-left: auto;
+  margin-right: 1.5rem;
+  margin-top: 1rem;
+  font-size: 1.1rem;
+}
+
 .title {
   font-size: 2rem;
   margin-bottom: 2rem;
@@ -62,5 +70,12 @@ p {
 
 .button-create {
   width: 10rem;
+  font-size: 1.1rem;
+  margin-bottom: 0.2rem;
+}
+
+.logout-button {
+  position: absolute;
+  bottom: 8rem;
   font-size: 1.1rem;
 }
