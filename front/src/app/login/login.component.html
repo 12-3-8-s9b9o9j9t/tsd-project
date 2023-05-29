@@ -19,12 +19,16 @@
         </mat-form-field>
       </div>
 
+      <div *ngIf="isError" class="error-message">
+        Incorrect username or password.
+      </div>
+
       <div class="button-section">
         <button mat-raised-button class="button-login" color="primary" appeareace="fill" type="submit">
           Login
         </button>
         <button mat-button class="button-register" color="primary" appeareace="fill" type="button"
-          (click)="isRegister = true">
+          (click)="moveToRegister(true)">
           Don't have an account? Register now
         </button>
       </div>
@@ -50,12 +54,16 @@
         </mat-form-field>
       </div>
 
+      <div *ngIf="isError" class="error-message">
+        Incorrect username or password.
+      </div>
+
       <div class="button-section">
         <button mat-raised-button class="button-login" color="primary" appeareace="fill" type="submit">
           Register
         </button>
         <button mat-button class="button-register" color="primary" appeareace="fill" type="button"
-          (click)="isRegister = false">
+          (click)="moveToRegister(false)">
           Already have an account ? Sign in
         </button>
       </div>

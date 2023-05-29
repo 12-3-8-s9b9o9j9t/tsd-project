@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiHelperService } from '../services/api-helper.service';
-import { getName, resetOwner, saveSessionIdentifier, setOwner } from "../services/storage.service";
+import { getName, resetOwner, saveID, saveName, saveSessionIdentifier, setOwner } from "../services/storage.service";
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -35,16 +35,13 @@ export class HomeComponent {
       return;
     }
     let sessionIdentifier: string | null = this.joinSessionControl.value;
-
     if (sessionIdentifier == null) {
       return ;
     }
     
     saveSessionIdentifier(sessionIdentifier);
-
     resetOwner();
     this.moveToSession(sessionIdentifier);
-
   }
 
   moveToSession(code: string): void {
@@ -83,6 +80,18 @@ export class HomeComponent {
     }
     ).catch((error) => {
       console.error("Error when creating session :", error);
-    });  }
-  
+    });
+  }
+
+  logout(): void {
+    resetOwner();
+    saveName('');
+    saveID(-1);
+    this.user = '';
+    this.snackBar.open('Vous êtes déconnecté', 'Fermer', {
+      duration: 2000,
+    });
+    this.router.navigate(['/login']);
+
+  }
 }

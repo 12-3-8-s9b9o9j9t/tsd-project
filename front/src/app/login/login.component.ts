@@ -14,6 +14,7 @@ export class LoginComponent {
   nameControl = new FormControl('', [Validators.required]);
   passwordControl = new FormControl('', [Validators.required]);
 
+  isError = false;
   isRegister = false;
 
   formGroup = new FormGroup({
@@ -51,6 +52,7 @@ export class LoginComponent {
       saveID(response.id);
       this.moveToHome();
     } catch (error) {
+      this.isError = true;
       console.log("User not found");
     }    
   }
@@ -70,13 +72,21 @@ export class LoginComponent {
     }
 
     try {
-      const response = await this.api.post({ endpoint: '/User/auth/register', data: { name: name, password: password }});
+      const response = await this.api.post({ endpoint: '/User', data: { name: name, password: password }});
       console.log("User created");
       this.signIn();
     } catch (error) {
+      this.isError = true;
       console.log("Erorr creating user");
     }
     
+  }
+
+  moveToRegister(bool: boolean): void {
+    this.isRegister = bool;
+    this.isError = false;
+    this.nameControl.reset();
+    this.passwordControl.reset();
   }
 
   moveToHome() {
