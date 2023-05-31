@@ -203,6 +203,7 @@
             text-align: center;
 
             .task-item {
+                display: flex;
                 padding: 0.5rem;
                 border-radius: 4px;
                 word-wrap: break-word;
