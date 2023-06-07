@@ -154,6 +154,20 @@ public class SessionController : ControllerBase
         return Ok(us);
     }
 
+    [HttpDelete("deleteUserStoryProposition/{sessionIdentifier}/{uspId:int}")]
+    public async Task<ActionResult> deleteUserStoryProposition(string sessionIdentifier, int uspId)
+    {
+        try
+        {
+            await _sessionService.deleteUserStoryProposition(sessionIdentifier, uspId);
+        }
+        catch (BadHttpRequestException e)
+        {
+            return BadRequest("session does not exist");
+        }
+        return Ok();
+    }
+
     [HttpGet("showVotesOfEveryone/{sessionIdentifier}")]
     public async Task<ActionResult> showVotesOfEveryone(string sessionIdentifier)
     {
