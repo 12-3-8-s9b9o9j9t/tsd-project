@@ -4,6 +4,8 @@ import { ApiHelperService } from '../services/api-helper.service';
 import { getID, getName, getSessionIdentifier } from '../services/storage.service';
 import { FormControl } from '@angular/forms';
 import { SocketService } from '../services/socket.service';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-waiting-room',
@@ -21,7 +23,13 @@ export class WaitingRoomComponent implements OnInit {
 
   sessionIdentifier: string;
 
-  constructor(private api: ApiHelperService, private socket: SocketService, private router: Router, private route:ActivatedRoute) {
+  constructor(
+    private api: ApiHelperService,
+    private socket: SocketService,
+    private router: Router,
+    private route:ActivatedRoute,
+    public dialog: MatDialog,
+  ) {
     this.player = new Player(getName(), getID());
     this.sessionIdentifier = getSessionIdentifier();
   }
@@ -141,13 +149,36 @@ export class WaitingRoomComponent implements OnInit {
   }
 
   async deleteUserStory(id: number): Promise<void> {
-    try {
-      await this.api.delete({endpoint:'/Session/deleteUserStoryProposition/' + getSessionIdentifier() + "/" + id});
-    }
-    catch (e) {
-      console.log("error when deleting users story");
-    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent);
+
+    dialogRef.afterClosed().subscribe(async result => {
+      if (result) {
+        try {
+          await this.api.delete({endpoint:'/Session/deleteUserStoryProposition/' + getSessionIdentifier() + "/" + id});
+        }
+        catch (e) {
+          console.log("error when deleting users story");
+        }
+      }
+    });
   }
+}
+
+//** Dialog components to confirm the delete actions */
+@Component({
+  selector: 'app-confirmation-dialog',
+  template: `
+    <h2 mat-dialog-title>Are you sure you want to delete this user story ?</h2>
+    <div style="display: flex; justify: center; width: full;">
+      <button mat-button (click)="dialogRef.close(false)">Cancel</button>
+      <button mat-button color="warn" (click)="dialogRef.close(true)">Delete</button>
+    </div>
+  `,
+  standalone: true,
+  imports: [MatButtonModule, MatDialogModule]
+})
+export class ConfirmationDialogComponent {
+  constructor(public dialogRef: MatDialogRef<ConfirmationDialogComponent>) { }
 }
 
 class Player {

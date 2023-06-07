@@ -5,6 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { SocketService } from '../services/socket.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 
 
 
@@ -45,7 +47,13 @@ export class SessionComponent implements OnInit {
   isOwner: boolean = false;
 
 
-  constructor(private api: ApiHelperService, private socket: SocketService, private router: Router, private route: ActivatedRoute) {
+  constructor(
+    private api: ApiHelperService,
+    private socket: SocketService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private dialog: MatDialog,
+    ) {
     this.gameId = "";
     this.route.params.subscribe(params => {
       this.gameId = params['id'];
@@ -178,21 +186,26 @@ export class SessionComponent implements OnInit {
   }
 
   async deleteTask(task: string) {
-    this.currentUserStory.tasks = this.currentUserStory.tasks.filter((t) => t != task);
 
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent);
 
-    await this.api.put({
-      endpoint: '/UserStoryProposition/' + this.currentUserStory.id,
-      data: {
-        description: this.currentUserStory.description,
-        tasks: JSON.stringify({tasks: this.currentUserStory.tasks}),
-        sessionIdentifier: getSessionIdentifier()
+    dialogRef.afterClosed().subscribe(async result => {
+      if (result) {
+        this.currentUserStory.tasks = this.currentUserStory.tasks.filter((t) => t != task);
+        await this.api.put({
+          endpoint: '/UserStoryProposition/' + this.currentUserStory.id,
+          data: {
+            description: this.currentUserStory.description,
+            tasks: JSON.stringify({tasks: this.currentUserStory.tasks}),
+            sessionIdentifier: getSessionIdentifier()
+          }
+        }).then((response) => {
+          console.log("Task deleted");
+        }).catch((error) => {
+          console.log("error while deleting task");
+          console.log(error);
+        });
       }
-    }).then((response) => {
-      console.log("Task deleted");
-    }).catch((error) => {
-      console.log("error while deleting task");
-      console.log(error);
     });
   }
 
@@ -207,6 +220,23 @@ export class SessionComponent implements OnInit {
       console.log(error);
     });
   }
+}
+
+//** Dialog components to confirm the delete actions */
+@Component({
+  selector: 'app-confirmation-dialog',
+  template: `
+    <h2 mat-dialog-title>Are you sure you want to delete this task ?</h2>
+    <div style="display: flex; justify: center; width: full;">
+      <button mat-button (click)="dialogRef.close(false)">Cancel</button>
+      <button mat-button color="warn" (click)="dialogRef.close(true)">Delete</button>
+    </div>
+  `,
+  standalone: true,
+  imports: [MatButtonModule, MatDialogModule]
+})
+export class ConfirmationDialogComponent {
+  constructor(public dialogRef: MatDialogRef<ConfirmationDialogComponent>) { }
 }
 
 class Player {
