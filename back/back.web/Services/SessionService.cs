@@ -7,6 +7,7 @@ using back.Classes.SessionState;
 using back.DAL;
 using back.Entities;
 using CsvHelper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.VisualBasic.FileIO;
 
 namespace back.Services;
@@ -29,6 +30,8 @@ public interface ISessionService
 
 
     public Task<UserStoryPropositionEntity> createUserStoryProposition(UserStoryPropositionInput usInput, string sessionIdentifier);
+
+    public Task deleteUserStoryProposition(string sessionIdentifier, int uspId);
 
     public Task addWS(WebSocket webSocket, string sessionIdentifier);
 
@@ -360,6 +363,29 @@ public class SessionService : ISessionService
         return us;
     }
 
+    public async Task deleteUserStoryProposition(string sessionIdentifier, int uspId)
+    {
+        // first, remove the usp from its session
+        Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
+
+        if (session == null)
+        {
+            throw new BadHttpRequestException("session does not exist");
+        }
+
+        session._allUserStories = new Queue<UserStoryPropositionEntity>(session._allUserStories.Where(usp => usp.id != uspId));
+        
+        // send the usp through ws
+        await sendUSToAllWS(sessionIdentifier);
+        
+        // remove usp from db
+        UserStoryPropositionEntity? usp = _databaseContext.UserStoriesProposition.Find(uspId);
+        _databaseContext.UserStoriesProposition.Remove(usp);
+
+        await _databaseContext.SaveChangesAsync();
+        
+    } 
+
     public async Task addWS(WebSocket webSocket, string sessionIdentifier)
     {
         Session? session = SessionList.Sessions.Find(s => s.Identifier.Equals(sessionIdentifier));
@@ -452,9 +478,7 @@ public class SessionService : ISessionService
             return null;
         }
 
-        List<string> descriptions = session._allVotedUserStories
-            .Select(us => us.description)
-            .ToList();
+        List<UserStoryEntity> allUS = session._allVotedUserStories.ToList();
 
         // Create a memory stream to write the CSV data
         using (var memoryStream = new MemoryStream())
@@ -464,12 +488,14 @@ public class SessionService : ISessionService
             {
                 // Write the header
                 csvWriter.WriteField("Summary");
+                csvWriter.WriteField("Cost");
                 csvWriter.NextRecord();
 
                 // Write the descriptions
-                foreach (string description in descriptions)
+                foreach (UserStoryEntity us in allUS)
                 {
-                    csvWriter.WriteField(description);
+                    csvWriter.WriteField(us.description);
+                    csvWriter.WriteField(us.estimatedCost);
                     csvWriter.NextRecord();
                 }
             }

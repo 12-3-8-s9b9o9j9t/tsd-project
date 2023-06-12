@@ -27,6 +27,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HistoryComponent } from './history/history.component';
 import { MatListModule } from '@angular/material/list';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDialogModule } from '@angular/material/dialog'; 
 
 
 
@@ -42,7 +43,6 @@ import { MatExpansionModule } from '@angular/material/expansion';
     EndPageComponent,
     LoginComponent,
     HistoryComponent,
-    
   ],
   imports: [
     HttpClientModule,
@@ -63,7 +63,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatIconModule,
     MatSnackBarModule,
     MatListModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatDialogModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

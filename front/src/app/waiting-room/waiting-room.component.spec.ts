@@ -9,6 +9,7 @@ import { MatTableModule } from '@angular/material/table';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDialogModule } from '@angular/material/dialog';
 
 describe('WaitingRoomComponent', () => {
   let component: WaitingRoomComponent;
@@ -25,7 +26,8 @@ describe('WaitingRoomComponent', () => {
         MatTableModule,
         ReactiveFormsModule,
         MatInputModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
+        MatDialogModule
       ]
     })
     .compileComponents();
