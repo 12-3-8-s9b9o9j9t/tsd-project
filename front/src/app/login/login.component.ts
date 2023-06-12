@@ -28,11 +28,9 @@ export class LoginComponent {
     private router: Router
   ) { }
 
-
   onCheckboxChange(event: any) {
     this.checked = !event.target.checked;
   }
-
   async signIn(): Promise<void> {
     if (!this.formGroup.valid) {
       return;
