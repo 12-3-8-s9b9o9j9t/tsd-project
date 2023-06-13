@@ -186,7 +186,6 @@ export class SessionComponent implements OnInit {
   }
 
   async deleteTask(task: string) {
-
     const dialogRef = this.dialog.open(ConfirmationDialogComponent);
 
     dialogRef.afterClosed().subscribe(async result => {

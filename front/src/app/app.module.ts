@@ -33,7 +33,6 @@ import { TermsAndCondsComponent } from './terms-and-conds/terms-and-conds.compon
 
 
 
-
 @NgModule({
   declarations: [
     AppComponent,
