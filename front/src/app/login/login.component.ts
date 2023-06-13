@@ -97,4 +97,8 @@ export class LoginComponent {
   moveToHome() {
     this.router.navigateByUrl('/home');
   }
+
+  moveToSession(): void {
+    this.router.navigate(['/session', 'code', 'waiting-room']);
+  }
 }

@@ -27,7 +27,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HistoryComponent } from './history/history.component';
 import { MatListModule } from '@angular/material/list';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatDialogModule } from '@angular/material/dialog'; 
+import { MatDialogModule } from '@angular/material/dialog';
+import { TermsAndCondsComponent } from './terms-and-conds/terms-and-conds.component'; 
 
 
 
@@ -44,6 +45,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     EndPageComponent,
     LoginComponent,
     HistoryComponent,
+    TermsAndCondsComponent,
   ],
   imports: [
     HttpClientModule,
