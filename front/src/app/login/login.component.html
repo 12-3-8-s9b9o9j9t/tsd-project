@@ -69,7 +69,11 @@
       </div>
     </form>
   </ng-template>
-  <div *ngIf="isRegister">
-    <mat-checkbox class="checkbox" [(ngModel)]="checked" (change)="onCheckboxChange($event)">I agree to the terms and conditions</mat-checkbox>
+  <div *ngIf="isRegister" class="t-and-c">
+    <mat-checkbox class="checkbox" [(ngModel)]="checked" (change)="onCheckboxChange($event)"/>
+    <nav>
+      I agree to the
+      <a [routerLink]="['/legal/terms']" target="_blank">Terms and Conditions</a>
+    </nav>
   </div>
 </div>

@@ -6,6 +6,7 @@ import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
 import { EndPageComponent } from './end-page/end-page.component';
 import { LoginComponent } from './login/login.component';
 import { HistoryComponent } from './history/history.component';
+import { TermsAndCondsComponent } from './terms-and-conds/terms-and-conds.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -15,6 +16,7 @@ const routes: Routes = [
   { path: 'session/:id/waiting-room', component: WaitingRoomComponent },
   { path: 'session/:id/game', component: SessionComponent },
   { path: 'session/:id/end', component: EndPageComponent },
+  { path: 'legal/terms', component: TermsAndCondsComponent },
 ];
 
 @NgModule({

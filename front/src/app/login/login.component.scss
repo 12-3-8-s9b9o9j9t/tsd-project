@@ -5,6 +5,20 @@
   align-items: center;
   height: 75%;
 
+  .t-and-c {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    a {
+      color: #2374cf;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  }
+
   .form {
     display: flex;
     flex-direction: column;
@@ -45,7 +59,6 @@
 
       .button-register {
         font-size: small;
-        
       }
     }
   }
